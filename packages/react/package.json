@@ -1,6 +1,6 @@
 {
   "name": "store-bind",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Binding store to your app",
   "main": "lib/main.js",
   "scripts": {
@@ -39,6 +39,23 @@
       "js",
       "json"
     ]
+  },
+  "keywords": [
+    "store",
+    "state",
+    "common state",
+    "redux",
+    "flux",
+    "react",
+    "stencil",
+    "alt",
+    "observer",
+    "observable",
+    "mobx-state-tree"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/moshe-kabala/StoreX"
   },
   "dependencies": {
     "@storex/core": "^1.0.3",
