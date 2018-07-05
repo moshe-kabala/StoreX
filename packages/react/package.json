@@ -1,12 +1,14 @@
 {
   "name": "@storex/react",
   "scope": "@storex",
-  "version": "1.0.1",
+  "version": "1.0.7",
   "description": "Binding store to your app",
   "main": "lib/main.js",
   "scripts": {
     "test": "jest",
-    "build": "tsc"
+    "build": "tsc",
+    "update-dependence": "npm update @storex/core",
+    "release": "npm run update-dependence && rm -rf lib && tsc --sourceMap false && npm test && npm publish --access=public && npm version patch"
   },
   "author": "Moshe Kabala",
   "license": "ISC",
@@ -59,7 +61,7 @@
     "url": "https://github.com/moshe-kabala/StoreX"
   },
   "dependencies": {
-    "@storex/core": "^1.0.3",
+    "@storex/core": "^1.0.7",
     "react": "^16.4.1",
     "react-dom": "^16.4.1"
   }
