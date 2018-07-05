@@ -1,5 +1,6 @@
 {
-  "name": "store-bind",
+  "name": "@storex/react",
+  "scope": "@storex",
   "version": "1.0.1",
   "description": "Binding store to your app",
   "main": "lib/main.js",
