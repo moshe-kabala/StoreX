@@ -1,0 +1,47 @@
+{
+  "name": "store-bind",
+  "version": "1.0.0",
+  "description": "Binding store to your app",
+  "main": "lib/main.js",
+  "scripts": {
+    "test": "jest",
+    "build": "tsc"
+  },
+  "author": "Moshe Kabala",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/enzyme": "^3.1.11",
+    "@types/enzyme-adapter-react-16": "^1.0.2",
+    "@types/jest": "^23.1.4",
+    "@types/react": "^16.4.6",
+    "@types/react-dom": "^16.0.6",
+    "enzyme": "^3.3.0",
+    "enzyme-adapter-react-16": "^1.1.1",
+    "jest": "^23.3.0",
+    "ts-jest": "^23.0.0",
+    "typescript": "^2.9.2"
+  },
+  "jest": {
+    "transform": {
+      ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/lib/"
+    ],
+    "moduleNameMapper": {
+      "@/(.*)$": "<rootDir>/src/$1"
+    },
+    "testRegex": "\\.(test|spec)\\.(ts|tsx|js)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "json"
+    ]
+  },
+  "dependencies": {
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1"
+  }
+}

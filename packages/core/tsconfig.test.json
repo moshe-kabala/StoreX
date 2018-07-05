@@ -1,0 +1,6 @@
+{
+  "extends": "./tsconfig.josn",
+  "include": [
+    "./test"
+  ]
+}
