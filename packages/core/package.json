@@ -1,12 +1,13 @@
 {
   "name": "@storex/core",
-  "version": "1.0.5",
+  "version": "1.0.8",
   "description": "Binding store to your app",
   "main": "lib/index.js",
   "scope": "@storex",
   "scripts": {
     "test": "jest",
-    "build": "tsc"
+    "build": "tsc",
+    "release": "rm -rf lib && tsc --sourceMap false && npm test && npm publish --access=public && npm version patch"
   },
   "author": "Moshe Kabala",
   "license": "ISC",
