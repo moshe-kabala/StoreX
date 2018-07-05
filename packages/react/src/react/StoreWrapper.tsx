@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Store } from "../binding";
+import { Store } from "@storex/core";
 
 export interface StoreWrapperProps<T extends Store> {
   store: T;

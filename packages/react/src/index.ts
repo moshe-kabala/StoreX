@@ -1,2 +1,2 @@
-export * from "./core";
+export * from "./react-context-wrapper";
 export * from "./react";

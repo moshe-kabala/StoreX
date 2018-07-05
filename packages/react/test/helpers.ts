@@ -1,4 +1,4 @@
-import { Store, update } from "../src";
+import { Store, update } from "@storex/core";
 
 export enum StoreInsEvents {
   AddItem = "add-item",
