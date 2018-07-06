@@ -28,6 +28,8 @@ export class Store {
     }
   }
 
+  _sentOnChange = () => this;
+
   listen(func: (a: this) => any, eventNames?: string[]) {
     if (eventNames) {
       eventNames.forEach(eventName => {
@@ -75,8 +77,9 @@ export class Store {
       this._waited_to_update_funcs = funcs;
       setTimeout(() => {
         try {
+          const message = this._sentOnChange()
           for (const func of this._waited_to_update_funcs) {
-            func(this);
+            func(message);
           }
         } catch (err) {
           console.error(err);

@@ -9,20 +9,32 @@ export interface StateArsg extends StoreArgs {
 
 export class State extends Store {
     _save_history;
-    _history = [];
-    _status_history = [];
+    _is_need_to_updated = true;
+    _history;
+    _status_history;
     _status = {};
+    _state_cache
     _state;
+
+    _sentOnChange = () => this.state;
+
     constructor(
         { defaultState, saveHistory, ...args }: StateArsg = { saveHistory: false, defaultState: {} }
     ) {
         super(args);
+        if (saveHistory) {
+            this._history = [];
+            this._status_history = [];
+        }
         this._save_history = saveHistory;
         this._state = fromJS(defaultState);
     }
 
     get state() {
-        return this._state.toObject();
+        if (this._is_need_to_updated) {
+            this._state_cache = this._state.toJS();
+        }
+        return this._state_cache
     }
 
     @update()
@@ -33,6 +45,7 @@ export class State extends Store {
             this._history.push(oldState);
         }
         this._state = newState;
+        this._is_need_to_updated = true;
     }
 
     setState(args) {

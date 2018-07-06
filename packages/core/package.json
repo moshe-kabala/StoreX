@@ -21,6 +21,8 @@
     "typescript": "^2.9.2"
   },
   "keywords": [
+    "@storex/core",
+    "storex",
     "store",
     "state",
     "common state",
