@@ -1,4 +1,4 @@
-import { Store, update } from "../src";
+import { Store, update } from "../../src";
 
 export enum StoreInsEvents {
   AddItem = "add-item",
@@ -23,11 +23,13 @@ export class StoreIns extends Store {
   }
 
   @update()
-  action2() {}
+  action2() { }
 
   @update()
-  action3() {}
+  action3() { }
 
   @update()
-  action4() {}
+  action4() { }
 }
+
+

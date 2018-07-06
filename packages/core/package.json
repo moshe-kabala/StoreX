@@ -11,12 +11,31 @@
   },
   "author": "Moshe Kabala",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "immutable": "^3.8.2"
+  },
   "devDependencies": {
     "@types/jest": "^23.1.4",
     "jest": "^23.3.0",
     "ts-jest": "^23.0.0",
     "typescript": "^2.9.2"
+  },
+  "keywords": [
+    "store",
+    "state",
+    "common state",
+    "redux",
+    "flux",
+    "react",
+    "stencil",
+    "alt",
+    "observer",
+    "observable",
+    "mobx-state-tree"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/moshe-kabala/StoreX"
   },
   "jest": {
     "transform": {
@@ -28,23 +47,6 @@
     ],
     "moduleNameMapper": {
       "@/(.*)$": "<rootDir>/src/$1"
-    },
-    "keywords": [
-      "store",
-      "state",
-      "common state",
-      "redux",
-      "flux",
-      "react",
-      "stencil",
-      "alt",
-      "observer",
-      "observable",
-      "mobx-state-tree"
-    ],
-    "repository": {
-      "type": "git",
-      "url": "https://github.com/moshe-kabala/StoreX"
     },
     "testRegex": "\\.(test|spec)\\.(ts|tsx|js)$",
     "moduleFileExtensions": [

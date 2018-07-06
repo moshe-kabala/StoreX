@@ -12,10 +12,9 @@ export interface StoreArgs {
 }
 
 export class Store {
-  state = {};
   _events;
   _waited_to_update_funcs;
-  _eventsListenFunc : { [key:string] : Set<(a: any) => any>}= {
+  _eventsListenFunc: { [key: string]: Set<(a: any) => any> } = {
     onChange: new Set()
   };
 
@@ -27,10 +26,6 @@ export class Store {
     if (!this._events.has("onChange")) {
       this._events.add("onChange");
     }
-  }
-
-  getState() {
-    return this.state;
   }
 
   listen(func: (a: this) => any, eventNames?: string[]) {
@@ -80,11 +75,11 @@ export class Store {
       this._waited_to_update_funcs = funcs;
       setTimeout(() => {
         try {
-            for (const func of this._waited_to_update_funcs) {
-                func(this);
-            }
+          for (const func of this._waited_to_update_funcs) {
+            func(this);
+          }
         } catch (err) {
-            console.error(err);
+          console.error(err);
         }
         this._waited_to_update_funcs = undefined;
       }, 0);

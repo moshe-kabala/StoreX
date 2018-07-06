@@ -1,4 +1,5 @@
 import { StoreIns, StoreInsEvents } from "./helpers";
+import "jest";
 import { Store } from "../src";
 
 describe("Store", () => {
@@ -125,7 +126,7 @@ describe("Store", () => {
     await new Promise(resolve => {
       setTimeout(() => {
         // exist in item1 but not in item2 because we unlisten 
-        expect(items1).toContain(arg); 
+        expect(items1).toContain(arg);
         expect(items2).not.toContain(arg);
         resolve();
       }, 1);
@@ -167,7 +168,7 @@ describe("Store", () => {
     await new Promise(resolve => {
       setTimeout(() => {
         // exist in item1 but not in item2 because we unlisten 
-        expect(items1).not.toContain(arg); 
+        expect(items1).not.toContain(arg);
         expect(items2).not.toContain(arg);
         resolve();
       }, 1);
