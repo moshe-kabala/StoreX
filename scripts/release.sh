@@ -2,7 +2,7 @@
 
 # run this script from root
 
-libs=("core" "react")
+libs=("core" "react" "container")
 
 cd packages
 

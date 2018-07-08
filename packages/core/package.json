@@ -1,6 +1,6 @@
 {
   "name": "@storex/core",
-  "version": "1.0.8",
+  "version": "1.0.10",
   "description": "Binding store to your app",
   "main": "lib/index.js",
   "scope": "@storex",
@@ -11,9 +11,7 @@
   },
   "author": "Moshe Kabala",
   "license": "ISC",
-  "dependencies": {
-    "immutable": "^3.8.2"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/jest": "^23.1.4",
     "jest": "^23.3.0",
