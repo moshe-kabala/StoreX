@@ -23,7 +23,9 @@ export class StoreIns extends Store {
   }
 
   @update()
-  action2() {}
+  action2(items = []) {
+    items.forEach(item => this.action1(item));
+  }
 
   @update()
   action3() {}

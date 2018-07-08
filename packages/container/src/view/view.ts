@@ -1,68 +1,59 @@
-import { Store } from "@storex/core";
-
+import { Store, update } from "@storex/core";
 
 export interface ViewArgs {
-    transfrom: (data: any[]) => any[];
-    source
+  transform: (data: any[]) => any[];
+  sources;
 }
 
-export interface ViewMeta {
+export interface ViewMeta {}
 
-}
-
-export interface ViewStatus {
-
-}
-
+export interface ViewStatus {}
 
 /**
- * 
- * 
+ *
+ *
  * @export
  * @class View
  */
 export class View extends Store {
-    loading = false;
-    _is_need_to_update = true;
-    _transfrom;
-    _sources;
-    _data;
+  loading = false;
+  _is_need_to_update = true;
+  _transform;
+  _sources;
+  _data;
 
-    constructor({ sources, transfrom }) {
-        super(); // todo
-        regester(this.update, sources);
-        this._transfrom = transfrom;
-        this._sources = sources;
+  constructor({ sources, transform }: ViewArgs) {
+    super(); // todo
+    Store.register(this.update, sources);
+    this._transform = transform;
+    this._sources = sources;
+  }
+  @update()
+  set data(value) {
+    this._data = value;
+  }
+
+  get data() {
+    return this._data;
+  }
+
+  update = () => {
+    try {
+      const result = this._transform(this._sources);
+      if (!(result instanceof Promise)) {
+        this.data = result;
+      } else {
+        result.then(
+          r => (this.data = r),
+          err => console.error("Failed to update the View", err)
+        );
+      }
+    } catch (err) {
+      console.error("Failed to update the View", err);
     }
-
-    set data(value) {
-        this._data = value;
-    }
-
-    get data() {
-        return this._data;
-    }
-
-    async update() {
-        this.loading = true;
-        try {
-            this.data = await transfrom(this._sources);
-        } catch (err) {
-            console.error(err)
-        }
-
-        this.loading = false;
-    }
+  };
 }
 
-
-function transfrom(value) {
-    return value;
-}
-
-function regester(func, stores: Store[]) {
-    for (const store of stores) {
-        store.listen(func)
-    }
-
+export function createView(args: ViewArgs) {
+  return new View(args);
 }

@@ -19,13 +19,16 @@ export function update(eventNames?: string[]) {
       descriptor[key] = function () {
         // console.log(`Arguments: ${arguments}`);
         try {
+          this._dispatch_count++;
           const result = original.apply(this, arguments);
-          store.dispatch.apply(this, [eventNames]);
           // console.log(`Result: ${result}`);
           return result;
         } catch (e) {
           console.error(`Error: ${e}`);
           throw e;
+        } finally {
+          this._dispatch_count--;
+          store.dispatch.apply(this, [eventNames]);
         }
       };
     }

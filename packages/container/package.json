@@ -1,6 +1,6 @@
 {
   "name": "@storex/container",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Contain some container to hold the data",
   "main": "lib/index.js",
   "scope": "@storex",
@@ -13,7 +13,7 @@
   "author": "Moshe Kabala",
   "license": "ISC",
   "dependencies": {
-    "@storex/core": "^1.0.9",
+    "@storex/core": "^1.0.11",
     "immutable": "^3.8.2"
   },
   "devDependencies": {

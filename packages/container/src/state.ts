@@ -18,15 +18,16 @@ export class State extends Store {
     _sentOnChange = () => this.state;
 
     constructor(
-        { defaultState, saveHistory, ...args }: StateArsg = { saveHistory: false, defaultState: {} }
+        { defaultState, saveHistory, ...args }: StateArsg
     ) {
         super(args);
+        
         if (saveHistory) {
             this._history = [];
             this._status_history = [];
         }
-        this._save_history = saveHistory;
-        this._state = fromJS(defaultState);
+        this._save_history = saveHistory || false;
+        this._state = fromJS(defaultState || {});
     }
 
     get state() {

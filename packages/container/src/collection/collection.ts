@@ -49,6 +49,14 @@ export class Collection extends Store {
     }
   }
 
+  @update([e.DataChange])
+  update(item) {
+    const id = this.meta.itemToId(item);
+    if (this._itemsDir[id]) {
+      this._itemsDir[id] = item;
+      this._is_items_need_to_render = true;
+    }
+  }
   
   override(items) {
     this.data = items;
@@ -101,7 +109,7 @@ export class Collection extends Store {
 }
 
 
-export function createCollection(itemToId) {
+export function createCollection({itemToId}) {
   const meta = new CollectionMeta({itemToId});
   const status = new CollectionStatus();  
   return new Collection({meta, status});

@@ -13,7 +13,8 @@ export interface StoreArgs {
 
 export class Store {
   _events;
-  _waited_to_update_funcs;
+  _waited_to_update_funcs = new Set();
+  _dispatch_count = 0;
   _eventsListenFunc: { [key: string]: Set<(a: any) => any> } = {
     onChange: new Set()
   };
@@ -25,6 +26,12 @@ export class Store {
     this._events = new Set(events);
     if (!this._events.has("onChange")) {
       this._events.add("onChange");
+    }
+  }
+
+  static register(func, stores: Store[]) {
+    for (const store of stores) {
+      store.listen(func);
     }
   }
 
@@ -71,26 +78,23 @@ export class Store {
       });
     }
 
-    const funcs = new Set(funcs_array);
+    this._waited_to_update_funcs = new Set([
+      ...funcs_array,
+      ...this._waited_to_update_funcs
+    ]);
 
-    if (!this._waited_to_update_funcs) {
-      this._waited_to_update_funcs = funcs;
-      setTimeout(() => {
+    if (this._dispatch_count === 0) {
+      //setTimeout(() => {
         try {
-          const message = this._sentOnChange()
+          const message = this._sentOnChange();
           for (const func of this._waited_to_update_funcs) {
             func(message);
           }
         } catch (err) {
           console.error(err);
         }
-        this._waited_to_update_funcs = undefined;
-      }, 0);
-    } else {
-      this._waited_to_update_funcs = new Set([
-        ...funcs,
-        ...this._waited_to_update_funcs
-      ]);
+        this._waited_to_update_funcs = new Set();
+      //}, 0);
     }
   }
 
