@@ -1,0 +1,64 @@
+{
+  "name": "@storex/container",
+  "version": "1.0.8",
+  "description": "Contain some container to hold the data",
+  "main": "lib/index.js",
+  "scope": "@storex",
+  "scripts": {
+    "test": "jest",
+    "build": "tsc",
+    "update-dependence": "npm update @storex/core",
+    "release": "npm run update-dependence && rm -rf lib && tsc --sourceMap false && npm test && npm publish --access=public && npm version patch"
+  },
+  "author": "Moshe Kabala",
+  "license": "ISC",
+  "dependencies": {
+    "@storex/core": "^1.0.9",
+    "immutable": "^3.8.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^23.1.4",
+    "jest": "^23.3.0",
+    "ts-jest": "^23.0.0",
+    "typescript": "^2.9.2"
+  },
+  "keywords": [
+    "@storex/core",
+    "container",
+    "storex",
+    "store",
+    "state",
+    "common state",
+    "redux",
+    "flux",
+    "react",
+    "stencil",
+    "alt",
+    "observer",
+    "observable",
+    "mobx-state-tree"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/moshe-kabala/StoreX"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/lib/"
+    ],
+    "moduleNameMapper": {
+      "@/(.*)$": "<rootDir>/src/$1"
+    },
+    "testRegex": "\\.(test|spec)\\.(ts|tsx|js)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "json"
+    ]
+  }
+}
