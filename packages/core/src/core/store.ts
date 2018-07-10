@@ -11,13 +11,20 @@ export interface StoreArgs {
   dependencies?: (Store | dependenceStore)[];
 }
 
-export class Store {
+export interface StoreRegisterOptions {
+  store: Store;
+  on: string[];
+}
+
+export class Store<T = any> {
   _events;
   _waited_to_update_funcs = new Set();
   _dispatch_count = 0;
   _eventsListenFunc: { [key: string]: Set<(a: any) => any> } = {
     onChange: new Set()
   };
+
+  context:T
 
   constructor(
     { events, dependencies }: StoreArgs = { events: [], dependencies: [] }
@@ -29,9 +36,15 @@ export class Store {
     }
   }
 
-  static register(func, stores: Store[]) {
-    for (const store of stores) {
-      store.listen(func);
+  static register(func, stores: Store[] | StoreRegisterOptions[]) {
+    for (const val of stores) {
+      if (val instanceof Store) {
+        val.listen(func);
+      } else if (val || val.store instanceof Store ){
+        val.store.listen(func, val.on);
+      } else {
+        throw Error("You must ot send store in resources arg");
+      }
     }
   }
 
