@@ -1,13 +1,13 @@
-import { Store, update, StoreArgs } from "@storex/core";
+import { Dispatcher, dispatch, DispatcherArgs } from "@storex/core";
 
-export interface CollectionMetaArgs extends StoreArgs {
+export interface CollectionMetaArgs extends DispatcherArgs {
   id?: number | string;
   name?: string;
   columnMeta?;
   itemToId;
 }
 
-export class CollectionMeta extends Store {
+export class CollectionMeta extends Dispatcher {
   id;
   name;
   jsonSchema;

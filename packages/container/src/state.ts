@@ -1,12 +1,12 @@
-import { Store, StoreArgs, update } from "@storex/core";
+import { Dispatcher, DispatcherArgs, dispatch } from "@storex/core";
 import { fromJS } from "immutable";
 
-export interface StateArsg extends StoreArgs {
+export interface StateArsg extends DispatcherArgs {
     defaultState?: Object
     saveHistory?: boolean
 }
 
-export class State extends Store {
+export class State extends Dispatcher {
     _save_history;
     _is_need_to_updated = true;
     _history;
@@ -37,7 +37,7 @@ export class State extends Store {
         return this._state_cache
     }
 
-    @update()
+    @dispatch()
     set state(value) {
         const oldState = this._state;
         const newState = this._state.mergeDeep(value);

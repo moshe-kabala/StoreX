@@ -1,7 +1,7 @@
-import { Store } from "./store";
+import { Dispatcher } from "./dispatcher";
 
-export function update(eventNames?: string[]) {
-  return (store: Store, actionName, descriptor) => {
+export function dispatch(eventNames?: string[]) {
+  return (store: Dispatcher, actionName, descriptor) => {
 
     let key = "value";
 

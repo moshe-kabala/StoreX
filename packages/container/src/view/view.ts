@@ -1,9 +1,9 @@
-import { Store, update, StoreRegisterOptions } from "@storex/core";
+import { Dispatcher, dispatch, DispatcherRegisterOptions } from "@storex/core";
 
 export type SourcesOptions =
-  | (Store | StoreRegisterOptions)[]
-  | { [key: string]: Store }
-  | { [key: string]: StoreRegisterOptions };
+  | (Dispatcher | DispatcherRegisterOptions)[]
+  | { [key: string]: Dispatcher }
+  | { [key: string]: DispatcherRegisterOptions };
 
 export interface ViewArgs {
   transform: (data: any[]) => any[];
@@ -20,7 +20,7 @@ export interface ViewStatus {}
  * @export
  * @class View
  */
-export class View extends Store {
+export class View extends Dispatcher {
   loading = false;
   _is_need_to_update = true;
   _transform;
@@ -35,35 +35,35 @@ export class View extends Store {
     if (sources instanceof Array) {
       _sources = [];
       for (let val of sources) {
-        if (val instanceof Store) {
+        if (val instanceof Dispatcher) {
           _sources.push(val);
           _registerProps.push(val);
-        } else if (val && val.store instanceof Store) {
-          _sources.push(val.store);
+        } else if (val && val.dispatcher instanceof Dispatcher) {
+          _sources.push(val.dispatcher);
           _registerProps.push(val);
         } else {
-          throw Error("You must ot send store in resources arg");
+          throw Error("You must ot send dispatcher in resources arg");
         }
       }
     } else if (sources instanceof Object) {
       _sources = {};
       for (let key in sources) {
         const val = sources[key];
-        if (val instanceof Store) {
+        if (val instanceof Dispatcher) {
           _sources[key] = val;
           _registerProps.push(val);
-        } else if (val || val.store instanceof Store) {
+        } else if (val || val.dispatcher instanceof Dispatcher) {
           _registerProps.push(val);
         } else {
-          throw Error("You must ot send store in resources arg");
+          throw Error("You must ot send dispatcher in resources arg");
         }
       }
     }
-    Store.register(this.update, _registerProps);
+    Dispatcher.register(this.update, _registerProps);
     this._sources = _sources;
     this._transform = transform;
   }
-  @update()
+  @dispatch()
   set data(value) {
     this._data = value;
   }

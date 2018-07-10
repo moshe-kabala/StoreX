@@ -1,4 +1,4 @@
-import { Store, update } from "./";
+import { Dispatcher, dispatch } from "./";
 
 export enum SortInsEvents {
   AddItem = "add-item",
@@ -7,7 +7,7 @@ export enum SortInsEvents {
 
 const events = Object.keys(SortInsEvents);
 
-export class StoreIns extends Store {
+export class StoreIns extends Dispatcher {
   args1 = [];
   args2;
 
@@ -16,20 +16,20 @@ export class StoreIns extends Store {
     this.args1 = [];
   }
 
-  @update([SortInsEvents.AddItem])
+  @dispatch([SortInsEvents.AddItem])
   action1(item) {
     this.args1.push(item);
     this.dispatch();
   }
 
-  @update()
+  @dispatch()
   action2(items = []) {
     items.forEach(item => this.action1(item));
   }
 
-  @update()
+  @dispatch()
   action3() {}
 
-  @update()
+  @dispatch()
   action4() {}
 }

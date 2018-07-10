@@ -5,9 +5,9 @@ describe("wrapObject", () => {
       let counter = 0;
       let obj: any = {name: "moshe"};
       const store = wrapObject(obj);
-      store.listen(()=> counter++);
+      store.register(()=> counter++);
       store.context.name = "name";
-      store.context.age = 45
+      store.context.age = 45;
       expect(counter).toBe(2);
   });
 });

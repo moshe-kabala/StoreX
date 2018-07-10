@@ -1,13 +1,13 @@
-import { Store } from "./core";
-import {StoreIns} from "./examples"
 
+import {StoreIns} from "./examples"
 const items = ["moshe", "liav", "amit"];
 let count = 0;
-const store = new StoreIns();
 
+const dispatcher = new StoreIns();
 
-store.listen(s => {
+dispatcher.register(s => {
   count++;
 });
 
-store.action2(items);
+dispatcher.action2(items); // call to action1 multiple times
+expect(count).toBe(1);

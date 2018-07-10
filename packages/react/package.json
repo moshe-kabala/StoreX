@@ -61,7 +61,7 @@
     "url": "https://github.com/moshe-kabala/StoreX"
   },
   "dependencies": {
-    "@storex/core": "^1.0.16",
+    "@storex/core": "^1.0.18",
     "react": "^16.4.1",
     "react-dom": "^16.4.1"
   }

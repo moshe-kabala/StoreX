@@ -1,4 +1,4 @@
-import { Store, update, StoreArgs } from "@storex/core";
+import { Dispatcher, dispatch, DispatcherArgs } from "@storex/core";
 import { CollectionStatus } from "./collection-status";
 import { CollectionMeta,  } from "./collection-meta";
 
@@ -13,12 +13,12 @@ const e = DataGridEvents;
 
 const _events = Object.keys(e);
 
-export interface CollectionArgs extends StoreArgs {
+export interface CollectionArgs extends DispatcherArgs {
   meta: CollectionMeta;
   status: CollectionStatus;
 }
 
-export class Collection extends Store {
+export class Collection extends Dispatcher {
   // meta;
   meta: CollectionMeta;
   status: CollectionStatus;
@@ -34,14 +34,14 @@ export class Collection extends Store {
     this.meta = meta;
   }
 
-  @update([e.DataChange])
+  @dispatch([e.DataChange])
   add(item) {
     const id = this.meta.itemToId(item);
     this._itemsDir[id] = item;
     this._is_items_need_to_render = true;
   }
 
-  @update([e.DataChange])
+  @dispatch([e.DataChange])
   remove(id) {
     if (this._itemsDir[id]) {
       delete this._itemsDir[id];
@@ -49,7 +49,7 @@ export class Collection extends Store {
     }
   }
 
-  @update([e.DataChange])
+  @dispatch([e.DataChange])
   update(item) {
     const id = this.meta.itemToId(item);
     if (this._itemsDir[id]) {
@@ -62,7 +62,7 @@ export class Collection extends Store {
     this.data = items;
   }
 
-  @update([e.DataChange])
+  @dispatch([e.DataChange])
   set data(value) {
     if (!(value instanceof Array)) {
       throw new TypeError("Data must to be Array");
@@ -80,7 +80,7 @@ export class Collection extends Store {
     return this._items;
   }
 
-  @update([e.DataChange])
+  @dispatch([e.DataChange])
   set itemsAsObj(value) {
     this._itemsDir = value;
     this._is_items_need_to_render = true;
@@ -90,7 +90,7 @@ export class Collection extends Store {
     return this._itemsDir;
   }
 
-  @update([e.DataChange])
+  @dispatch([e.DataChange])
   private generateDicItem() {
     for (const item of this._items) {
       let id = this.meta.itemToId(item);

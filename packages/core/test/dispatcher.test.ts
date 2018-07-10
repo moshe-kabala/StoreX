@@ -1,53 +1,53 @@
 import { StoreIns, StoreInsEvents } from "./helpers";
 import "jest";
-import { Store } from "../src";
+import { Dispatcher } from "../src";
 
-describe("Store", () => {
-  let store;
+describe("Dispatcher", () => {
+  let dispatcher;
   beforeEach(() => {
-    store = new StoreIns();
+    dispatcher = new StoreIns();
   });
 
-  test("Simple listen checker", () => {
+  test("Simple register checker", () => {
     let items;
     const arg = "new args";
 
-    store.listen(s => {
+    dispatcher.register(s => {
       items = s.args1;
     });
-    store.action1(arg); // adding arg to store.args1
+    dispatcher.action1(arg); // adding arg to store.args1
 
     expect(items).toContain(arg);
   });
 
-  test("Should Listen to specific event", () => {
+  test("Should register to specific event", () => {
     let items;
     const arg = "new args";
 
-    store.listen(
+    dispatcher.register(
       s => {
         items = s.args1;
       },
       [StoreInsEvents.AddItem]
     );
 
-    store.action1(arg); // adding arg to store.args1
+    dispatcher.action1(arg); // adding arg to store.args1
 
     expect(items).toContain(arg);
   });
 
-  test("Should not Listen to specific event", () => {
+  test("Should not register to specific event", () => {
     let items;
     const arg = "new args";
 
-    store.listen(
+    dispatcher.register(
       s => {
         items = s.args1;
       },
       [StoreInsEvents.DeleteItem]
     );
 
-    store.action1(arg); // adding arg to store.args1
+    dispatcher.action1(arg); // adding arg to store.args1
 
     expect(items || []).not.toContain(arg);
   });
@@ -56,31 +56,31 @@ describe("Store", () => {
     const items = ["moshe", "liav", "amit"];
     let count = 0;
 
-    store.listen(s => {
+    dispatcher.register(s => {
       count++;
     });
 
-    store.action2(items); // call to action1 multiple times
+    dispatcher.action2(items); // call to action1 multiple times
     expect(count).toBe(1);
   });
 
-  test("Should not listen apter unlisten", () => {
+  test("Should not register apter unregister", () => {
     let items;
     const arg = "new args";
     const func = s => {
       items = s.args1;
     };
-    store.listen(func);
-    store.action1(arg); // adding arg to store.args1
+    dispatcher.register(func);
+    dispatcher.action1(arg); // adding arg to store.args1
 
     expect(items).toContain(arg);
     items = []; // reset the local items var
-    store.unlisten(func);
-    store.action1(arg);
+    dispatcher.unregister(func);
+    dispatcher.action1(arg);
     expect(items).not.toContain(arg);
   });
 
-  test("Should not listen apter unlisten for specific event", () => {
+  test("Should not register apter unregister for specific event", () => {
     let items1;
     let items2;
 
@@ -92,10 +92,10 @@ describe("Store", () => {
       items2 = s.args1;
     };
 
-    store.listen(func1);
-    store.listen(func2, [StoreInsEvents.AddItem]);
+    dispatcher.register(func1);
+    dispatcher.register(func2, [StoreInsEvents.AddItem]);
 
-    store.action1(arg); // adding arg to store.args1
+    dispatcher.action1(arg); // adding arg to store.args1
 
     setTimeout(() => {
       expect(items1).toContain(arg);
@@ -103,15 +103,15 @@ describe("Store", () => {
     });
 
     items2 = []; // reset the local items var
-    store.unlisten(func2, [StoreInsEvents.AddItem]);
-    store.action1(arg);
+    dispatcher.unregister(func2, [StoreInsEvents.AddItem]);
+    dispatcher.action1(arg);
 
-    // exist in item1 but not in item2 because we unlisten
+    // exist in item1 but not in item2 because we unregister
     expect(items1).toContain(arg);
     expect(items2).not.toContain(arg);
   });
 
-  test("Should not listen after unlisten for all functions", () => {
+  test("Should not register after unregister for all functions", () => {
     let items1;
     let items2;
 
@@ -123,22 +123,26 @@ describe("Store", () => {
       items2 = s.args1;
     };
 
-    store.listen(func1);
-    store.listen(func2, [StoreInsEvents.AddItem]);
+    dispatcher.register(func1);
+    dispatcher.register(func2, [StoreInsEvents.AddItem]);
 
-    store.action1(arg); // adding arg to store.args1
+    dispatcher.action1(arg); // adding arg to store.args1
 
     expect(items1).toContain(arg);
     expect(items2).toContain(arg);
 
     items1 = [];
     items2 = []; // reset the local items var
-    store.unlistenFromAll(func1);
-    store.unlistenFromAll(func2);
-    store.action1(arg);
+    dispatcher.unregisterFromAll(func1);
+    dispatcher.unregisterFromAll(func2);
+    dispatcher.action1(arg);
 
-    // exist in item1 but not in item2 because we unlisten
+    // exist in item1 but not in item2 because we unregister
     expect(items1).not.toContain(arg);
     expect(items2).not.toContain(arg);
   });
+
+  test("Should register a function to some dispatchers", () => {
+    // todo
+  })
 });

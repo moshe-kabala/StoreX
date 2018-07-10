@@ -19,7 +19,7 @@ describe("View", () => {
       sources: [collection, filter],
       transform
     });
-    collection.override(data);
+    collection.data = data;
     expect(view.data).toHaveLength(data.length);
     const name = "moshe";
     const query = new RegExp(name, "i");

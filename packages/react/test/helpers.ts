@@ -1,4 +1,4 @@
-import { Store, update } from "@storex/core";
+import { Dispatcher, dispatch } from "@storex/core";
 
 export enum StoreInsEvents {
   AddItem = "add-item",
@@ -7,7 +7,7 @@ export enum StoreInsEvents {
 
 const events = Object.keys(StoreInsEvents);
 
-export class StoreIns extends Store {
+export class StoreIns extends Dispatcher {
   args1 = [];
   args2;
 
@@ -16,18 +16,13 @@ export class StoreIns extends Store {
     this.args1 = [];
   }
 
-  @update([StoreInsEvents.AddItem])
+  @dispatch([StoreInsEvents.AddItem])
   action1(item) {
     this.args1.push(item);
     this.dispatch();
   }
 
-  @update()
+  @dispatch()
   action2() {}
 
-  @update()
-  action3() {}
-
-  @update()
-  action4() {}
 }

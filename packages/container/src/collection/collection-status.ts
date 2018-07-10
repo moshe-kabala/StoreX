@@ -1,20 +1,20 @@
-import { Store, update } from "@storex/core";
+import { Dispatcher, dispatch } from "@storex/core";
 
-export class CollectionStatus extends Store {
+export class CollectionStatus extends Dispatcher {
   lastUpdate;
   filter?;
   isLoading = false;
   statusDir = {};
   pagination?;
 
-  @update()
+  @dispatch()
   updateItemsStatus(itemsStatus) {
     Object.keys(itemsStatus).forEach(id => {
       this.statusDir[id] = itemsStatus[id];
     });
   }
 
-  @update()
+  @dispatch()
   removeStatus(id) {
     delete this.statusDir[id];
   }

@@ -1,3 +1,4 @@
-export * from "./store";
-export * from "./update";
-export * from "./objectWrapper";
+export * from "./dispatcher";
+export * from "./dispatch";
+export * from "./wrappers";
+

@@ -1,1 +1,1 @@
-export * from "./StoreWrapper";
+export * from "./DispatcherWrapper";
