@@ -12,7 +12,7 @@ const transform = ([collection, filter]) => {
     return data.filter(i=> query.test(i.name));
 }
 const view = createView({
-    sources: [collection, filter],
+    dispatchers: [collection, filter],
     transform,
 })
 console.log("before", view.data)

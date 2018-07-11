@@ -142,7 +142,50 @@ describe("Dispatcher", () => {
     expect(items2).not.toContain(arg);
   });
 
-  test("Should register a function to some dispatchers", () => {
+  test("Should register and unregister a function to some dispatchers", () => {
+    let count = 0;
+
+    const func = () => count++;
+
+    const dispatcher1 = new Dispatcher();
+    const dispatcher2 = new Dispatcher();
+    const dispatcher3 = new Dispatcher();
+    const dispatcher4 = new Dispatcher();
+
+    Dispatcher.register(func, [
+      { dispatcher: dispatcher1, on: [] },
+      { dispatcher: dispatcher2, on: ["myEvent"] },
+      dispatcher3,
+      { dispatcher: dispatcher4 },
+    ]);
+    dispatcher1.dispatch();
+    dispatcher2.dispatch();
+    dispatcher3.dispatch();
+    dispatcher4.dispatch();
+
+    expect(count).toBe(3);
+    dispatcher2.dispatch(["myEvent"]);
+    expect(count).toBe(4);
+
+    Dispatcher.unregister(func, [
+      { dispatcher: dispatcher1, on: [] },
+      { dispatcher: dispatcher2, on: ["myEvent"] },
+      dispatcher3,
+      { dispatcher: dispatcher4 },
+    ]);
+
+    count = 0;
+
+    dispatcher1.dispatch();
+    dispatcher2.dispatch();
+    dispatcher3.dispatch();
+    dispatcher4.dispatch();
+
+    expect(count).toBe(0);
+
+  });
+
+  test("Should unregister a function to some dispatchers", () => {
     // todo
-  })
+  });
 });

@@ -7,7 +7,10 @@ export interface DispatcherWrapperProps<T extends Dispatcher> {
   children: (store: T) => any;
 }
 
-export class DispatcherWrapper<T extends Dispatcher> extends React.Component<DispatcherWrapperProps<T>, any> {
+export class DispatcherWrapper<T extends Dispatcher> extends React.Component<
+  DispatcherWrapperProps<T>,
+  any
+> {
   state = {
     dispatcher: undefined
   };
@@ -19,7 +22,7 @@ export class DispatcherWrapper<T extends Dispatcher> extends React.Component<Dis
   componentWillMount() {
     const { dispatcher, updateOn } = this.props;
     dispatcher.register(this.update, updateOn);
-    this.state.dispatcher = dispatcher; // not updating by set state 
+    this.state.dispatcher = dispatcher; // not updating by set state
   }
 
   componentWillUnmount() {

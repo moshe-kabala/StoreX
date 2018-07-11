@@ -13,19 +13,20 @@ export interface DispatcherArgs {
 
 export interface DispatcherRegisterOptions {
   dispatcher: Dispatcher;
-  on: string[];
+  on?: string[];
 }
 
 export class Dispatcher<T = any> {
   _is_async = false;
   _events;
+  _waited_to_update_events = new Set();
   _waited_to_update_funcs = new Set();
   _dispatch_count = 0;
   _eventsRegisterFunc: { [key: string]: Set<(a: any) => any> } = {
     onChange: new Set()
   };
 
-  context:T
+  context: T;
 
   constructor(
     { events, dependencies }: DispatcherArgs = { events: [], dependencies: [] }
@@ -37,12 +38,30 @@ export class Dispatcher<T = any> {
     }
   }
 
-  static register(func, dispatcher: Dispatcher[] | DispatcherRegisterOptions[]) {
+  static register(
+    func,
+    dispatcher: (Dispatcher | DispatcherRegisterOptions)[]
+  ) {
     for (const val of dispatcher) {
       if (val instanceof Dispatcher) {
         val.register(func);
-      } else if (val || val.dispatcher instanceof Dispatcher ){
+      } else if (val || val.dispatcher instanceof Dispatcher) {
         val.dispatcher.register(func, val.on);
+      } else {
+        throw Error("You must ot send dispatcher in resources arg");
+      }
+    }
+  }
+
+  static unregister(
+    func,
+    dispatcher: (Dispatcher | DispatcherRegisterOptions)[]
+  ) {
+    for (const val of dispatcher) {
+      if (val instanceof Dispatcher) {
+        val.unregister(func);
+      } else if (val || val.dispatcher instanceof Dispatcher) {
+        val.dispatcher.unregister(func, val.on);
       } else {
         throw Error("You must ot send dispatcher in resources arg");
       }
@@ -52,7 +71,7 @@ export class Dispatcher<T = any> {
   _sentOnChange = () => this;
 
   register(func: (a: this) => any, eventNames?: string[]) {
-    if (eventNames) {
+    if (eventNames && eventNames.length) {
       eventNames.forEach(eventName => {
         if (!this._eventsRegisterFunc[eventName]) {
           this._eventsRegisterFunc[eventName] = new Set();
@@ -71,7 +90,7 @@ export class Dispatcher<T = any> {
   }
 
   unregister(func, eventNames?: string[]) {
-    if (eventNames) {
+    if (eventNames && eventNames.length) {
       eventNames.forEach(eventName => {
         if (this._eventsRegisterFunc[eventName]) {
           this._eventsRegisterFunc[eventName].delete(func);
@@ -84,13 +103,21 @@ export class Dispatcher<T = any> {
 
   dispatch(eventNames?: string[]) {
     let funcs_array = [...this._eventsRegisterFunc.onChange];
-    if (eventNames) {
+    if (eventNames && eventNames.length) {
       eventNames.forEach(eventName => {
         if (this._eventsRegisterFunc[eventName]) {
-          funcs_array = [...funcs_array, ...this._eventsRegisterFunc[eventName]];
+          funcs_array = [
+            ...funcs_array,
+            ...this._eventsRegisterFunc[eventName]
+          ];
         }
       });
     }
+
+    this._waited_to_update_events = new Set([
+      ...(eventNames || []),
+      ...this._waited_to_update_events
+    ]);
 
     this._waited_to_update_funcs = new Set([
       ...funcs_array,
@@ -99,15 +126,16 @@ export class Dispatcher<T = any> {
 
     if (this._dispatch_count === 0) {
       //setTimeout(() => {
-        try {
-          const message = this._sentOnChange();
-          for (const func of this._waited_to_update_funcs) {
-            func(message);
-          }
-        } catch (err) {
-          console.error(err);
+      try {
+        const message = this._sentOnChange();
+        for (const func of this._waited_to_update_funcs) {
+          func(message, this._waited_to_update_events);
         }
-        this._waited_to_update_funcs = new Set();
+      } catch (err) {
+        console.error(err);
+      }
+      this._waited_to_update_funcs = new Set();
+      this._waited_to_update_events = new Set();
       //}, 0);
     }
   }
