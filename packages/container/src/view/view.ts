@@ -108,19 +108,32 @@ export class View extends Dispatcher {
     eventsData,
     events
   ) => {
-    const { pre, post } = options.onDispatch;
-    // let isUpdate
-    let { data, context } = this;
-    if (pre) {
-      pre(this._sources, { eventsData, events, data, context });
+    if (this._is_updating) {
+      return; // todo
     }
-    data = this.data;
-    context = this.data
+    try {
 
-    this.update();
-
-    if (post) {
-      post(this._sources, { eventsData, events, data, context });
+      const { pre, post } = options.onDispatch;
+      // let isUpdate
+      let { data, context } = this;
+      if (pre) {
+        this._is_updating = true;
+        pre(this._sources, { eventsData, events, data, context });
+        this._is_updating = false;
+      }
+      data = this.data;
+      context = this.data
+      
+      this.update();
+      
+      if (post) {
+        this._is_updating = true;
+        post(this._sources, { eventsData, events, data, context });
+        this._is_updating = false;
+      }
+    } catch (err) {
+      console.error(err);
+      this._is_updating = false
     }
   };
 
