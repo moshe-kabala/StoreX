@@ -36,6 +36,7 @@ export class Dispatcher<T = any> {
     if (!this._events.has("onChange")) {
       this._events.add("onChange");
     }
+    this.dispatch = this.dispatch.bind(this)
   }
 
   static register(
@@ -52,6 +53,22 @@ export class Dispatcher<T = any> {
       }
     }
   }
+
+  dispatchOnce = async func => {
+    this._dispatch_count++;
+    try {
+      const r = func();
+      if (r instanceof Promise) {
+        await r;
+      }
+      console.log("dic once")
+      this._dispatch_count--;
+      this.dispatch();
+    } catch (err) {
+      this._dispatch_count--;
+      throw err;
+    }
+  };
 
   static unregister(
     func,
@@ -70,7 +87,7 @@ export class Dispatcher<T = any> {
 
   _sentOnChange = () => this;
 
-  register(func: (a: this) => any, eventNames?: string[]) {
+  register = (func: (a: this) => any, eventNames?: string[]) => {
     if (eventNames && eventNames.length) {
       eventNames.forEach(eventName => {
         if (!this._eventsRegisterFunc[eventName]) {
@@ -83,13 +100,13 @@ export class Dispatcher<T = any> {
     }
   }
 
-  unregisterFromAll(func) {
+  unregisterFromAll = (func) => {
     for (const event of Object.keys(this._eventsRegisterFunc)) {
       this._eventsRegisterFunc[event].delete(func);
     }
   }
 
-  unregister(func, eventNames?: string[]) {
+  unregister = (func, eventNames?: string[]) => {
     if (eventNames && eventNames.length) {
       eventNames.forEach(eventName => {
         if (this._eventsRegisterFunc[eventName]) {
@@ -102,6 +119,9 @@ export class Dispatcher<T = any> {
   }
 
   dispatch(eventNames?: string[]) {
+    if (eventNames && !(eventNames instanceof Array)) {
+      throw new TypeError(`[${getTypeName(this)}::dispatch]Events must to be array, got: ${getTypeName(eventNames)}`)
+    }
     let funcs_array = [...this._eventsRegisterFunc.onChange];
     if (eventNames && eventNames.length) {
       eventNames.forEach(eventName => {
@@ -139,8 +159,12 @@ export class Dispatcher<T = any> {
       //}, 0);
     }
   }
+}
 
-  destroy() {
-    // todo
+
+function getTypeName(arg) {
+  if (arg && arg.constructor) {
+    return arg.constructor.name;
   }
+  return typeof arg
 }

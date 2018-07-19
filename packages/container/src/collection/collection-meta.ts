@@ -3,15 +3,16 @@ import { Dispatcher, dispatch, DispatcherArgs } from "@storex/core";
 export interface CollectionMetaArgs extends DispatcherArgs {
   id?: number | string;
   name?: string;
-  columnMeta?;
+  schema?;
   itemToId;
 }
 
 export class CollectionMeta extends Dispatcher {
   id;
   name;
-  jsonSchema;
+  schema;
   itemToId: Function;
+  length: number;
   constructor(args: CollectionMetaArgs) {
     super();
     if (!args || typeof args.itemToId !== "function") {
@@ -19,6 +20,13 @@ export class CollectionMeta extends Dispatcher {
     } 
     this.id = args.id;
     this.name = args.name;
+    this.schema = args.schema;
     this.itemToId = args.itemToId;
+  }
+  setOptions(key, options) {
+
+  }
+  getOptions(key) {
+
   }
 }

@@ -3,6 +3,7 @@ import { Dispatcher, dispatch } from "@storex/core";
 export class CollectionStatus extends Dispatcher {
   lastUpdate;
   filter?;
+  @dispatch()
   isLoading = false;
   statusDir = {};
   pagination?;

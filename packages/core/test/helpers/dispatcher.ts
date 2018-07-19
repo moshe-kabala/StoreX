@@ -9,6 +9,8 @@ const events = Object.keys(StoreInsEvents);
 
 export class StoreIns extends Dispatcher {
   args1 = [];
+  
+  @dispatch()
   args2;
 
   constructor() {

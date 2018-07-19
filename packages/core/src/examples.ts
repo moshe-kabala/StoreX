@@ -9,6 +9,7 @@ const events = Object.keys(SortInsEvents);
 
 export class StoreIns extends Dispatcher {
   args1 = [];
+  @dispatch()
   args2;
 
   constructor() {

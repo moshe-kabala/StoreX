@@ -16,6 +16,8 @@ export type DispatcherOptions =
   | { [key: string]: ViewDispatcherRegisterOptions };
 
 export interface ViewArgs {
+  meta?;
+  status?; // todo
   transform: ViewTransform;
   dispatchers: DispatcherOptions;
 }

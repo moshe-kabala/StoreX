@@ -8,7 +8,9 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceFolder}/lib/main.js"
+            "sourceMaps": true,
+            "program": "${workspaceFolder}/lib/main.js",
+  
         },
         {
             "type": "node",

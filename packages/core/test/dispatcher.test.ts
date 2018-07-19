@@ -156,7 +156,7 @@ describe("Dispatcher", () => {
       { dispatcher: dispatcher1, on: [] },
       { dispatcher: dispatcher2, on: ["myEvent"] },
       dispatcher3,
-      { dispatcher: dispatcher4 },
+      { dispatcher: dispatcher4 }
     ]);
     dispatcher1.dispatch();
     dispatcher2.dispatch();
@@ -171,7 +171,7 @@ describe("Dispatcher", () => {
       { dispatcher: dispatcher1, on: [] },
       { dispatcher: dispatcher2, on: ["myEvent"] },
       dispatcher3,
-      { dispatcher: dispatcher4 },
+      { dispatcher: dispatcher4 }
     ]);
 
     count = 0;
@@ -182,10 +182,57 @@ describe("Dispatcher", () => {
     dispatcher4.dispatch();
 
     expect(count).toBe(0);
+  });
 
+  test("Should dispatch on update prop", () => {
+    let count = 0;
+    const func = () => count++;
+    dispatcher.register(func, ["args2"]);
+    dispatcher.args2 = 4;
+    dispatcher.args2 = 5;
+    dispatcher.args2 = 5; // will not dispatch because there is no change
+    expect(count).toBe(2);
+    count = 0;
+    dispatcher.unregisterFromAll(func);
+    dispatcher.args2 = 4;
+    expect(count).toBe(0);
+  });
+
+  test("Should dispatchOnce only once", async () => {
+    let count = 0;
+    const func = () => count++;
+    dispatcher.register(func);
+    dispatcher.dispatchOnce(() => {
+      dispatcher.args2 = 4;
+      dispatcher.args2 = 5;
+      // dispatcher.action1("new item");
+    });
+    expect(count).toBe(1);
+    count = 0; // reset the count;
+  //   await dispatcher.dispatchOnce(async () => { // todo not working
+  //     dispatcher.args2 = 4;
+  //     dispatcher.args2 = 5;
+  //     await timeoutPromise(() => {}, 20);
+  //     dispatcher.action1("new item");
+  //   });
+
+  //   expect(count).toBe(0); // no change here
+
+  //   await timeoutPromise(() => {
+  //     expect(count).toBe(1);
+  //   }, 1000);
   });
 
   test("Should unregister a function to some dispatchers", () => {
     // todo
   });
 });
+
+function timeoutPromise(func, time = 0) {
+  return new Promise(res => {
+    setTimeout(() => {
+      func();
+      res();
+    }, time);
+  });
+}

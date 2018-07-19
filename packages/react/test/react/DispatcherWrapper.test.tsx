@@ -14,13 +14,15 @@ describe("Store Wrapper", () => {
     dispatcher = new StoreIns();
   });
 
+  
+
   test("Should update status, and unregister when the component is unmount", async () => {
     const Comp = (
-        <DispatcherWrapper dispatcher={dispatcher}>
-          {(_store: StoreIns) => (
-            <ul>{_store.args1.map(str => <li key={str}>{str}</li>)}</ul>
-          )}
-        </DispatcherWrapper>
+      <DispatcherWrapper dispatcher={dispatcher}>
+        {(_store: StoreIns) => (
+          <ul>{_store.args1.map(str => <li key={str}>{str}</li>)}</ul>
+        )}
+      </DispatcherWrapper>
     );
     const wrapper = mount(Comp);
 
@@ -32,7 +34,9 @@ describe("Store Wrapper", () => {
         expect(wrapper.text()).toContain(arg);
         wrapper.unmount();
         // check if unlisten when wrapper unmount
-        expect(Array.from( dispatcher._eventsRegisterFunc.onChange )).toHaveLength(0);
+        expect(
+          Array.from(dispatcher._eventsRegisterFunc.onChange)
+        ).toHaveLength(0);
         resolve();
       }, 2);
     });

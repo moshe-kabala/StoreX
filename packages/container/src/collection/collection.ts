@@ -32,6 +32,8 @@ export class Collection extends Dispatcher {
   constructor({ meta, status, events = [], dependencies = [] }: CollectionArgs) {
     super({ events: [...events, ..._events], dependencies });
     this.meta = meta;
+    this.status = status;
+
   }
 
   @dispatch([e.DataChange])

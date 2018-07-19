@@ -4,7 +4,7 @@ import { Dispatcher } from "@storex/core";
 export interface DispatcherWrapperProps<T extends Dispatcher> {
   dispatcher: T;
   updateOn?: string[];
-  children: (store: T) => any;
+  children: (store: T) => any ;
 }
 
 export class DispatcherWrapper<T extends Dispatcher> extends React.Component<
@@ -33,6 +33,10 @@ export class DispatcherWrapper<T extends Dispatcher> extends React.Component<
   render() {
     const { dispatcher } = this.state;
     const { children } = this.props;
-    return children(dispatcher);
+    if (children instanceof Function) {
+      return children(dispatcher);
+    } else {
+      return children;
+    }
   }
 }
