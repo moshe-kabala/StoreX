@@ -1,7 +1,7 @@
 {
   "name": "@storex/react",
   "scope": "@storex",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "Binding store to your app",
   "main": "lib/index.js",
   "scripts": {
@@ -13,15 +13,15 @@
   "author": "Moshe Kabala",
   "license": "ISC",
   "devDependencies": {
-    "@types/enzyme": "^3.1.11",
+    "@types/enzyme": "^3.1.12",
     "@types/enzyme-adapter-react-16": "^1.0.2",
-    "@types/jest": "^23.1.4",
-    "@types/react": "^16.4.6",
+    "@types/jest": "^23.3.0",
+    "@types/react": "^16.4.7",
     "@types/react-dom": "^16.0.6",
     "enzyme": "^3.3.0",
     "enzyme-adapter-react-16": "^1.1.1",
-    "jest": "^23.3.0",
-    "ts-jest": "^23.0.0",
+    "jest": "^23.4.1",
+    "ts-jest": "^23.0.1",
     "typescript": "^2.9.2"
   },
   "jest": {
@@ -61,7 +61,7 @@
     "url": "https://github.com/moshe-kabala/StoreX"
   },
   "dependencies": {
-    "@storex/core": "^1.0.21",
+    "@storex/core": "^1.0.27",
     "react": "^16.4.1",
     "react-dom": "^16.4.1"
   }

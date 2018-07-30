@@ -92,6 +92,10 @@ export class Collection extends Dispatcher {
     return this._itemsDir;
   }
 
+  get = (id) => {
+    return this._itemsDir[id];
+  }
+
   @dispatch([e.DataChange])
   private generateDicItem() {
     for (const item of this._items) {

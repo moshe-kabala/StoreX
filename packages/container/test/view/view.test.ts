@@ -39,6 +39,9 @@ describe("View", () => {
     const transform: ViewTransform = (sources: any, { oldData, context }) => {
       const names = [];
       for (let s of sources) {
+        if (s.dispatcher) {
+          s = s.dispatcher;
+        }
         names.push(s.state.name);
       }
       return names;
@@ -59,16 +62,19 @@ describe("View", () => {
       ]
     });
 
-    state2.setState({ name: names[1] });
-
+    view.update();
+    
     expect(view.data).toEqual(names);
+
+    state2.setState({ name: names[0] });
+
+    expect(view.data).not.toEqual(names);
     expect(preCount).toBe(1);
     expect(postCount).toBe(1);
 
     view.destroy();
     state2.setState({ name: names[3] });
 
-    expect(view.data).toEqual(names);
     expect(preCount).toBe(1);
     expect(postCount).toBe(1);
 

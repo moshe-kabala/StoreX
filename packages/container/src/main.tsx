@@ -1,21 +1,39 @@
 import { createCollection } from "./collection";
-import {createState} from "./state";
-import {createView} from "./view";
+import { createState } from "./state";
+import { createView, ViewTransform } from "./view";
+const names = ["moshe", "liav", "amit"];
+let postCount = 0,
+  preCount = 0;
+const state1 = createState({ name: names[0] });
+const state2 = createState({ name: names[1] });
+const state3 = createState({ name: names[2] });
 
+const transform: ViewTransform = (sources: any, { oldData, context }) => {
+  const names = [];
+  for (let s of sources) {
+    if (s.dispatcher) {
+      s = s.dispatcher;
+    }
+    names.push(s.state.name);
+  }
+  return names;
+};
 
-const collection = createCollection({ itemToId: i => i.id });
-const data = [{ id: 2, name: "moshe", age: 45 }];
-const filter = createState();
-const transform = ([collection, filter]) => {
-    const data = collection.data;
-    const query = new RegExp( filter.state.name || "", "i");
-    return data.filter(i=> query.test(i.name));
-}
 const view = createView({
-    dispatchers: [collection, filter],
-    transform,
-})
-console.log("before", view.data)
+  transform,
+  dispatchers: [
+    state1,
+    {
+      dispatcher: state2,
+      onDispatch: {
+        pre: () => preCount++,
+        post: () => postCount++
+      }
+    },
+    state3
+  ]
+});
 
-collection.override(data);
-console.log("after", view.data)
+state2.setState({ name: names[0] });
+
+expect(view.data).toEqual(names);

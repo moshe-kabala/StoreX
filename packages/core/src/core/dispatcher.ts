@@ -36,14 +36,15 @@ export class Dispatcher<T = any> {
     if (!this._events.has("onChange")) {
       this._events.add("onChange");
     }
-    this.dispatch = this.dispatch.bind(this)
+    this.dispatch = this.dispatch.bind(this);
   }
 
   static register(
     func,
-    dispatcher: (Dispatcher | DispatcherRegisterOptions)[]
+    dispatchers: (Dispatcher | DispatcherRegisterOptions)[]
   ) {
-    for (const val of dispatcher) {
+    for (const key in dispatchers) {
+      const val = dispatchers[key];
       if (val instanceof Dispatcher) {
         val.register(func);
       } else if (val || val.dispatcher instanceof Dispatcher) {
@@ -61,7 +62,7 @@ export class Dispatcher<T = any> {
       if (r instanceof Promise) {
         await r;
       }
-      console.log("dic once")
+      console.log("dic once");
       this._dispatch_count--;
       this.dispatch();
     } catch (err) {
@@ -72,9 +73,10 @@ export class Dispatcher<T = any> {
 
   static unregister(
     func,
-    dispatcher: (Dispatcher | DispatcherRegisterOptions)[]
+    dispatchers: (Dispatcher | DispatcherRegisterOptions)[]
   ) {
-    for (const val of dispatcher) {
+    for (const key in dispatchers) {
+      const val = dispatchers[key];
       if (val instanceof Dispatcher) {
         val.unregister(func);
       } else if (val || val.dispatcher instanceof Dispatcher) {
@@ -98,13 +100,13 @@ export class Dispatcher<T = any> {
     } else {
       this._eventsRegisterFunc.onChange.add(func);
     }
-  }
+  };
 
-  unregisterFromAll = (func) => {
+  unregisterFromAll = func => {
     for (const event of Object.keys(this._eventsRegisterFunc)) {
       this._eventsRegisterFunc[event].delete(func);
     }
-  }
+  };
 
   unregister = (func, eventNames?: string[]) => {
     if (eventNames && eventNames.length) {
@@ -116,11 +118,15 @@ export class Dispatcher<T = any> {
     } else {
       this._eventsRegisterFunc.onChange.delete(func);
     }
-  }
+  };
 
   dispatch(eventNames?: string[]) {
     if (eventNames && !(eventNames instanceof Array)) {
-      throw new TypeError(`[${getTypeName(this)}::dispatch]Events must to be array, got: ${getTypeName(eventNames)}`)
+      throw new TypeError(
+        `[${getTypeName(
+          this
+        )}::dispatch]Events must to be array, got: ${getTypeName(eventNames)}`
+      );
     }
     let funcs_array = [...this._eventsRegisterFunc.onChange];
     if (eventNames && eventNames.length) {
@@ -156,15 +162,13 @@ export class Dispatcher<T = any> {
       }
       this._waited_to_update_funcs = new Set();
       this._waited_to_update_events = new Set();
-      //}, 0);
     }
   }
 }
-
 
 function getTypeName(arg) {
   if (arg && arg.constructor) {
     return arg.constructor.name;
   }
-  return typeof arg
+  return typeof arg;
 }

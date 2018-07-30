@@ -1,9 +1,14 @@
+import {DepIns, des1, des2} from "./core/sub-ins"
 
-import {StoreIns} from "./examples"
-import {wrapObject} from "./core/wrappers"
-let counter = 0;
-let obj: any = {name: "moshe"};
-const store = wrapObject(obj);
-store.register(()=> counter++);
-store.context.name = "name";
-store.context.age = 45;
+
+const dep1 = new DepIns();
+
+des1.dispatch();
+
+des1.dispatch();
+
+des1.dispatch();
+
+
+
+console.log(dep1.count1)
