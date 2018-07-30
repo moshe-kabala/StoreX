@@ -16,7 +16,7 @@ The StoreX builds to help you storing data and connect it to the UI in a simple,
 * Dispatcher - dispatch some events / messages. this is the basic class for everythink.
 * Subscriper - subscrib to the dispatcher/s and do something on change.
 ## Modules
-There is some modules in this lib each of them get responsblty to anther part
+There are some modules in this lib each of them get responsblty to anther part
 ### @storex/core
 This is the core lib it contain the components reletet to the data binding (Dispatcher and Subscriber)
 ### @storex/react
