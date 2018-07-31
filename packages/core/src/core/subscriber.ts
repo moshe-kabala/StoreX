@@ -20,7 +20,7 @@ export type DispatcherOptions =
   | { [key: string]: SubscriberDispatcherRegisterOptions };
 
 export interface SubscriberArgs {
-  dispatchers: DispatcherOptions;
+  to: DispatcherOptions;
 }
 
 export interface SubscriberMeta {}
@@ -43,16 +43,16 @@ export class Subscriber extends Dispatcher {
   context: any = {};
   static _functions_to_updates = []
 
-  constructor({ dispatchers }: SubscriberArgs) {
+  constructor({ to }: SubscriberArgs) {
     super(); // todo
     let _sources,
       _registerProps = [],
       _specificRegisterProps = [];
 
-    if (dispatchers instanceof Array) {
+    if (to instanceof Array) {
       _sources = [];
-      for (const i in dispatchers) {
-        const val: any = dispatchers[i];
+      for (const i in to) {
+        const val: any = to[i];
         if (val && val.dispatcher instanceof Object) {
           // Dispatcher
           _sources.push(val.dispatcher);
@@ -69,10 +69,10 @@ export class Subscriber extends Dispatcher {
           throw new TypeError("You must ot send dispatcher in resources arg");
         }
       }
-    } else if (dispatchers instanceof Object) {
+    } else if (to instanceof Object) {
       _sources = {};
-      for (let key in dispatchers) {
-        const val: any = dispatchers[key];
+      for (let key in to) {
+        const val: any = to[key];
         if (val && val.dispatch && val.register) {
           // Dispatcher
           _sources[key] = val;

@@ -43,11 +43,12 @@ export class Dispatcher<T = any> {
     func,
     dispatchers: (Dispatcher | DispatcherRegisterOptions)[]
   ) {
-    for (const key in dispatchers) {
-      const val = dispatchers[key];
-      if (val instanceof Dispatcher) {
+    const dis: any = dispatchers;
+    for (const key in dis) {
+      const val = dis[key];
+      if (val && val.dispatch && val.register) {
         val.register(func);
-      } else if (val || val.dispatcher instanceof Dispatcher) {
+      } else if (val || (val.dispatcher.dispatch && val.dispatcher.register)) {
         val.dispatcher.register(func, val.on);
       } else {
         throw Error("You must ot send dispatcher in resources arg");
@@ -75,11 +76,15 @@ export class Dispatcher<T = any> {
     func,
     dispatchers: (Dispatcher | DispatcherRegisterOptions)[]
   ) {
-    for (const key in dispatchers) {
-      const val = dispatchers[key];
-      if (val instanceof Dispatcher) {
+    const dis: any = dispatchers;
+    for (const key in dis) {
+      const val = dis[key];
+      if (val && val.dispatch && val.unregister) {
         val.unregister(func);
-      } else if (val || val.dispatcher instanceof Dispatcher) {
+      } else if (
+        val ||
+        (val.dispatcher.dispatch && val.dispatcher.unregister)
+      ) {
         val.dispatcher.unregister(func, val.on);
       } else {
         throw Error("You must ot send dispatcher in resources arg");

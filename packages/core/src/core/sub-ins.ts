@@ -10,7 +10,7 @@ export class DepIns extends Subscriber {
   count2 = 0;
 
   constructor() {
-    super({ dispatchers: [{ dispatchr: des1, name: "des1" }, des2] });
+    super({ to: [{ dispatcher: des1, name: "des1" }, des2] });
   }
 
   @subscribe(["des1"])
