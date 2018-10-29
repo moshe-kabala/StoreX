@@ -1,7 +1,6 @@
 import { Dispatcher, dispatch, DispatcherArgs } from "@storex/core";
 import { CollectionStatus } from "./collection-status";
-import { CollectionMeta,  } from "./collection-meta";
-
+import { CollectionMeta } from "./collection-meta";
 
 export enum DataGridEvents {
   DataChange = "data-change",
@@ -29,11 +28,20 @@ export class Collection extends Dispatcher {
   private _is_items_need_to_render = true;
   private _is_view_items_need_to_render = true;
 
-  constructor({ meta, status, events = [], dependencies = [] }: CollectionArgs) {
+  constructor({
+    meta,
+    status,
+    events = [],
+    dependencies = []
+  }: CollectionArgs) {
     super({ events: [...events, ..._events], dependencies });
     this.meta = meta;
     this.status = status;
+  }
 
+  @dispatch([e.DataChange])
+  addMany(items) {
+    this.data = [...this.data, ...items];
   }
 
   @dispatch([e.DataChange])
@@ -59,7 +67,7 @@ export class Collection extends Dispatcher {
       this._is_items_need_to_render = true;
     }
   }
-  
+
   override(items) {
     this.data = items;
   }
@@ -88,13 +96,18 @@ export class Collection extends Dispatcher {
     this._is_items_need_to_render = true;
   }
 
+  @dispatch([e.DataChange])
+  clean() {
+    this.data = [];
+  }
+
   get itemsAsObj() {
     return this._itemsDir;
   }
 
-  get = (id) => {
+  get = id => {
     return this._itemsDir[id];
-  }
+  };
 
   @dispatch([e.DataChange])
   private generateDicItem() {
@@ -114,9 +127,8 @@ export class Collection extends Dispatcher {
   }
 }
 
-
-export function createCollection({itemToId}) {
-  const meta = new CollectionMeta({itemToId});
-  const status = new CollectionStatus();  
-  return new Collection({meta, status});
+export function createCollection({ itemToId }) {
+  const meta = new CollectionMeta({ itemToId });
+  const status = new CollectionStatus();
+  return new Collection({ meta, status });
 }
