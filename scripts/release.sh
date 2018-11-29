@@ -2,7 +2,7 @@
 
 # run this script from root
 
-libs=("core" "react" "container")
+libs=("core" "react" "container" "utils" "db-controller")
 
 cd packages
 

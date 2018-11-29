@@ -1,35 +1,37 @@
 {
-  "name": "@storex/container",
-  "version": "1.0.25",
-  "description": "Contain some container to hold the data",
+  "name": "@storex/db-controller",
+  "version": "1.0.30",
+  "description": "Utils for db and routing ...",
   "main": "lib/index.js",
   "scope": "@storex",
   "scripts": {
     "test": "jest",
     "build": "tsc",
-    "update-dependence": "npm update @storex/core",
-    "release": "npm run update-dependence && rm -rf lib && tsc --sourceMap false && npm test && npm publish --access=public && npm version patch"
+    "release": "rm -rf lib && tsc --sourceMap false && npm test && npm publish --access=public && npm version patch"
   },
   "author": "Moshe Kabala",
   "license": "ISC",
   "dependencies": {
-    "@storex/core": "^1.0.29",
-    "immutable": "^3.8.2",
-    "moment": "^2.22.2"
+    "ajv": "^6.6.1",
+    "express": "^4.16.4",
+    "mongodb": "^2.2.33",
+    "mysql": "^2.16.0"
   },
   "devDependencies": {
-    "@types/node": "^10.12.10",
-    "@types/jest": "^23.3.0",
-    "jest": "^23.4.1",
-    "ts-jest": "^23.0.1",
+    "@types/jest": "^23.1.4",
+    "@types/mongodb": "^2.2.18",
+    "@types/mysql": "^2.15.5",
+    "jest": "^23.3.0",
+    "ts-jest": "^23.0.0",
     "typescript": "^2.9.2"
   },
   "keywords": [
     "@storex/core",
-    "container",
     "storex",
     "store",
     "state",
+    "MySql",
+    "MongoDB",
     "common state",
     "redux",
     "flux",
@@ -46,7 +48,7 @@
   },
   "jest": {
     "transform": {
-      "^.+\\.tsx?$": "ts-jest"
+      ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
     "testPathIgnorePatterns": [
       "/node_modules/",

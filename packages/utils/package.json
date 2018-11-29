@@ -1,32 +1,25 @@
 {
-  "name": "@storex/container",
-  "version": "1.0.25",
-  "description": "Contain some container to hold the data",
+  "name": "@storex/utils",
+  "version": "1.0.30",
+  "description": "Utils for schema and more ...",
   "main": "lib/index.js",
   "scope": "@storex",
   "scripts": {
     "test": "jest",
     "build": "tsc",
-    "update-dependence": "npm update @storex/core",
-    "release": "npm run update-dependence && rm -rf lib && tsc --sourceMap false && npm test && npm publish --access=public && npm version patch"
+    "release": "rm -rf lib && tsc --sourceMap false && npm test && npm publish --access=public && npm version patch"
   },
   "author": "Moshe Kabala",
   "license": "ISC",
-  "dependencies": {
-    "@storex/core": "^1.0.29",
-    "immutable": "^3.8.2",
-    "moment": "^2.22.2"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "@types/node": "^10.12.10",
-    "@types/jest": "^23.3.0",
-    "jest": "^23.4.1",
-    "ts-jest": "^23.0.1",
+    "@types/jest": "^23.1.4",
+    "jest": "^23.3.0",
+    "ts-jest": "^23.0.0",
     "typescript": "^2.9.2"
   },
   "keywords": [
     "@storex/core",
-    "container",
     "storex",
     "store",
     "state",
@@ -46,7 +39,7 @@
   },
   "jest": {
     "transform": {
-      "^.+\\.tsx?$": "ts-jest"
+      ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
     "testPathIgnorePatterns": [
       "/node_modules/",

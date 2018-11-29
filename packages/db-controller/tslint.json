@@ -1,0 +1,15 @@
+{
+  "defaultSeverity": "warn",
+  "extends": [
+    "prettier",
+    "tslint:recommended"
+  ],
+  "jsRules": {},
+  "rules": {
+    "member-access": false
+  },
+  "rulesDirectory": [],
+  "plugins": [
+    "prettier"
+  ]
+}
