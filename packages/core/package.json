@@ -1,6 +1,6 @@
 {
   "name": "@storex/core",
-  "version": "1.0.30",
+  "version": "1.0.33",
   "description": "Binding store to your app",
   "main": "lib/index.js",
   "scope": "@storex",

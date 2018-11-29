@@ -8,7 +8,7 @@ export interface FilterDataSqlArgs {
   fromTable;
   whereIgnore?;
   moreWhere?;
-  getDB: ()=>object;
+  getDB: () => object;
   filterDataValidation?;
 }
 
