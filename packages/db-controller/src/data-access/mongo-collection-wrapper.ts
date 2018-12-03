@@ -1,5 +1,5 @@
-import { FilterDataMongo } from "./filter-data-mongo";
-import { ModelOptionsData, idType, idsType } from "../data-acsses/data-model-options";
+import { FilterDataMongo } from "../filter-data/filter-data-mongo";
+import { ModelOptionsData, idType, idsType } from "./data-model-options";
 
 // todo this class is abstract for mongo
 export class MongoCollectionWrapper<T = any> implements ModelOptionsData<T> {

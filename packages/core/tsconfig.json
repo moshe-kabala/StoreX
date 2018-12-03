@@ -6,17 +6,7 @@
     "declaration": true,
     "experimentalDecorators": true,
     "target": "es6",
-    "jsx": "react",
-    "baseUrl": ".",
-    "paths": {
-      "@/*": [
-        "src/*"
-      ],
-      "ui-logic/*": [
-        "../ui/lib/*"
-      ]
-    }
-  },
+     },
   "include": [
     "./src",
   ]

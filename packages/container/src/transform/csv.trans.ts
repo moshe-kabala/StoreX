@@ -1,4 +1,4 @@
-import { CustomDate } from "@/format";
+import { CustomDate } from "../format";
 
 const rowDelim = "\n";
 const colDelim = '","';

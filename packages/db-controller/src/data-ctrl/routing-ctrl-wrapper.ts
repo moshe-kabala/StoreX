@@ -1,8 +1,16 @@
 import { Router, Request, Response } from "express";
-import { ModelOptionsCtrl, ModelOptionsData } from "../data-acsses/data-model-options";
+import { ModelOptionsCtrl, ModelOptionsData } from "../data-access";
+
 import * as Ajv from "ajv";
 
-export class RoutingCtrlWrapper implements ModelOptionsCtrl {
+
+export interface CtrlStatus {
+  success: boolean,
+  data: any,
+  errMsg: string
+}
+
+export class RoutingCtrlWrapper<T=any> implements ModelOptionsCtrl {
   data;
   modelName;
   modelsName;
@@ -18,7 +26,7 @@ export class RoutingCtrlWrapper implements ModelOptionsCtrl {
     modelSchema,
     filterValidation
   }: {
-    data: ModelOptionsData;
+    data: ModelOptionsData<T>;
     modelName: string;
     modelsName: string;
     modelSchema?: any;
@@ -28,7 +36,8 @@ export class RoutingCtrlWrapper implements ModelOptionsCtrl {
     this.data = data;
     this.modelName = modelName;
     this.modelsName = modelsName;
-    this.modelSchema = modelSchema; // todo
+    this.modelSchema = modelSchema;
+   
 
     this.filterValidation = filterValidation;
     if (validation) {
@@ -41,13 +50,24 @@ export class RoutingCtrlWrapper implements ModelOptionsCtrl {
         return _validation.errors;
       };
     }
+
+    // bind the function to this
+    this.remove = this.remove.bind(this)
+    this.add = this.add.bind(this)
+    this.update = this.update.bind(this)
+    this.get = this.get.bind(this)
+    this.getMany=this.getMany.bind(this)
+    this.addMany=this.addMany.bind(this)
+    this.removeMany=this.removeMany.bind(this)
+    this.getManyByFilter=this.getManyByFilter.bind(this)
+   
   }
 
   connectRouter = (router: Router) => {
     // todo...
   };
 
-  _getAndValidIDs = (req, res, canBeEmpty = false) => {
+  _getAndValidIDs (req, res, canBeEmpty = false) {
     const id = req.body.ids;
     if (!id && !canBeEmpty) {
       res.status(400).send({ msg: "IDs are empty" });
@@ -55,7 +75,7 @@ export class RoutingCtrlWrapper implements ModelOptionsCtrl {
     }
     return id;
   };
-  _getAndValidFilter = (req, res, canBeEmpty = false) => {
+  _getAndValidFilter (req, res, canBeEmpty = false)  {
     const id = req.body.ids;
     if (!id && !canBeEmpty) {
       res.status(400).send({ msg: "ID is empty" });
@@ -63,7 +83,7 @@ export class RoutingCtrlWrapper implements ModelOptionsCtrl {
     }
     return id;
   };
-  _getAndValidID = (req, res, canBeEmpty = false) => {
+  _getAndValidID (req, res, canBeEmpty = false) {
     const id = req.params.id;
     if (!id && !canBeEmpty) {
       res.status(400).send({ msg: "ID is empty" });
@@ -71,7 +91,7 @@ export class RoutingCtrlWrapper implements ModelOptionsCtrl {
     }
     return id;
   };
-  _getAndValidModels = (req, res, canBeEmpty = false) => {
+  _getAndValidModels (req, res, canBeEmpty = false) {
     const models = req.body;
     if (!models && !canBeEmpty) {
       res.status(400).send({ msg: "Not valid ID" });
@@ -87,7 +107,7 @@ export class RoutingCtrlWrapper implements ModelOptionsCtrl {
     return models;
   };
 
-  _getAndValidModel = (req, res, canBeEmpty = false) => {
+  _getAndValidModel (req, res, canBeEmpty = false) {
     const model = req.body;
     if (!model && !canBeEmpty) {
       res.status(400).send({ msg: "Not valid ID" });
@@ -101,7 +121,7 @@ export class RoutingCtrlWrapper implements ModelOptionsCtrl {
     return model;
   };
 
-  _isModelValid = (m, req, res) => {
+  _isModelValid (m, req, res) {
     let err;
     if (this._validation) {
       err = this._validation(m);
@@ -112,60 +132,77 @@ export class RoutingCtrlWrapper implements ModelOptionsCtrl {
     }
   };
 
-  _failed = ({ err, msg, res }) => {
+  _failed ({ err, msg, res })  {
     res.status(400).send({ msg, err });
   };
 
-  get = async (req: Request, res: Response) => {
+  async get (req: Request, res: Response) {
+    const status:any = { success: false, errMsg: "", data :{} }
     try {
-      const id = this._getAndValidID(req, res);
+      const id = await this._getAndValidID(req, res);
       if (id == false) {
-        return;
+        return status;
       }
       const result = await this.data.get(id);
       res.send(result);
+      return status
     } catch (err) {
       this._failed({err, res, msg: "Failed to get data"});
     }
   };
 
-  add = async (req: Request, res: Response) => {
+  async add (req: Request, res: Response) {
+    const status:any = { success: false, errMsg: "", data :{model:{}} }
     try {
-      const model = this._getAndValidModel(req, res);
+      const model = await this._getAndValidModel(req, res);
       if (model == false) {
-        return;
+        return status;
       }
       await this.data.add(model);
-      res.send({ msg: "added" });
+      status.data.model = model
+      status.success = true;
+      return status
     } catch (err) {
-      this._failed({err, res, msg: "Failed to add data"});
+      status.errMsg = err
+      return status
     }
   };
-  remove = async (req: Request, res: Response) => {
+
+  async remove (req: Request, res: Response) {
+    const status:any = { success: false, errMsg: "", data :{ids:""} }
     try {
-      const id = this._getAndValidID(req, res);
-      if (id == false) {
-        return;
+      const removeId = this._getAndValidID(req, res);
+      if (removeId == false) {
+        return status;
       }
-      await this.data.remove(id);
-      res.send({ msg: "removed" });
+      await this.data.remove(removeId);
+      status.data.ids = removeId
+      status.success = true;
+      return status
     } catch (err) {
-      this._failed({err, res, msg: "Failed to remove"});
+      status.errMsg = err
+      return status
     }
   };
-  update = async (req: Request, res: Response) => {
+
+
+  async update (req: Request, res: Response): Promise<CtrlStatus>  {
+    const status:any = { success: false, errMsg: "", data :{model:{}}}
     try {
       const model = this._getAndValidModel(req, res);
       if (model == false) {
-        return;
+        return status;
       }
       await this.data.update(model);
-      res.send({ msg: "updated" });
+      status.data.model = model
+      status.success = true;
+      return status
     } catch (err) {
-      this._failed({err, res, msg: "Failed to update"});
+      status.errMsg = err
+      return status
     }
   };
-  getMany = async (req: Request, res: Response) => {
+  async getMany (req: Request, res: Response) {
     try {
       const ids = this._getAndValidIDs(req, res, true);
       if (!ids == false) {
@@ -178,7 +215,7 @@ export class RoutingCtrlWrapper implements ModelOptionsCtrl {
     }
   };
 
-  addMany = async (req: Request, res: Response) => {
+  async addMany (req: Request, res: Response): Promise<CtrlStatus>  {
     try {
       const models = this._getAndValidModels(req, res);
       if (models == false) {
@@ -190,7 +227,7 @@ export class RoutingCtrlWrapper implements ModelOptionsCtrl {
       this._failed({err, res, msg: "Failed to add data"});
     }
   };
-  removeMany = async (req: Request, res: Response) => {
+  async removeMany  (req: Request, res: Response) {
     try {
       const ids = this._getAndValidIDs(req, res);
       if (!ids) {
@@ -202,7 +239,7 @@ export class RoutingCtrlWrapper implements ModelOptionsCtrl {
       this._failed({err, res, msg: "Failed to remove data"});
     }
   };
-  getManyByFilter = async (req: Request, res: Response) => {
+  async getManyByFilter (req: Request, res: Response)  {
     try {
       const filter = this._getAndValidFilter(req, res);
       if (filter == false) {

@@ -6,18 +6,8 @@
     "declaration": true,
     "experimentalDecorators": true,
     "target": "es6",
-    "jsx": "react",
-    "baseUrl": ".",
-    "paths": {
-      "@/*": [
-        "src/*"
-      ],
-      "ui-logic/*": [
-        "../ui/lib/*"
-      ]
-    }
   },
   "include": [
-    "./src", "../db-controller/src/data-ctrl/routing-ctrl-wrapper.ts", "../db-controller/src/data-acsses/data-model-options.ts",
+    "./src",
   ]
 }

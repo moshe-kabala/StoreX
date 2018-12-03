@@ -1,5 +1,5 @@
 import { BaseCache, BaseCacheArgs } from "./base-cache";
-import { createCollection, Collection } from "@/collection";
+import { createCollection, Collection } from "../collection";
 
 interface CollectionCacheArgs extends BaseCacheArgs {
   id: ((item) => string | number) | string;

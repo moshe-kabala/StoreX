@@ -126,24 +126,20 @@ function createSchema(fields: string[]) {
   const _whereSchema = whereSchema(fields);
 
   const filterDataSchema = {
-    id: "filterData",
+    id: "#filterData",
     type: "object",
     properties: {
       sort: {
         type: "array",
-        items: { $ref: "#sort" }
+        items: _sortSchema
       },
       where: {
         type: "array",
-        item: { $ref: "#where" }
+        item: _whereSchema
       },
       itemPerPage: { type: "integer", minimum: 1 },
       page: { type: "integer", minimum: 0 }
     },
-    definitions: {
-      where: _sortSchema,
-      sort: _sortSchema
-    }
   };
 
   return filterDataSchema;

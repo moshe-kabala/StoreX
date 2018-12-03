@@ -1,24 +1,14 @@
 import * as mysql from "mysql";
 import { Query } from "mysql";
 
-let mysqlConf;
-
-export function init(_mysqlConf) {
-  mysqlConf = mysqlConf;
-  for (const db of Object.keys(exportedObj)) {
-    Object.defineProperty(exportedObj, db, {
-      get: () => {
-        if (connections[db]) {
-          return connections[db];
-        }
-        return demoPool;
-      }
-    });
-  }
-  connect();
+interface ConnectionDetails {
+  password: string;
+  user: string;
+  host: string;
+  dbs: string[];
 }
 
-const connections: any = {};
+let mysqlConf: ConnectionDetails;
 
 class DemoPool {
   query = (
@@ -38,29 +28,48 @@ class DemoPool {
 
 const demoPool = new DemoPool();
 
-const exportedObj: { [key: string]: mysql.Pool } = {
-  ids: undefined,
-  topology: undefined,
-  configuration: undefined,
-  management: undefined
-};
+const DBS_POOL: { [key: string]: mysql.Pool } = {};
+
+export function init(_mysqlConf: ConnectionDetails) {
+  mysqlConf = _mysqlConf;
+
+  for (const db of mysqlConf.dbs) {
+    Object.defineProperty(DBS_POOL, db, {
+      get: () => {
+        if (connections[db]) {
+          return connections[db];
+        }
+        return demoPool;
+      }
+    });
+  }
+  connect();
+}
+
+const connections: any = {};
 
 export function connect() {
   // before connect lets close
   close();
-  for (const db of Object.keys(exportedObj)) {
+  const { host, user, password } = mysqlConf;
+  for (const db of mysqlConf.dbs) {
     connections[db] = mysql.createPool({
       connectionLimit: 15,
-      host: mysqlConf.url,
-      user: mysqlConf.user,
-      password: mysqlConf.mysql_password,
+      host,
+      user,
+      password,
       database: db
     });
   }
 }
 
 export function close() {
-  for (const db of Object.keys(exportedObj)) {
+  if (!mysqlConf) {
+    throw Error(
+      "[MySql::close] the db never init, please init the db before using it"
+    );
+  }
+  for (const db of mysqlConf.dbs) {
     const dbPool = connections[db];
     if (dbPool != undefined) {
       dbPool.end();
@@ -69,4 +78,4 @@ export function close() {
   }
 }
 
-export default exportedObj;
+export default DBS_POOL;
