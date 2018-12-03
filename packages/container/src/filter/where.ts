@@ -25,19 +25,24 @@ function filterItemByWheres(item, wheres) {
     var where = wheres[i];
     var values = where.value;
     var key = where.key;
+    let path = where.path;
     var equalToType = where.type || "string";
     if (!key) continue;
-
-    var obj = item;
-    if (key && key.indexOf(".") != -1) {
-      var filterPats = key.split(".");
-      for (var i = 0; i < filterPats.length - 1; i++) {
-        var key = filterPats[i];
-        if (!obj.hasOwnProperty(key)) return;
-        obj = obj[key];
-      }
-      key = filterPats[filterPats.length - 1];
+    if (path) {
     }
+    const obj = path ? getNestedObject(item, path) : item;
+    if (!obj) {
+      return false; // let to config what to do if there is no path. 
+    }
+    // if (key && key.indexOf(".") != -1) {
+    //   var filterPats = key.split(".");
+    //   for (var i = 0; i < filterPats.length - 1; i++) {
+    //     var key = filterPats[i];
+    //     if (!obj.hasOwnProperty(key)) return;
+    //     obj = obj[key];
+    //   }
+    //   key = filterPats[filterPats.length - 1];
+    // }
     let operatorFunc;
 
     switch (where.operator) {
@@ -81,10 +86,11 @@ function filterItemByWheres(item, wheres) {
 function properWhere(wheres, schema?) {
   var _wheres = [];
   wheres.forEach(item => {
-    var val = item.value;
-    var key = item.key;
-    var type = item.type || "string";
-    var operator = item.operator;
+    let { value: val, key, type, operator, path } = item;
+
+    if (path && typeof path === "string") {
+      path = path.split(".");
+    }
 
     switch (type) {
       case "bool":
@@ -119,7 +125,7 @@ function properWhere(wheres, schema?) {
         }
       //return (obj[key] == val);
     }
-    _wheres.push({ key: key, value: val, type: type, operator: item.operator });
+    _wheres.push({ key, value: val, type, operator, path });
   });
   return _wheres;
 }
@@ -206,3 +212,10 @@ function ifSmaller(key, val, obj, equalType) {
       );
   }
 }
+
+const getNestedObject = (nestedObj, pathArr) => {
+  return pathArr.reduce(
+    (obj, key) => (obj && obj[key] !== "undefined" ? obj[key] : undefined),
+    nestedObj
+  );
+};
