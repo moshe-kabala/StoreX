@@ -1,6 +1,6 @@
 {
   "name": "@storex/db-controller",
-  "version": "1.0.44",
+  "version": "1.0.48",
   "description": "Utils for db and routing ...",
   "main": "lib/index.js",
   "scope": "@storex",
@@ -20,6 +20,7 @@
   "devDependencies": {
     "@types/mongodb": "^2.2.18",
     "@types/mysql": "^2.15.5",
+    "@types/jest": "^23.3.0",
     "jest": "^23.3.0",
     "ts-jest": "^23.0.0",
     "typescript": "^2.9.2"

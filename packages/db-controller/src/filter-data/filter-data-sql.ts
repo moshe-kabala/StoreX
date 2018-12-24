@@ -235,7 +235,7 @@ export function createSqlWhere(where, moreWhere = "", ignoreFields) {
 function createWhereWithLike(column, value, type = "string", operator = "=") {
   if (type === "string" && (operator === "~" || operator === "!~")) {
     operator = operator === "~" ? "LIKE" : "NOT LIKE";
-    return `CAST(${column} as char(100))  ${operator} "%${value}%"`;
+    return `CAST(${column} as char)  ${operator} "%${value}%"`;
   } else {
     if (operator === "!" || operator === "!~") {
       operator = "<>";

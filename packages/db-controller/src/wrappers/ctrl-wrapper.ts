@@ -1,16 +1,15 @@
 import { Router, Request, Response } from "express";
-import { ModelOptionsCtrl, ModelOptionsData } from "../data-access";
+import { ModelOptionsCtrl, ModelOptionsData } from ".";
 
 import * as Ajv from "ajv";
 
-
 export interface CtrlStatus {
-  success: boolean,
-  data: any,
-  errMsg: string
+  success: boolean;
+  data: any;
+  errMsg: string;
 }
 
-export class RoutingCtrlWrapper<T=any> implements ModelOptionsCtrl {
+export class CtrlWrapper<T = any> implements ModelOptionsCtrl {
   data;
   modelName;
   modelsName;
@@ -37,7 +36,6 @@ export class RoutingCtrlWrapper<T=any> implements ModelOptionsCtrl {
     this.modelName = modelName;
     this.modelsName = modelsName;
     this.modelSchema = modelSchema;
-   
 
     this.filterValidation = filterValidation;
     if (validation) {
@@ -52,46 +50,45 @@ export class RoutingCtrlWrapper<T=any> implements ModelOptionsCtrl {
     }
 
     // bind the function to this
-    this.remove = this.remove.bind(this)
-    this.add = this.add.bind(this)
-    this.update = this.update.bind(this)
-    this.get = this.get.bind(this)
-    this.getMany=this.getMany.bind(this)
-    this.addMany=this.addMany.bind(this)
-    this.removeMany=this.removeMany.bind(this)
-    this.getManyByFilter=this.getManyByFilter.bind(this)
-   
+    this.remove = this.remove.bind(this);
+    this.add = this.add.bind(this);
+    this.update = this.update.bind(this);
+    this.get = this.get.bind(this);
+    this.getMany = this.getMany.bind(this);
+    this.addMany = this.addMany.bind(this);
+    this.removeMany = this.removeMany.bind(this);
+    this.getManyByFilter = this.getManyByFilter.bind(this);
   }
 
   connectRouter = (router: Router) => {
     // todo...
   };
 
-  _getAndValidIDs (req, res, canBeEmpty = false) {
+  _getAndValidIDs(req, res, canBeEmpty = false) {
     const id = req.body.ids;
     if (!id && !canBeEmpty) {
       res.status(400).send({ msg: "IDs are empty" });
       return false;
     }
     return id;
-  };
-  _getAndValidFilter (req, res, canBeEmpty = false)  {
+  }
+  _getAndValidFilter(req, res, canBeEmpty = false) {
     const id = req.body.ids;
     if (!id && !canBeEmpty) {
       res.status(400).send({ msg: "ID is empty" });
       return false;
     }
     return id;
-  };
-  _getAndValidID (req, res, canBeEmpty = false) {
+  }
+  _getAndValidID(req, res, canBeEmpty = false) {
     const id = req.params.id;
     if (!id && !canBeEmpty) {
       res.status(400).send({ msg: "ID is empty" });
       return false;
     }
     return id;
-  };
-  _getAndValidModels (req, res, canBeEmpty = false) {
+  }
+  _getAndValidModels(req, res, canBeEmpty = false) {
     const models = req.body;
     if (!models && !canBeEmpty) {
       res.status(400).send({ msg: "Not valid ID" });
@@ -105,9 +102,9 @@ export class RoutingCtrlWrapper<T=any> implements ModelOptionsCtrl {
       }
     }
     return models;
-  };
+  }
 
-  _getAndValidModel (req, res, canBeEmpty = false) {
+  _getAndValidModel(req, res, canBeEmpty = false) {
     const model = req.body;
     if (!model && !canBeEmpty) {
       res.status(400).send({ msg: "Not valid ID" });
@@ -119,9 +116,9 @@ export class RoutingCtrlWrapper<T=any> implements ModelOptionsCtrl {
       return false;
     }
     return model;
-  };
+  }
 
-  _isModelValid (m, req, res) {
+  _isModelValid(m, req, res) {
     let err;
     if (this._validation) {
       err = this._validation(m);
@@ -130,14 +127,14 @@ export class RoutingCtrlWrapper<T=any> implements ModelOptionsCtrl {
       res.status(400).send({ msg: "Not valid Body data", err });
       return false;
     }
-  };
+  }
 
-  _failed ({ err, msg, res })  {
+  _failed({ err, msg, res }) {
     res.status(400).send({ msg, err });
-  };
+  }
 
-  async get (req: Request, res: Response) {
-    const status:any = { success: false, errMsg: "", data :{} }
+  async get(req: Request, res: Response) {
+    const status: any = { success: false, errMsg: "", data: {} };
     try {
       const id = await this._getAndValidID(req, res);
       if (id == false) {
@@ -145,64 +142,70 @@ export class RoutingCtrlWrapper<T=any> implements ModelOptionsCtrl {
       }
       const result = await this.data.get(id);
       res.send(result);
-      return status
+      return status;
     } catch (err) {
-      this._failed({err, res, msg: "Failed to get data"});
+      this._failed({ err, res, msg: "Failed to get data" });
     }
-  };
+  }
 
-  async add (req: Request, res: Response) {
-    const status:any = { success: false, errMsg: "", data :{model:{}} }
+  async add(req: Request, res: Response) {
+    const status: any = { success: false, errMsg: "", data: { model: {} } };
     try {
       const model = await this._getAndValidModel(req, res);
       if (model == false) {
         return status;
       }
       await this.data.add(model);
-      status.data.model = model
+      res.send({ msg: "added" });
+      status.data.model = model;
       status.success = true;
-      return status
+      return status;
     } catch (err) {
-      status.errMsg = err
-      return status
-    }
-  };
+      status.errMsg = err;
+      this._failed({ err, res, msg: "Failed to removed data" });
 
-  async remove (req: Request, res: Response) {
-    const status:any = { success: false, errMsg: "", data :{ids:""} }
+      return status;
+    }
+  }
+
+  async remove(req: Request, res: Response) {
+    const status: any = { success: false, errMsg: "", data: { ids: "" } };
     try {
       const removeId = this._getAndValidID(req, res);
       if (removeId == false) {
         return status;
       }
       await this.data.remove(removeId);
-      status.data.ids = removeId
+      res.send({ msg: "removed" });
+      status.data.ids = removeId;
       status.success = true;
-      return status
+      return status;
     } catch (err) {
-      status.errMsg = err
-      return status
+      status.errMsg = err;
+      this._failed({ err, res, msg: "Failed to removed data" });
+      return status;
     }
-  };
+  }
 
-
-  async update (req: Request, res: Response): Promise<CtrlStatus>  {
-    const status:any = { success: false, errMsg: "", data :{model:{}}}
+  async update(req: Request, res: Response): Promise<CtrlStatus> {
+    const status: any = { success: false, errMsg: "", data: { model: {} } };
     try {
       const model = this._getAndValidModel(req, res);
       if (model == false) {
         return status;
       }
       await this.data.update(model);
-      status.data.model = model
+      res.send({ msg: "updated" });
+      status.data.model = model;
       status.success = true;
-      return status
+      return status;
     } catch (err) {
-      status.errMsg = err
-      return status
+      status.errMsg = err;
+      this._failed({ err, res, msg: "Failed to updated data" });
+      return status;
     }
-  };
-  async getMany (req: Request, res: Response) {
+  }
+  async getMany(req: Request, res: Response) {
     try {
       const ids = this._getAndValidIDs(req, res, true);
       if (!ids == false) {
@@ -211,11 +214,11 @@ export class RoutingCtrlWrapper<T=any> implements ModelOptionsCtrl {
       const result = await this.data.getMany(ids);
       res.send(result);
     } catch (err) {
-      this._failed({err, res, msg: "Failed to get data"});
+      this._failed({ err, res, msg: "Failed to get data" });
     }
-  };
+  }
 
-  async addMany (req: Request, res: Response): Promise<CtrlStatus>  {
+  async addMany(req: Request, res: Response): Promise<CtrlStatus> {
     try {
       const models = this._getAndValidModels(req, res);
       if (models == false) {
@@ -224,10 +227,10 @@ export class RoutingCtrlWrapper<T=any> implements ModelOptionsCtrl {
       await this.data.addMany(models);
       res.send({ msg: "added" });
     } catch (err) {
-      this._failed({err, res, msg: "Failed to add data"});
+      this._failed({ err, res, msg: "Failed to add data" });
     }
-  };
-  async removeMany  (req: Request, res: Response) {
+  }
+  async removeMany(req: Request, res: Response) {
     try {
       const ids = this._getAndValidIDs(req, res);
       if (!ids) {
@@ -236,10 +239,10 @@ export class RoutingCtrlWrapper<T=any> implements ModelOptionsCtrl {
       const result = await this.data.removeMany(ids);
       res.send(result);
     } catch (err) {
-      this._failed({err, res, msg: "Failed to remove data"});
+      this._failed({ err, res, msg: "Failed to remove data" });
     }
-  };
-  async getManyByFilter (req: Request, res: Response)  {
+  }
+  async getManyByFilter(req: Request, res: Response) {
     try {
       const filter = this._getAndValidFilter(req, res);
       if (filter == false) {
@@ -248,7 +251,7 @@ export class RoutingCtrlWrapper<T=any> implements ModelOptionsCtrl {
       await this.data.getManyByFilter(filter);
       res.send({ msg: "updated" });
     } catch (err) {
-      this._failed({err, res, msg: "Failed to get by filter"});
+      this._failed({ err, res, msg: "Failed to get by filter" });
     }
-  };
+  }
 }
