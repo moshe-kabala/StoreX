@@ -15,7 +15,10 @@ export class MongoCollectionWrapper<T = any> implements ModelOptionsData<T> {
     return await collection.findOne({ _id: id });
   }
 
-  async getManyByFilter(filter: FilterDataMongo, whatGet?) {
+  async getManyByFilter(filter?: FilterDataMongo, whatGet?) {
+    if (!filter) {
+      return this.getMany(undefined,whatGet )
+    }
     let collection = await this.getCollection();
     let isLimit;
 
@@ -81,7 +84,7 @@ export class MongoCollectionWrapper<T = any> implements ModelOptionsData<T> {
   async addMany(data: T[]) {
     return (await this.getCollection()).insertMany(data);
   }
-
+ 
   prepareFilter(filter?: FilterDataMongo) {
     const query: any = filter ? filter.mongoFilter : {};
     if (query.id) {

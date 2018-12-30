@@ -3,6 +3,7 @@ import { ModelOptionsCtrl, ModelOptionsData, idType, idsType } from ".";
 
 import * as Ajv from "ajv";
 import { FilterData } from "@/filter-data";
+import { map } from "./map";
 
 export class BLWrapper<T = any> implements ModelOptionsData<T> {
   data;
@@ -11,6 +12,8 @@ export class BLWrapper<T = any> implements ModelOptionsData<T> {
   _validation;
   modelSchema;
   filterValidation;
+  _mapFrom;
+  _mapTo;
 
   constructor({
     data,
@@ -18,7 +21,9 @@ export class BLWrapper<T = any> implements ModelOptionsData<T> {
     modelsName,
     validation,
     modelSchema,
-    filterValidation
+    filterValidation,
+    mapFrom,
+    mapTo,
   }: {
     data: ModelOptionsData<T>;
     modelName: string;
@@ -26,11 +31,15 @@ export class BLWrapper<T = any> implements ModelOptionsData<T> {
     modelSchema?: any;
     validation?;
     filterValidation?;
+    mapFrom?: (itemOrItems) => any;
+    mapTo?: (itemOrItems) => any;
   }) {
     this.data = data;
     this.modelName = modelName;
     this.modelsName = modelsName;
     this.modelSchema = modelSchema;
+    this._mapFrom = mapFrom;
+    this._mapTo = mapTo;
 
     this.filterValidation = filterValidation;
     if (validation) {
@@ -54,28 +63,49 @@ export class BLWrapper<T = any> implements ModelOptionsData<T> {
     this.removeMany = this.removeMany.bind(this);
     this.getManyByFilter = this.getManyByFilter.bind(this);
   }
-  remove(id: idType): any {
-    return this.remove(id);
+
+  async mapFrom(items: any | any[]) {
+    return map(items, this._mapFrom);
   }
-  add(data: T): any {
-    return this.add(data);
+  async mapTo(items: any | any[]) {
+    return map(items, this._mapTo);
   }
-  update(data: T): any {
-    return this.update(data);
+  remove(id: idType): Promise<any> {
+    return this.data.remove(id);
   }
-  get(id: idType): any {
-    return this.get(id);
+  async add(data: T): Promise<any> {
+    return this.data.add(await this.mapTo(data));
   }
-  getMany(ids?: idsType): any {
-    return this.getMany(ids);
+  async update(data: T): Promise<any> {
+    return this.data.update(await this.mapTo(data));
   }
-  addMany(data: T[]): any {
-    return this.addMany(data);
+  async get(id: idType): Promise<any> {
+    try {
+      return this.mapFrom(await this.data.get(id));
+    } catch (err) {
+      return Promise.reject(err);
+    }
   }
-  removeMany(ids: idsType): any {
-    return this.removeMany(ids);
+  async getMany(ids?: idsType): Promise<any> {
+    try {
+      return this.mapFrom(await this.data.getMany(ids));
+    } catch (err) {
+      return Promise.reject(err);
+    }
   }
-  getManyByFilter(filter: FilterData): any {
-    return this.getManyByFilter(filter);
+  async addMany(data: T[]): Promise<any> {
+    return this.data.addMany(await this.mapTo(data));
+  }
+  async removeMany(ids: idsType): Promise<any> {
+    return this.data.removeMany(ids);
+  }
+  async getManyByFilter(filter?: FilterData): Promise<any> {
+    try {
+      return this.mapFrom(await this.data.getManyByFilter(filter));
+    } catch (err) {
+      return Promise.reject(err);
+    }
   }
 }
+
+
