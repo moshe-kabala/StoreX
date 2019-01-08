@@ -15,6 +15,10 @@ export class MongoCollectionWrapper<T = any> implements ModelOptionsData<T> {
     return await collection.findOne({ _id: id });
   }
 
+  async removeManyByFilter(filter?: FilterDataMongo, whatGet?){
+    
+  }
+
   async getManyByFilter(filter?: FilterDataMongo, whatGet?) {
     if (!filter) {
       return this.getMany(undefined,whatGet )

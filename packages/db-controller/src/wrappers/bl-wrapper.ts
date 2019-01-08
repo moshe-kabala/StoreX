@@ -106,6 +106,10 @@ export class BLWrapper<T = any> implements ModelOptionsData<T> {
       return Promise.reject(err);
     }
   }
+  async removeManyByFilter(filter?: FilterData, whatGet?): Promise<any>{
+    return this.data.removeManyByFilter(filter, whatGet);
+  }
+
 }
 
 

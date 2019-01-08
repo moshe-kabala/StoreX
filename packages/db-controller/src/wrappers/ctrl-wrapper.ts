@@ -255,4 +255,17 @@ export class CtrlWrapper<T = any> implements ModelOptionsCtrl {
       this._failed({ err, res, msg: "Failed to get by filter" });
     }
   }
+  async removeManyByFilter(req: Request, res: Response): Promise<any> {
+    try {
+      const filter = this._getAndValidFilter(req, res, true);
+      if (filter == false) {
+        return;
+      }
+      const result = await this.data.removeManyByFilter(filter);
+      res.send(result);
+      return result;
+    } catch (err) {
+      this._failed({ err, res, msg: "Failed to get by filter" });
+    }
+  }
 }

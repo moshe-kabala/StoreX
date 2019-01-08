@@ -13,6 +13,7 @@ export interface ModelOptionsData<T = any> {
   addMany(data: T[]);
   removeMany(ids: idsType);
   getManyByFilter(filter: FilterData);
+  removeManyByFilter(filter?: FilterData, whatGet?)
 }
 
 export interface ModelOptionsCtrl {
@@ -24,4 +25,5 @@ export interface ModelOptionsCtrl {
   addMany(req: Request, res: Response);
   removeMany(req: Request, res: Response);
   getManyByFilter(req: Request, res: Response);
+  
 }
