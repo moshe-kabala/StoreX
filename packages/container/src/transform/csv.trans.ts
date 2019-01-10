@@ -9,13 +9,13 @@ const colDelim = '","';
  * @param {Array} config An array of the fields the table should have
  */
 export function csvTransform(objArray, schema) {
-  let headings;
+  let headings = [];
   for (const key in schema.properties) {
     const val = schema.properties[key];
     headings.push(val.title || key);
   }
 
-  let output = this.createRow(headings);
+  let output = createRow(headings);
 
   for (var i = 0; i < objArray.length; i++) {
     let element = objArray[i];
@@ -26,7 +26,7 @@ export function csvTransform(objArray, schema) {
       let val = schema.properties[key];
       row.push(val || "");
     }
-    output += this.rowDelim + this.createRow(row);
+    output += this.rowDelim + createRow(row);
   }
   return output;
 }
@@ -56,7 +56,7 @@ function convertToType(val, columnMetaData) {
     case "enum":
       if (columnMetaData.options instanceof Array)
         // if exist options take the name of the enum
-        columnMetaData.options.some(function(item) {
+        columnMetaData.options.some(function (item) {
           if (item.value == val) {
             val == item.name;
             return true;
@@ -66,4 +66,8 @@ function convertToType(val, columnMetaData) {
     default:
       return val;
   }
+}
+
+function createRow(row) {
+  return '"' + row.join(colDelim) + '"';
 }
