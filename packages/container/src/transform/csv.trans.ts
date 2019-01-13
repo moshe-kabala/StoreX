@@ -22,8 +22,8 @@ export function csvTransform(objArray, schema) {
     let obj = element;
     let row = [];
     let val;
-    for (const key in element) {
-      let val = element[key];
+    for (const key in obj) {
+      val = obj[key];
       row.push(val || "");
     }
     output += rowDelim + createRow(row);
