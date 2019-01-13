@@ -18,7 +18,7 @@ export function csvTransform(objArray, schema) {
   let output = createRow(headings);
 
   for (var i = 0; i < objArray.length; i++) {
-    let element = objArray[i];
+    let element = objArray.data ? objArray.data[i] : objArray[i];
     let obj = element;
     let row = [];
     let val;
