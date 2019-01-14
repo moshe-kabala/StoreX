@@ -22,14 +22,12 @@ export function csvTransform(objArray, schema) {
     let obj = element;
     let row = [];
     let val;
-    for (const key in obj) {
-      if ( typeof key !== 'object')
-      {
-        val = obj[key];
-      } else {
-        Object.keys(key).map(p => val.push(p))
+    for (let dataKey in obj) {
+      for (let schemaKeys in schema.properties){
+        if(dataKey == schemaKeys)
+        val = obj[dataKey];
+        row.push(val || "");
       }
-      row.push(val || "");
     }
     output += rowDelim + createRow(row);
   }
