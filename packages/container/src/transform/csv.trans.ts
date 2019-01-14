@@ -23,11 +23,12 @@ export function csvTransform(objArray, schema) {
     let obj = element;
     let row = [];
     let val;
+
     for (let schemaKeys of schema) {
       for (let dataKey in  obj){
         if(dataKey === schemaKeys.key && schemaKeys.hide !== true){
           if(obj[dataKey] instanceof Object){
-            val = JSON.stringify(obj[dataKey],null, " ")
+            val = JSON.stringify(obj[dataKey],null, " ") 
           } else {
             val = obj[dataKey];
           }
@@ -75,6 +76,28 @@ function convertToType(val, columnMetaData) {
     default:
     return val;
   }
+}
+
+function pathResolution(obj, path, key) {
+  if (!obj) {
+      return {};
+  }
+  if (!path && !key) {
+      return {};
+  }
+  let currentObj = obj, preObj = obj;
+  const keys = path ? path.split('.') : [];
+  for (const key of keys) {
+      if (!key) {
+          preObj = currentObj;
+      }
+      currentObj = currentObj[key];
+      if (currentObj === undefined) {
+          return {};
+      }
+  }
+  ;
+  return key ? { val: currentObj[key], obj: currentObj } : { val: currentObj, obj: preObj };
 }
 
 function createRow(row) {
