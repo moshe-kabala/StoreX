@@ -10,9 +10,10 @@ const colDelim = '","';
 */
 export function csvTransform(objArray, schema) {
   let headings = [];
-  for (const key in schema.properties) {
-    const val = schema.properties[key];
-    headings.push(val.title || key);
+  for (const val of schema) {
+    if (val.hide !== true){
+      headings.push(val.title || val.key);
+    } 
   }
   
   let output = createRow(headings);
@@ -22,11 +23,11 @@ export function csvTransform(objArray, schema) {
     let obj = element;
     let row = [];
     let val;
-    for (let schemaKeys in schema.properties) {
+    for (let schemaKeys of schema) {
       for (let dataKey in  obj){
-        if(dataKey === schemaKeys){
+        if(dataKey === schemaKeys.key && schemaKeys.hide !== true){
           if(obj[dataKey] instanceof Object){
-            val = JSON.stringify(obj[dataKey])
+            val = JSON.stringify(obj[dataKey],null, " ")
           } else {
             val = obj[dataKey];
           }
