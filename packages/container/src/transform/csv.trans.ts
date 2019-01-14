@@ -22,11 +22,16 @@ export function csvTransform(objArray, schema) {
     let obj = element;
     let row = [];
     let val;
-    for (let dataKey in obj) {
-      for (let schemaKeys in schema.properties){
-        if(dataKey == schemaKeys)
-        val = obj[dataKey];
+    for (let schemaKeys in schema.properties) {
+      for (let dataKey in  obj){
+        if(dataKey === schemaKeys){
+          if(obj[dataKey] instanceof Object){
+            val = JSON.stringify(obj[dataKey])
+          } else {
+            val = obj[dataKey];
+          }
         row.push(val || "");
+        }
       }
     }
     output += rowDelim + createRow(row);
