@@ -43,13 +43,13 @@ export function csvTransform(objArray, schema) {
       let key = column.key;
       let res = pathResolution(obj, column.path, key);
       let val = res.val !== undefined ? res.val : "";
-      if(val instanceof Object){
+      if(val instanceof Object && column.hide !== true){
         const s = new StringifyData(new StringifyDataOptions( {separateBetweenKeys: "\n"}));
         val = s.obj(t.obj(val)) 
       }
       // else if (typeof column.display === "function") {
       //   val = column.display({ key, val, obj});}
-       else {
+       else if(column.hide !== true){
         val = val;
       }
       row.push(val);
