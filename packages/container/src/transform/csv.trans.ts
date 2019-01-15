@@ -12,31 +12,6 @@ const colDelim = '","';
 */
 
 
-const t = new DataTranslator(
-  new DataTranslatorOptions({
-    keysMap: {
-      src_macs: "Source MAC",
-      dst_macs: "Destination MAC",
-      src_ips: "Source IP",
-      dst_ips: "Destination IP",
-      src_address: "DNP3 Src Address",
-      dst_address: "DNP3 Dst Address",
-      cip_service: "CIP Service",
-      cip_class: "CIP Object",
-      mms_service: "MMS Service",
-      mms_sub_service: "MMS Sub Service",
-      dpi: "DPI",
-      vlan: "VLAN",
-      // 'ttl': 'TTL',
-      unit_id: "Unit ID"
-    },
-    valsMap: {
-      transport: t => (t ? t.toUpperCase() : ""),
-    },
-    keysTransform: NormalizeKey
-  })
-);
-
 export function csvTransform(objArray, schema) {
   let headings = [];
   for (const val of schema) {
@@ -52,21 +27,50 @@ export function csvTransform(objArray, schema) {
     let obj = element;
     let row = [];
     let val;
-
-    for (let schemaKeys of schema) {
-      for (let dataKey in  obj){
-        if(dataKey === schemaKeys.key && schemaKeys.hide !== true){
-          if(obj[dataKey] instanceof Object){
-            const s = new StringifyData(new StringifyDataOptions( {separateBetweenKeys: "\n"}));
-            val = s.obj((obj[dataKey])) 
-          } else {
-            val = obj[dataKey];
-          }
-        row.push(val || "");
-        }
+    const t = new DataTranslator(
+      new DataTranslatorOptions({
+        keysMap: {
+          schema
+        },
+        valsMap: {
+          transport: t => (t ? t.toUpperCase() : ""),
+        },
+        keysTransform: NormalizeKey
+      })
+    );
+    
+    schema.forEach((column, i) => {
+      let key = column.key;
+      let res = pathResolution(obj, column.path, key);
+      let val = res.val !== undefined ? res.val : "";
+      if(val instanceof Object){
+        const s = new StringifyData(new StringifyDataOptions( {separateBetweenKeys: "\n"}));
+        val = s.obj(t.obj(val)) 
       }
-    }
+      // else if (typeof column.display === "function") {
+      //   val = column.display({ key, val, obj});}
+       else {
+        val = val;
+      }
+      row.push(val);
+    });
+    
     output += rowDelim + createRow(row);
+    
+    //   for (let schemaKeys of schema) {
+    //     for (let dataKey in  obj){
+    //       if(dataKey === schemaKeys.key && schemaKeys.hide !== true){
+    //         if(obj[dataKey] instanceof Object){
+    //           const s = new StringifyData(new StringifyDataOptions( {separateBetweenKeys: "\n"}));
+    //           val = s.obj(t.obj(obj[dataKey])) 
+    //         } else {
+    //           val = obj[dataKey];
+    //         }
+    //       row.push(val || "");
+    //       }
+    //     }
+    //   }
+    //   output += rowDelim + createRow(row);
   }
   return output;
 }
@@ -110,21 +114,21 @@ function convertToType(val, columnMetaData) {
 
 function pathResolution(obj, path, key) {
   if (!obj) {
-      return {};
+    return {};
   }
   if (!path && !key) {
-      return {};
+    return {};
   }
   let currentObj = obj, preObj = obj;
   const keys = path ? path.split('.') : [];
   for (const key of keys) {
-      if (!key) {
-          preObj = currentObj;
-      }
-      currentObj = currentObj[key];
-      if (currentObj === undefined) {
-          return {};
-      }
+    if (!key) {
+      preObj = currentObj;
+    }
+    currentObj = currentObj[key];
+    if (currentObj === undefined) {
+      return {};
+    }
   }
   ;
   return key ? { val: currentObj[key], obj: currentObj } : { val: currentObj, obj: preObj };

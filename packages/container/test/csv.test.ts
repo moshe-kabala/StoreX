@@ -16,7 +16,7 @@ describe("Csv", () => {
   
   test("PolicyMonitorTable", async () => {
     const res = await csvTransform({data:data, length: 1}, [{key:"meta", title: "Details"}] );
-    expect(res).toEqual(`"Details"\n"modification_time: 1547127985.394509\nmodifier: System\nnamespace: from-traffic"`)
+    expect(res).toEqual(`"Details"\n"Modification Time: 1547127985.394509\nModifier: System\nNamespace: from-traffic"`)
   });
   
 });
