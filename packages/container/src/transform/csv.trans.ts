@@ -9,10 +9,11 @@ const colDelim = '","';
 * Converts an array of objects into a CSV table.
 * @param {Array} objArray An array of objects.
 * @param {Array} config An array of the fields the table should have
+  @param {Any} translator An array of the fields the table should have
 */
 
 
-export function csvTransform(objArray, schema) {
+export function csvTransform(objArray, schema, translator?) {
   let headings = [];
   for (const val of schema) {
     if (val.hide !== true){
@@ -26,14 +27,14 @@ export function csvTransform(objArray, schema) {
     let element = objArray.data ? objArray.data[i] : objArray[i];
     let obj = element;
     let row = [];
-    let val;
+    let maps = translator? translator.option.valmaps : undefined
     const t = new DataTranslator(
       new DataTranslatorOptions({
         keysMap: {
           schema
         },
         valsMap: {
-          transport: t => (t ? t.toUpperCase() : ""),
+          maps
         },
         keysTransform: NormalizeKey
       })
@@ -45,10 +46,9 @@ export function csvTransform(objArray, schema) {
       let val = res.val !== undefined ? res.val : "";
       if(val instanceof Object){
         const s = new StringifyData(new StringifyDataOptions( {separateBetweenKeys: "\n"}));
-        val = s.obj(t.obj(val)) 
+        let str = s.obj(t.obj(val)) 
+        val = str
       }
-      // else if (typeof column.display === "function") {
-      //   val = column.display({ key, val, obj});}
        else {
         val = val;
       }
@@ -58,21 +58,6 @@ export function csvTransform(objArray, schema) {
     });
     
     output += rowDelim + createRow(row);
-    
-    //   for (let schemaKeys of schema) {
-    //     for (let dataKey in  obj){
-    //       if(dataKey === schemaKeys.key && schemaKeys.hide !== true){
-    //         if(obj[dataKey] instanceof Object){
-    //           const s = new StringifyData(new StringifyDataOptions( {separateBetweenKeys: "\n"}));
-    //           val = s.obj(t.obj(obj[dataKey])) 
-    //         } else {
-    //           val = obj[dataKey];
-    //         }
-    //       row.push(val || "");
-    //       }
-    //     }
-    //   }
-    //   output += rowDelim + createRow(row);
   }
   return output;
 }
