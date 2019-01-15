@@ -1,4 +1,6 @@
 import { CustomDate } from "../format";
+import { StringifyData, StringifyDataOptions } from ".";
+import { DataTranslator, DataTranslatorOptions, NormalizeKey } from "./data.trans";
 
 const rowDelim = "\n";
 const colDelim = '","';
@@ -8,6 +10,33 @@ const colDelim = '","';
 * @param {Array} objArray An array of objects.
 * @param {Array} config An array of the fields the table should have
 */
+
+
+const t = new DataTranslator(
+  new DataTranslatorOptions({
+    keysMap: {
+      src_macs: "Source MAC",
+      dst_macs: "Destination MAC",
+      src_ips: "Source IP",
+      dst_ips: "Destination IP",
+      src_address: "DNP3 Src Address",
+      dst_address: "DNP3 Dst Address",
+      cip_service: "CIP Service",
+      cip_class: "CIP Object",
+      mms_service: "MMS Service",
+      mms_sub_service: "MMS Sub Service",
+      dpi: "DPI",
+      vlan: "VLAN",
+      // 'ttl': 'TTL',
+      unit_id: "Unit ID"
+    },
+    valsMap: {
+      transport: t => (t ? t.toUpperCase() : ""),
+    },
+    keysTransform: NormalizeKey
+  })
+);
+
 export function csvTransform(objArray, schema) {
   let headings = [];
   for (const val of schema) {
@@ -28,7 +57,8 @@ export function csvTransform(objArray, schema) {
       for (let dataKey in  obj){
         if(dataKey === schemaKeys.key && schemaKeys.hide !== true){
           if(obj[dataKey] instanceof Object){
-            val = JSON.stringify(obj[dataKey],null, " ") 
+            const s = new StringifyData(new StringifyDataOptions( {separateBetweenKeys: "\n"}));
+            val = s.obj((obj[dataKey])) 
           } else {
             val = obj[dataKey];
           }

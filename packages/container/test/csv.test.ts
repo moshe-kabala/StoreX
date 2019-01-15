@@ -10,14 +10,14 @@ describe("Csv", () => {
   
   
   test("CyberAttackTable", async () => {
-    const res = await csvTransform({data:[{ name:"Bob", bite:"ssegro" }], length: 1}, [{key:"bite", title: "Bite"}, {key:"name", title:"Name"}] );
-    expect(res).toEqual(`"Bite","Name"\n"ssegro","Bob"`)
+    const res = await csvTransform({data:[{ name:"Bob", bite:"28" }], length: 1}, [{key:"age", title: "Age"}, {key:"name", title:"Name"}] );
+    expect(res).toEqual(`"Age","Name"\n"28","Bob"`)
   });
   
-  // test("PolicyMonitorTable", async () => {
-  //   const res = await csvTransform({data:data, length: 1}, [{key:"details", title: "Details"}] );
-  //   expect(res).toEqual(`"Details"\n"{"modification_time":1547127985.394509,"modifier":"System","namespace":"from-traffic"}"`)
-  // });
+  test("PolicyMonitorTable", async () => {
+    const res = await csvTransform({data:data, length: 1}, [{key:"meta", title: "Details"}] );
+    expect(res).toEqual(`"Details"\n"modification_time: 1547127985.394509\nmodifier: System\nnamespace: from-traffic"`)
+  });
   
 });
 
