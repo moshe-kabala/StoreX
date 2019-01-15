@@ -15,6 +15,19 @@ const colDelim = '","';
 
 export function csvTransform(objArray, schema, translator?) {
   let headings = [];
+  let maps = translator? translator.options.valsMap : ""
+  const t = new DataTranslator(
+    new DataTranslatorOptions({
+      keysMap: {
+        schema
+      },
+      valsMap: maps,
+      keysTransform: NormalizeKey
+    })
+  );
+
+  Object["values"](objArray).map(d => t.obj(d))
+  
   for (const val of schema) {
     if (val.hide !== true){
       headings.push(val.title || val.key);
@@ -27,16 +40,6 @@ export function csvTransform(objArray, schema, translator?) {
     let element = objArray.data ? objArray.data[i] : objArray[i];
     let obj = element;
     let row = [];
-    let maps = translator? translator.options.valsMap : ""
-    const t = new DataTranslator(
-      new DataTranslatorOptions({
-        keysMap: {
-          schema
-        },
-        valsMap: maps,
-        keysTransform: NormalizeKey
-      })
-    );
     
     schema.forEach((column, i) => {
       let key = column.key;
