@@ -27,15 +27,13 @@ export function csvTransform(objArray, schema, translator?) {
     let element = objArray.data ? objArray.data[i] : objArray[i];
     let obj = element;
     let row = [];
-    let maps = translator? translator.option.valmaps : undefined
+    let maps = translator? translator.options.valsMap : ""
     const t = new DataTranslator(
       new DataTranslatorOptions({
         keysMap: {
           schema
         },
-        valsMap: {
-          maps
-        },
+        valsMap: maps,
         keysTransform: NormalizeKey
       })
     );
