@@ -1,5 +1,5 @@
-// import "jest";
-// import {csvTransform}  from "../../container/src/transform/csv.trans";
+import "jest";
+import {csvTransform}  from "../../container/src/transform/csv.trans";
 
 // describe("Csv", () => {
   
@@ -29,3 +29,29 @@
 // ]
   
 
+const data = [
+  {
+    meta: {
+      modification_time: 1547127985.394509,
+      modifier: "System",
+      namespace: "from-traffic"
+    }
+  }
+];
+const schema = {
+  type: "object",
+  properties: {
+    meta: {
+      title: "Details",
+      modification_time: { type: "number", title: "Modification" },
+      modifier: { type: "string" },
+      namespace: { type: "string" }
+    }
+  }
+};
+
+  test("PolicyMonitorTable", async () => {
+    const res = await csvTransform(data,  schema );
+    expect(res).toEqual(`"Details"\n"modification_time: 1547127985.394509\nmodifier: System\nnamespace: from-traffic"`)
+  });
+  

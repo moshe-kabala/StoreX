@@ -20,7 +20,7 @@ export function csvTransform(objArray, schema) {
   let headings = [];
   for (const key in schema.properties) {
     const key_schema = schema.properties[key];
-    const { title, path } = schema || key;
+    const { title, path } = schema.properties[key] || key;
     headings.push({ title, key, path, schema: key_schema });
   }
 
