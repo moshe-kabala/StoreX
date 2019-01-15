@@ -10,8 +10,8 @@ describe("Csv", () => {
   
   
   test("CyberAttackTable", async () => {
-    const res = await csvTransform({data:[{ name:"Bob", bite:"28" }], length: 1}, [{key:"age", title: "Age"}, {key:"name", title:"Name"}] );
-    expect(res).toEqual(`"Age","Name"\n"28","Bob"`)
+    const res = await csvTransform({data:[{ name:"Bob", bite:"ssegro" }], length: 1}, [{key:"bite", title: "Bite"}, {key:"name", title:"Name"}] );
+    expect(res).toEqual(`"Bite","Name"\n"ssegro","Bob"`)
   });
   
   test("PolicyMonitorTable", async () => {
