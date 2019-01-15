@@ -1,39 +1,29 @@
-import { createCollection } from "./collection";
-import { createState } from "./state";
-import { createView, ViewTransform } from "./view";
-const names = ["moshe", "liav", "amit"];
-let postCount = 0,
-  preCount = 0;
-const state1 = createState({ name: names[0] });
-const state2 = createState({ name: names[1] });
-const state3 = createState({ name: names[2] });
+import { csvTransform } from "./transform/csv.trans";
 
-const transform: ViewTransform = (sources: any, { oldData, context }) => {
-  const names = [];
-  for (let s of sources) {
-    if (s.dispatcher) {
-      s = s.dispatcher;
+const data = [
+  {
+    meta: {
+      modification_time: 1547127985.394509,
+      modifier: "System",
+      namespace: "from-traffic"
     }
-    names.push(s.state.name);
   }
-  return names;
+];
+const schema = {
+  type: "object",
+  properties: {
+    meta: {
+      title: "Details",
+      modification_time: { type: "number", title: "Modification" },
+      modifier: { type: "string" },
+      namespace: { type: "string" }
+    }
+  }
 };
 
-const view = createView({
-  transform,
-  dispatchers: [
-    state1,
-    {
-      dispatcher: state2,
-      onDispatch: {
-        pre: () => preCount++,
-        post: () => postCount++
-      }
-    },
-    state3
-  ]
-});
+function main() {
+  const res = csvTransform(data, schema);
+  return res
+}
 
-state2.setState({ name: names[0] });
-
-expect(view.data).toEqual(names);
+main();
