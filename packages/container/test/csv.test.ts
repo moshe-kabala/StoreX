@@ -43,15 +43,15 @@ const schema = {
   properties: {
     meta: {
       title: "Details",
-      modification_time: { type: "number", title: "Modification" },
-      modifier: { type: "string" },
-      namespace: { type: "string" }
+      modification_time: { type: "number", title: "Modification time" },
+      modifier: { type: "string", title: "Modifier"},
+      namespace: { type: "string", title: "Namespace" }
     }
   }
 };
 
   test("PolicyMonitorTable", async () => {
     const res = await csvTransform(data,  schema );
-    expect(res).toEqual(`"Details"\n"modification_time: 1547127985.394509\nmodifier: System\nnamespace: from-traffic"`)
+    expect(res).toEqual(`"Details"\n"Modification Time: 1547127985.394509\nModifier: System\nNamespace: from-traffic"`)
   });
   
