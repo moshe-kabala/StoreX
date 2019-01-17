@@ -6,7 +6,7 @@ import {
   NormalizeKey
 } from "./data.trans";
 
-const rowDelim = "\n";
+const rowDelim = "\r\n";
 const colDelim = '","';
 
 /**
