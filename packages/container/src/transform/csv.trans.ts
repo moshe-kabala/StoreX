@@ -120,14 +120,13 @@ function cell(schema, cell) {
     case "boolean":
       return cell;
     case "object": {
-      const keySchema = schema.properties
       const t =  new DataTranslator(
         new DataTranslatorOptions({
            keysTransform: NormalizeKey
         })
       );
       const s = new StringifyData(
-        new StringifyDataOptions({ separateBetweenKeys: "\n" })
+        new StringifyDataOptions({ separateBetweenKeys: "\r\n" })
       );
       return s.obj(t.obj(cell));
     }

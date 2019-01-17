@@ -21,8 +21,11 @@ const schema = {
   }
 };
 
+const data2= {properties: {key:"name", title:"Name"}} 
+const schame2= [{ name:"Bob" }]
+
 function main() {
-  const res = csvTransform(data, schema);
+  const res = csvTransform(data2, schame2);
   return res
 }
 
