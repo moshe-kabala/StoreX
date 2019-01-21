@@ -16,7 +16,7 @@ export class MongoCollectionWrapper<T = any> implements ModelOptionsData<T> {
   }
 
   async removeManyByFilter(filter?: FilterDataMongo, whatGet?){
-    
+    // todo
   }
 
   async getManyByFilter(filter?: FilterDataMongo, whatGet?) {
