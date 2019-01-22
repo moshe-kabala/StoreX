@@ -1,14 +1,29 @@
 import { BaseCache, BaseCacheArgs } from "./base-cache";
-import { createCollection, Collection } from "../collection";
+import { createCollection, Collection, CollectionOptions } from "../collection";
+import { flatKeys } from "@storex/utils/lib/schema";
 
 interface CollectionCacheArgs extends BaseCacheArgs {
   id: ((item) => string | number) | string;
+  schema?
+  use_options?: boolean,
+  validator?: (item: any) => any
 }
 
 export class CollectionCache extends BaseCache {
   protected _getId: (item) => string | number;
   data: Collection;
   _itemToId;
+  _schema;
+  _validator
+  _use_options
+  getSchema = () => {
+    return this._schema
+  }
+  isValid = (item) => {
+    if (this._validator) {
+      return this._validator(item)
+    }
+  }
   constructor(args: CollectionCacheArgs) {
     super(args);
     let itemToId;
@@ -22,10 +37,23 @@ export class CollectionCache extends BaseCache {
       );
     }
     this._itemToId = itemToId;
+    this._schema = args.schema;
+    this._validator = args.validator;
+    this._use_options = args.use_options;
   }
 
-  initData(){
-    this.data = createCollection({ itemToId: this._itemToId });
+  initData() {
+    let options;
+    if (this._use_options) {
+      if (!this._schema) {
+        throw new Error("[CollectionCache] you must to add schema if you set 'use_options: true'")
+      }
+      options = new CollectionOptions({
+        fields: flatKeys(this._schema).filter(({ type }) => type !== "object")
+      })
+    }
+
+    this.data = createCollection({ itemToId: this._itemToId, options });
   };
 
   /**

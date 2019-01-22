@@ -1,6 +1,7 @@
 import { Dispatcher, dispatch, DispatcherArgs } from "@storex/core";
 import { CollectionStatus } from "./collection-status";
 import { CollectionMeta } from "./collection-meta";
+import { CollectionOptions, GetOptionArgs } from "./collection-option";
 
 export enum DataGridEvents {
   DataChange = "data-change",
@@ -13,6 +14,7 @@ const e = DataGridEvents;
 const _events = Object.keys(e);
 
 export interface CollectionArgs extends DispatcherArgs {
+  options?: CollectionOptions
   meta: CollectionMeta;
   status: CollectionStatus;
 }
@@ -21,6 +23,7 @@ export class Collection extends Dispatcher {
   // meta;
   meta: CollectionMeta;
   status: CollectionStatus;
+  options: CollectionOptions;
 
   private _itemsDir = {};
   private _items = [];
@@ -31,12 +34,14 @@ export class Collection extends Dispatcher {
   constructor({
     meta,
     status,
+    options,
     events = [],
     dependencies = []
   }: CollectionArgs) {
     super({ events: [...events, ..._events], dependencies });
     this.meta = meta;
     this.status = status;
+    this.options = options;
   }
 
   @dispatch([e.DataChange])
@@ -48,8 +53,13 @@ export class Collection extends Dispatcher {
   add(item) {
     const id = this.meta.itemToId(item);
     this._itemsDir[id] = item;
+    if (this.options) {
+      this.options.addObj(item);
+    }
     this._is_items_need_to_render = true;
   }
+
+
 
   @dispatch([e.DataChange])
   remove(id) {
@@ -79,7 +89,16 @@ export class Collection extends Dispatcher {
     }
 
     this._items = value;
+    if (this.options) {
+      this.options.map(this._items)
+    }
     if (this.meta.itemToId) this.generateDicItem();
+  }
+
+  // wrap the options
+  async getOptions({ key, path = "", query = "", limit = 50 }) {
+    await this.data;
+    return this.options.getOptions({ key, path, query, limit })
   }
 
   get data() {
@@ -127,8 +146,8 @@ export class Collection extends Dispatcher {
   }
 }
 
-export function createCollection({ itemToId }) {
+export function createCollection({ itemToId, options = undefined }) {
   const meta = new CollectionMeta({ itemToId });
   const status = new CollectionStatus();
-  return new Collection({ meta, status });
+  return new Collection({ meta, status, options });
 }
