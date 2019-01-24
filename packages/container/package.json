@@ -1,6 +1,6 @@
 {
   "name": "@storex/container",
-  "version": "1.0.56",
+  "version": "1.0.64",
   "description": "Contain some container to hold the data",
   "main": "lib/index.js",
   "scope": "@storex",
@@ -14,7 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "@storex/core": "^1.0.33",
-    "@storex/utils": "^1.0.35",
+    "@storex/utils": "^1.0.40",
     "immutable": "^3.8.2",
     "moment": "^2.22.2"
   },

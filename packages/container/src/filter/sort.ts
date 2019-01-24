@@ -3,6 +3,21 @@ export interface Sort {
   reverse: boolean;
 }
 
+export const createSortSchema = fields => ({
+  id: "#sort",
+  type: "object",
+  properties: {
+    key: {
+      type: "string",
+      enum: fields
+    },
+    revers: {
+      type: "boolean"
+    }
+  }
+});
+
+
 export function sort(
   result: any[],
   sortBy: { key: string; reverse: boolean }[]
@@ -14,7 +29,7 @@ export function sort(
 }
 
 function dynamicSortMultiple(sortBy) {
-  return function(rule1, rule2) {
+  return function (rule1, rule2) {
     let i = 0;
     let result = 0;
 
@@ -30,7 +45,7 @@ function dynamicSortMultiple(sortBy) {
 }
 
 function dynamicSort(property, reverse) {
-  return function(rule1, rule2) {
+  return function (rule1, rule2) {
     if (rule1[property] > rule2[property]) {
       if (reverse) return -1;
       else {

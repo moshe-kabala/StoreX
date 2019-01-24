@@ -12,7 +12,11 @@ export function flatKeys(schema): FlatKey[] {
     return getRow(schema);
 }
 
-function getRow(schema, key = "", path = "") {
+export function flatSchema({ schema, includeObject }): FlatKey[] {
+    return getRow(schema, "", "", includeObject);
+}
+
+function getRow(schema, key = "", path = "", includeObject = false) {
     const type = getPropType(schema);
     const { title = key } = schema;
 
@@ -20,10 +24,10 @@ function getRow(schema, key = "", path = "") {
         // todo not using in the schema type first search for filter type
         let props = [];
 
-        // to do array of object
-        // if (key) {
-        //     props.push({ schema, type, key, title, path });
-        // }
+        //to do array of object
+        if (key && includeObject) {
+            props.push({ schema, type, key, title, path });
+        }
         for (const _key in schema.properties) {
             if (!schema.properties[_key]) {
                 continue;
@@ -32,7 +36,8 @@ function getRow(schema, key = "", path = "") {
                 getRow(
                     schema.properties[_key],
                     _key,
-                    path ? `${path}/${path}` : key
+                    path ? `${path}/${path}` : key,
+                    includeObject
                 )
             );
         }

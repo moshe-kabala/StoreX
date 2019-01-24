@@ -1,6 +1,7 @@
 import { csvTransform } from "./transform/csv.trans";
 import { flatKeys } from "@storex/utils/lib/schema";
 import { createCollection, CollectionOptions } from "./collection";
+import { runQuery } from "./filter";
 
 
 
@@ -14,18 +15,28 @@ const deviceTypeOptions = [
 const schema = {
   type: "object",
   properties: {
-    id: { type: "number" },
+    id: { type: "number", title: "ID" },
     name: {
-      type: "string"
+      type: "string",
+      title: "Name"
     },
     ip: {
-      type: "number"
+      type: "number",
+      title: "IP"
+    },
+    point: {
+      type: "object",
+      properties: {
+        x: { type: "number" },
+        y: { type: "number" }
+      }
     },
     type: {
-      type: "string", enum: deviceTypeOptions
+      type: "string", title: "Type", enum: deviceTypeOptions
     }
   }
 }
+
 
 
 function createMockDevices() {
@@ -52,20 +63,29 @@ function getRandomIp() {
   return `${random(0, 255)}.${random(0, 255)}.${random(0, 255)}.${random(0, 255)}`
 }
 
-async function main() {
-  const fields = flatKeys(schema)
-  console.log("fields", fields)
-  const collOpt = new CollectionOptions({
-    fields
+function main() {
+  const devices = createMockDevices()
+
+ 
+
+
+  const { data, schema: sche } = runQuery(devices, {
+    schema,
+    columns: [
+      { key: "x", path: "point", alias: "X" },
+      { key: "y", path: "point" },
+      { key: "name" },
+      { key: "type", alias: "T" },
+    ]
   })
 
-  let coll = createCollection({ itemToId: (i) => i.id, options: collOpt });
-  const devices = createMockDevices();
-
-  coll.data = devices;
-
-  const opt = await coll.getOptions({ key: "type" });
-  console.log("options", opt);
+  const s = ""
+}
+function getCount(devices, type) {
+  return devices.reduce((n, i) => {
+    return i.type == type ? ++n : n;
+  }, 0)
 }
 
 main();
+

@@ -7,7 +7,8 @@ export function getNestedObj(nestedObj, pathArr) {
 
 
 export function getNestedKey(nestedObj, { path, key }: { path: string, key: string }) {
-    const obj = path ? getNestedObj(nestedObj, path) : nestedObj;
+
+    const obj = path ? getNestedObj(nestedObj, path.split(".")) : nestedObj;
     if (obj) {
         return obj[key];
     }

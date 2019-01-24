@@ -5,6 +5,36 @@ export interface Where {
   operator?: string;
 }
 
+
+const filterTypes = ["string", "number", "bool", "boolean", "enum", "array"];
+  
+export const createWhereSchema = fields => ({
+  id: "#where",
+  type: "object",
+  properties: {
+    key: {
+      type: "string",
+      enum: fields
+    },
+    path: { type: "string" },
+    operator: { type: "string", enum: ["<", ">", "!", "=", "~", "!~"] },
+    value: {
+      anyOf: [
+        { type: "string" },
+        { type: "number" },
+        { type: "boolean" },
+        { type: "array", items: { type: "string" } },
+        { type: "array", items: { type: "number" } }
+      ]
+    },
+    type: {
+      type: "string",
+      enum: filterTypes
+    }
+  },
+  required: ["key", "value"]
+});
+
 export function where(items, where, schema?) {
   if (!(where instanceof Array)) return items;
 
@@ -114,10 +144,10 @@ function properWhere(wheres, schema?) {
         val = obj.size > 0 ? obj : undefined;
         break;
       case "string":
-        if (schema && Object.keys(schema.properties[key].dict).length > 0) {
-          let temp = schema.properties[key].dict[val];
-          if (temp) val = temp;
-        }
+        // if (schema && Object.keys(schema.properties[key].dict).length > 0) {
+        //   let temp = schema.properties[key].dict[val];
+        //   if (temp) val = temp;
+        // }
         if (operator === "~" || operator === "!~") {
           val = new RegExp(escapeRegExp(val), "i");
         } else {
