@@ -7,6 +7,9 @@ export const createGroupBySchema = (fields) => ({
             type: "string",
             enum: fields
         },
+        path: {
+            type: "string",
+        },
         range: {
             type: "number"
         },
@@ -57,6 +60,7 @@ export function groupBy({ data, group, onAdd, onNew, getCount, context = {} }: {
     return [...m.values()];
 
     function getKey(item) {
-        return item[key] //  todo
+        const k = item[key] //  todo
+        return range ? k - (k % range): k
     }
 }

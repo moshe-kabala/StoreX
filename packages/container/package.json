@@ -1,8 +1,8 @@
 {
   "name": "@storex/container",
-  "version": "1.0.66",
+  "version": "1.0.68",
   "description": "Contain some container to hold the data",
-  "main": "lib/index.js",
+  "main": "lib/main.js",
   "scope": "@storex",
   "scripts": {
     "test": "jest",

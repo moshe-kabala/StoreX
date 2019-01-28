@@ -1,7 +1,7 @@
 import { csvTransform } from "./transform/csv.trans";
 import { flatKeys } from "@storex/utils/lib/schema";
 import { createCollection, CollectionOptions } from "./collection";
-import { runQuery } from "./filter";
+import { runQuery, FuncOpts } from "./filter";
 
 
 
@@ -66,20 +66,56 @@ function getRandomIp() {
 function main() {
   const devices = createMockDevices()
 
- 
+  const count = deviceTypeOptions.reduce((o, type) => { o[type] = getCount(devices, type); return o }, {})
 
 
-  const { data, schema: sche } = runQuery(devices, {
+  const { data, schema: schm } = runQuery(devices, {
     schema,
-    columns: [
-      { key: "x", path: "point", alias: "X" },
-      { key: "y", path: "point" },
-      { key: "name" },
-      { key: "type", alias: "T" },
-    ]
+    group: {
+      key: "type",
+      aggregated_fields: [
+        {
+          key: "x",
+          path: "point",
+          alias: "X_MAX",
+          func: FuncOpts.MAX
+        },
+        {
+          key: "y",
+          path: "point",
+          alias: "Y_AVG",
+          func: FuncOpts.AVG
+        }
+      ]
+    }
   })
 
-  const s = ""
+  console.log("data", data);
+
+  const resultCount = data.reduce((o, i) => { o[i.key] = i.count; return o }, {})
+
+  // check the schema
+  expect(schm).toEqual({
+    type: "object",
+    properties: {
+      key: {
+        type: "string",
+        enum: deviceTypeOptions,
+        title: "Type",
+      },
+      count: {
+        type: "number"
+      },
+      [`point.x_${FuncOpts.MAX}`]: {
+        title: "X_MAX",
+        type: "number"
+      },
+      [`point.y_${FuncOpts.AVG}`]: {
+        title: "Y_AVG",
+        type: "number"
+      }
+    }
+  })
 }
 function getCount(devices, type) {
   return devices.reduce((n, i) => {

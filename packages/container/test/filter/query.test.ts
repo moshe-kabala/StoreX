@@ -1,4 +1,4 @@
-import { runQuery } from "../../src/filter"
+import { runQuery, FuncOpts } from "../../src/filter"
 
 
 const deviceTypeOptions = [
@@ -27,6 +27,11 @@ const schema = {
                 y: { type: "number" }
             }
         },
+        create_time: {
+            title: "Created",
+            type: "number",
+            role: "date"
+        },
         type: {
             type: "string", title: "Type", enum: deviceTypeOptions
         }
@@ -44,16 +49,127 @@ describe("test group and divided by cache", () => {
         const count = deviceTypeOptions.reduce((o, type) => { o[type] = getCount(devices, type); return o }, {})
 
 
-        const { data } = runQuery(devices, {
+        const { data, schema: schm } = runQuery(devices, {
             schema,
             group: {
                 key: "type",
             }
         })
 
+        console.log("data", data);
 
         const resultCount = data.reduce((o, i) => { o[i.key] = i.count; return o }, {})
+
+        // check the schema
+        expect(schm).toEqual({
+            type: "object",
+            properties: {
+                key: {
+                    type: "string",
+                    enum: deviceTypeOptions,
+                    title: "Type",
+                },
+                count: {
+                    type: "number"
+                }
+            }
+        })
         expect(resultCount).toEqual(count)
+    })
+
+    test("group by", async () => {
+
+
+        const devices = createMockDevices()
+
+        const count = deviceTypeOptions.reduce((o, type) => { o[type] = getCount(devices, type); return o }, {})
+
+
+        const { data, schema: schm } = runQuery(devices, {
+            schema,
+            group: {
+                key: "type",
+                aggregated_fields: [
+                    {
+                        key: "x",
+                        path: "point",
+                        alias: "X_MAX",
+                        func: FuncOpts.MAX
+                    },
+                    {
+                        key: "y",
+                        path: "point",
+                        alias: "Y_AVG",
+                        func: FuncOpts.AVG
+                    }
+                ]
+            }
+        })
+
+        console.log("data", data);
+
+        const resultCount = data.reduce((o, i) => { o[i.key] = i.count; return o }, {})
+
+        // check the schema
+        expect(schm).toEqual({
+            type: "object",
+            properties: {
+                key: {
+                    type: "string",
+                    enum: deviceTypeOptions,
+                    title: "Type",
+                },
+                count: {
+                    type: "number"
+                },
+                [`point.x_${FuncOpts.MAX}`]: {
+                    title: "X_MAX",
+                    type: "number"
+                },
+                [`point.y_${FuncOpts.AVG}`]: {
+                    title: "Y_AVG",
+                    type: "number"
+                }
+            }
+        })
+        expect(resultCount).toEqual(count)
+    })
+
+    test("group by (with date range)", async () => {
+
+
+        const devices = createMockDevices()
+
+        const count = deviceTypeOptions.reduce((o, type) => { o[type] = getCount(devices, type); return o }, {})
+
+
+        const { data, schema: schm } = runQuery(devices, {
+            schema,
+            group: {
+                key: "create_time",
+                range: 24 * 60 * 60
+            }
+        })
+
+
+        const resultCount = data.reduce((o, i) => { o[i.key] = i.count; return o }, {})
+
+        // check the schema
+        expect(schm).toEqual({
+            type: "object",
+            properties: {
+                key: {
+                    title: "Created",
+                    type: "number",
+                    role: "date"
+                },
+                count: {
+                    type: "number"
+                }
+            }
+        })
+        console.log("data:", data)
+        // expect(resultCount).toEqual(count)
     })
 
     test("divided by", async () => {
@@ -100,14 +216,15 @@ describe("test group and divided by cache", () => {
                     type: "string",
                     title: "Name"
                 },
+
                 type: {
                     type: "string", title: "T", enum: deviceTypeOptions
                 }
             }
         })
     })
-})
 
+})
 
 function getCount(devices, type) {
     return devices.reduce((n, i) => {
@@ -116,10 +233,7 @@ function getCount(devices, type) {
 }
 
 
-
-
 function createMockDevices() {
-
     const devices = [];
     for (let i = 0; i < 200; i++) {
         devices.push({
@@ -130,6 +244,7 @@ function createMockDevices() {
                 x: random(0, 100),
                 y: random(0, 100)
             },
+            create_time: (Date.now() / 1000) + i * 60 * 60 * 12,
             type: deviceTypeOptions[random(0, deviceTypeOptions.length)]
         })
     }

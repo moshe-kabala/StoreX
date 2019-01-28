@@ -102,13 +102,47 @@ export function runQuery(data, {
   }
 
   if (group) {
+
+    const { key, path, aggregated_fields } = group;
+    // function to create the aggragated function fields
+    const funcs = getAggregatedFunction(aggregated_fields);
+
+    // update the status
+    const updateFunc = (current, state) => {
+      if (funcs) {
+        for (const { get } of funcs) {
+          state = get({ current, state })
+        }
+      }
+      return state
+    }
+
+    const updateAfterFunc = (data) => {
+      const after = (funcs || []).filter(({ after }) => !!after).map(({ after }) => after);
+      if (after.length == 0) {
+        return;
+      }
+      for (let state of data) {
+
+        for (const a of after) {
+          let { count } = state;
+          state = a({ state, count })
+        }
+      }
+    }
+
     const dividedArgs = {
-      onNew: (key, item) => ({ key, count: 1 }),
-      onAdd: (key, item, previous) => previous.count++,
+      onNew: (key, current) => {
+        let state = { key, count: 1 };
+        return updateFunc(current, state)
+      },
+      onAdd: (key, current, state) => {
+        state.count++
+        updateFunc(current, state);
+      },
       getCount: (item) => item.count
 
     }
-    const { key, path } = group;
     context.grouped = { count: 0, key, path }
     if (divided) {
       for (const [k, v] of data) {
@@ -117,10 +151,11 @@ export function runQuery(data, {
         if (tempContext.count > context.grouped.count) {
           context.grouped.count = tempContext.count
         }
-
+        updateAfterFunc(v.value);
       }
     } else {
       data = groupBy({ data, group, ...dividedArgs, context: context.grouped })
+      updateAfterFunc(data)
     }
   }
 
@@ -139,17 +174,19 @@ export function runQuery(data, {
     }
   }
 
+  // flat key value
+  const k = flatSchema({ schema, includeObject: true }).reduce((o, { key, path = "", schema }) => {
+    o[`${path ? `${path}.` : ``}${key}`] = schema;
+    return o;
+  }, {})
+
   if (!group && columns) {
-    const k = flatSchema({ schema, includeObject: true }).reduce((o, { key, path = "", schema }) => {
-      o[`${path ? `${path}.` : ``}${key}`] = schema;
-      return o;
-    }, {})
     schema = {
       type: "object",
       properties: columns.reduce((o, { key, path = "", alias }) => {
         const d = k[`${path ? `${path}.` : ``}${key}`];
         if (!d) {
-          return;
+          return o;
         }
         const title = alias || d.title || key
         d.title = title;
@@ -165,10 +202,104 @@ export function runQuery(data, {
       })
     })
   } else if (group) {
-    // todo
+    const { key, path, fields = [] } = group;
+    const sche = k[`${path ? `${path}.` : ``}${key}`]
+
+    schema = {
+      type: "object",
+      properties: {
+        key: sche,
+        count: {
+          type: "number"
+        },
+        ...(fields.reduce((o, { key, path, func, alias }) => {
+
+          const d = k[`${path ? `${path}.` : ``}${key}`];
+          if (!d) {
+            return o;
+          }
+          const title = alias || d.title || key
+          d.title = title;
+
+          o[getGroupFunctionPath({ key, path, func })] = d;
+          return o;
+        }), {})
+      }
+    }
+
   }
   // return schema
   return { data, context, schema };
 }
 
 
+function getAggregatedFunction(fields) {
+  if (!fields) {
+    return
+  }
+  const funcs = [];
+  for (const { key, path, func, alias } of fields) {
+    funcs.push(_getAggregatedFunction({ key, path, func, alias }))
+  }
+  return funcs;
+}
+
+
+export enum FuncOpts {
+  MAX = "MAX",
+  MIN = "MIN",
+  SUM = "SUM",
+  AVG = "AVG"
+}
+
+function _getAggregatedFunction({ key, path, func, alias }) {
+  const k = getGroupFunctionPath({ key, path, func });
+
+  let f, after;
+  switch (func) {
+    case FuncOpts.MAX:
+      f = (x, y) => x > y ? x : y;
+      break;
+    case FuncOpts.MIN:
+      f = (x, y) => x > y ? y : x;
+      break;
+    case FuncOpts.AVG:
+      after = ({ value, count }) => value / count;
+    case FuncOpts.SUM:
+      f = (x, y) => x + y
+      break;
+  }
+
+  return {
+    get: ({ current, state = {} }) => {
+      if (current) {
+        const curVal = getNestedKey(current, { key, path })
+        const stateVal = state[k];
+        let v;
+        if (stateVal !== undefined && curVal != undefined) {
+          v = f(curVal, stateVal)
+        } else {
+          v = curVal == undefined ? stateVal : curVal
+        }
+
+        if (v !== undefined) {
+          state[k] = v;
+        }
+
+        return state
+      }
+    },
+    after: after ? ({ state, count }) => {
+      let v;
+      if (state) {
+        const value = state[k];
+        state[k] = after({ value, count })
+      }
+      return state;
+    } : undefined
+  }
+}
+
+function getGroupFunctionPath({ key, path, func }) {
+  return `${path ? `${path}.` : ``}${key}_${func}`
+}
