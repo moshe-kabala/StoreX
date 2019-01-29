@@ -56,8 +56,6 @@ describe("test group and divided by cache", () => {
             }
         })
 
-        console.log("data", data);
-
         const resultCount = data.reduce((o, i) => { o[i.key] = i.count; return o }, {})
 
         // check the schema
@@ -77,8 +75,7 @@ describe("test group and divided by cache", () => {
         expect(resultCount).toEqual(count)
     })
 
-    test("group by", async () => {
-
+    test("group by - aggregated fields", async () => {
 
         const devices = createMockDevices()
 
@@ -106,8 +103,6 @@ describe("test group and divided by cache", () => {
             }
         })
 
-        console.log("data", data);
-
         const resultCount = data.reduce((o, i) => { o[i.key] = i.count; return o }, {})
 
         // check the schema
@@ -133,6 +128,7 @@ describe("test group and divided by cache", () => {
             }
         })
         expect(resultCount).toEqual(count)
+
     })
 
     test("group by (with date range)", async () => {
@@ -168,7 +164,6 @@ describe("test group and divided by cache", () => {
                 }
             }
         })
-        console.log("data:", data)
         // expect(resultCount).toEqual(count)
     })
 
@@ -222,6 +217,8 @@ describe("test group and divided by cache", () => {
                 }
             }
         })
+        // todo
+        // expect(resultCount).toEqual(count)
     })
 
 })

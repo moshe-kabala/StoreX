@@ -1,12 +1,9 @@
 import { Where, Sort, FilterFunctions } from "./";
-
 import { createWhereSchema } from "./where";
 import { createSortSchema } from "./sort";
 import { createGroupBySchema, groupBy } from "./group-by";
 import { flatSchema } from "@storex/utils/lib/schema";
 import { getNestedKey } from "@storex/utils/lib/schema/get-nested-obj";
-
-
 
 
 export const createQuerySchema = ({ fields } = { fields: undefined }) => {
@@ -51,7 +48,6 @@ export const createQuerySchema = ({ fields } = { fields: undefined }) => {
     },
   };
 }
-
 
 export interface Query {
   columns?: any[]
@@ -184,25 +180,28 @@ export function runQuery(data, {
     schema = {
       type: "object",
       properties: columns.reduce((o, { key, path = "", alias }) => {
-        const d = k[`${path ? `${path}.` : ``}${key}`];
+        let d = k[`${path ? `${path}.` : ``}${key}`];
         if (!d) {
           return o;
         }
+        d = { ...d };
         const title = alias || d.title || key
         d.title = title;
         o[`${path ? `${path}.` : ``}${key}`] = d;
         return o;
       }, {})
     }
+    // mapping the data to selected columns
     data = data.map(d => {
       const n = {};
       columns.map(({ key, path, alias }) => {
         n[key] = getNestedKey(d, { key, path });
 
       })
+      return n;
     })
   } else if (group) {
-    const { key, path, fields = [] } = group;
+    const { key, path, aggregated_fields = [] } = group;
     const sche = k[`${path ? `${path}.` : ``}${key}`]
 
     schema = {
@@ -212,18 +211,19 @@ export function runQuery(data, {
         count: {
           type: "number"
         },
-        ...(fields.reduce((o, { key, path, func, alias }) => {
+        ...(aggregated_fields.reduce((o, { key, path, func, alias }) => {
 
-          const d = k[`${path ? `${path}.` : ``}${key}`];
+          let d = k[`${path ? `${path}.` : ``}${key}`];
           if (!d) {
             return o;
           }
+          d = { ...d };
           const title = alias || d.title || key
           d.title = title;
 
           o[getGroupFunctionPath({ key, path, func })] = d;
           return o;
-        }), {})
+        }, {}))
       }
     }
 
@@ -231,7 +231,6 @@ export function runQuery(data, {
   // return schema
   return { data, context, schema };
 }
-
 
 function getAggregatedFunction(fields) {
   if (!fields) {
@@ -243,7 +242,6 @@ function getAggregatedFunction(fields) {
   }
   return funcs;
 }
-
 
 export enum FuncOpts {
   MAX = "MAX",
@@ -293,7 +291,9 @@ function _getAggregatedFunction({ key, path, func, alias }) {
       let v;
       if (state) {
         const value = state[k];
-        state[k] = after({ value, count })
+        if (value !== undefined) {
+          state[k] = after({ value, count })
+        }
       }
       return state;
     } : undefined
