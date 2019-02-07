@@ -49,6 +49,7 @@ export class CollectionCache extends BaseCache {
         throw new Error("[CollectionCache] you must to add schema if you set 'use_options: true'")
       }
       options = new CollectionOptions({
+        itemToId: this._itemToId,
         fields: flatKeys(this._schema).filter(({ type }) => type !== "object")
       })
     }

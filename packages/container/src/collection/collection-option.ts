@@ -18,9 +18,11 @@ interface Value {
 }
 export class CollectionOptions {
     others = new Map()
+    itemToId;
     options: Map<string, Map<any, { value: any, name: any, count: number }>> = new Map();
 
-    constructor({ fields }: { fields: Field[] }) {
+    constructor({ fields, itemToId }: { fields: Field[], itemToId? }) {
+        this.itemToId = itemToId;
         for (const d of fields) {
             const { key, path } = d;
             this.options.set(JSON.stringify({ key, path }), new Map());
@@ -88,7 +90,23 @@ export class CollectionOptions {
     addObj(item) {
         for (const [k, map] of this.options) {
             const { key, path } = this.others.get(k)
-            addValue({ item, key, path, map })
+            this.addValue({ item, key, path, map })
+        }
+    }
+    addValue = ({ item, key, path, map }) => {
+        const val = getNestedKey(item, { key, path });
+        if (val === undefined || val === null || val === "") {
+            return;
+        }
+
+        if (!map.has(val)) {
+            let id
+            if (this.itemToId) {
+                id = this.itemToId(item)
+            }
+            map.set(val, { value: val, name: val, count: 1, id });
+        } else {
+            map.get(val).count++
         }
     }
 }
@@ -102,15 +120,3 @@ function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // $& means the whole matched string
 }
 
-function addValue({ item, key, path, map }) {
-    const val = getNestedKey(item, { key, path });
-    if (val === undefined || val === null || val === "") {
-        return;
-    }
-
-    if (!map.has(val)) {
-        map.set(val, { value: val, name: val, count: 1 });
-    } else {
-        map.get(val).count++
-    }
-}

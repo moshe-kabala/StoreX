@@ -109,7 +109,7 @@ export class StringifyData {
     }
   }
 
-  obj(o) {
+  obj = (o) => {
     let result = null;
     for (const key in o) {
       let content = null;
