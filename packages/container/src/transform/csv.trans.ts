@@ -38,7 +38,7 @@ export function csvTransform(objArray, schema) {
       } else {
         val = obj[key];
       }
-      if (val !== undefined || val !== null){
+      if (val !== undefined && val !== null){
         val = cell(schema, val)
       } else {
         val = ""
