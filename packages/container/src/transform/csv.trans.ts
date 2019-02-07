@@ -38,7 +38,11 @@ export function csvTransform(objArray, schema) {
       } else {
         val = obj[key];
       }
-      val = val === undefined ? "" : cell(schema, val);
+      if (val !== undefined || val !== null){
+        val = cell(schema, val)
+      } else {
+        val = ""
+      }
       row.push(val);
     }
 
