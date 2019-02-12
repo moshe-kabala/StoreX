@@ -68,7 +68,8 @@ describe("test group and divided by cache", () => {
                     title: "Type",
                 },
                 count: {
-                    type: "number"
+                    type: "number",
+                    title: "Count"
                 }
             }
         })
@@ -115,7 +116,8 @@ describe("test group and divided by cache", () => {
                     title: "Type",
                 },
                 count: {
-                    type: "number"
+                    type: "number",
+                    title: "Count"
                 },
                 [`point.x_${FuncOpts.MAX}`]: {
                     title: "X_MAX",
@@ -160,7 +162,8 @@ describe("test group and divided by cache", () => {
                     role: "date"
                 },
                 count: {
-                    type: "number"
+                    type: "number",
+                    title: "Count"
                 }
             }
         })

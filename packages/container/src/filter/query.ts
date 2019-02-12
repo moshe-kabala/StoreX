@@ -209,7 +209,8 @@ export function runQuery(data, {
       properties: {
         key: sche,
         count: {
-          type: "number"
+          type: "number",
+          title: "Count"
         },
         ...(aggregated_fields.reduce((o, { key, path, func, alias }) => {
 
