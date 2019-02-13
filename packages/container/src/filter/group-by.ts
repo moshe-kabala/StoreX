@@ -23,7 +23,7 @@ export const createGroupBySchema = (fields) => ({
 
 
 export function groupBy({ data, group, onAdd, onNew, getCount, context = {} }: { data, group, onAdd, onNew, getCount, context: any }) {
-    const { key, range, reverse, limit, path } = group
+    const { key, range, limit, path, SortBy } = group
     context.key = key;
     context.path = path
     let m = new Map();
@@ -46,7 +46,7 @@ export function groupBy({ data, group, onAdd, onNew, getCount, context = {} }: {
     }
 
     if (limit) {
-        d = sort(d, [{ key: "count", reverse: reverse }])
+        d = sort(d, [{ key: SortBy.key, reverse: SortBy.reverse }])
         d = d.slice(0, limit)
         const m1 = new Map();
         for (const { key } of d) {
