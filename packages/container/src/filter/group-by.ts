@@ -23,7 +23,7 @@ export const createGroupBySchema = (fields) => ({
 
 
 export function groupBy({ data, group, onAdd, onNew, getCount, context = {} }: { data, group, onAdd, onNew, getCount, context: any }) {
-    const { key, range, limit, path, SortBy } = group
+    const { key, from, to,  limit, path, SortBy } = group
     context.key = key;
     context.path = path
     let m = new Map();
@@ -60,7 +60,17 @@ export function groupBy({ data, group, onAdd, onNew, getCount, context = {} }: {
     return [...m.values()];
 
     function getKey(item) {
-        const k = item[key] //  todo
-        return range ? k - (k % range): k
+        const k = item[key] 
+        if (from || to){
+            if( k < from || k > to){
+                return undefined
+            }
+            else {
+                return k
+            }
+        }
+        else {
+            return k
+        }
     }
 }
