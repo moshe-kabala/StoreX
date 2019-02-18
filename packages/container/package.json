@@ -1,6 +1,6 @@
 {
   "name": "@storex/container",
-  "version": "1.0.72",
+  "version": "1.0.73",
   "description": "Contain some container to hold the data",
   "main": "lib/index.js",
   "scope": "@storex",
