@@ -1,4 +1,5 @@
 import * as mysql from "mysql";
+import { FilterData } from "./../filter-data";
 
 export interface FilterDataSqlArgs {
   limitResults?;
@@ -12,7 +13,7 @@ export interface FilterDataSqlArgs {
   filterDataValidation?;
 }
 
-export class FilterDataSql {
+export class FilterDataSql extends FilterData {
   query;
   filterData;
   fields;
@@ -25,6 +26,8 @@ export class FilterDataSql {
 
   constructor(args: FilterDataSqlArgs) {
     //filterData, fields, from, fieldForTime, whereIgnore  ){
+    super(args.fieldDate, args.filterDataValidation);
+
     this.query = "";
     this.filterData = args.filterData;
     this.fields = args.fields;
