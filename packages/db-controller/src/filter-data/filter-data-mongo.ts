@@ -109,7 +109,12 @@ function getFilterValue(where: Where) {
       }
       break;
     case "multi-range":
-      if (operator === "!") {
+      if (operator === "=") {
+        val = {
+          min: value,
+          max: value
+        };
+      } else if (operator === "!") {
         if (typeof value === "object") {
           val = {
             $not: {
