@@ -194,7 +194,7 @@ export class DataTranslator {
     }
   }
 
-  private _translateValue(key, val) {
+  private _translateValue(key, val, obj?) {
     if (!this.options.valsMap) {
       return val;
     }
@@ -202,7 +202,7 @@ export class DataTranslator {
     if (!opr) {
       return val;
     } else if (typeof opr == "function") {
-      return opr(val, key);
+      return opr(val, obj);
     } else if (opr instanceof DataTranslatorOptions) {
       return opr;
     }
@@ -254,7 +254,7 @@ export class DataTranslator {
       } else if (typeof val === "string") {
         if (IsEmpty.string(val)) {
           isContent = true;
-          content.val = _translateValue(key, val);
+          content.val = _translateValue(key, val, obj);
         } else if (!options.ignoreEmpty) {
           isContent = true;
           content.val = options.emptyValue;
@@ -262,7 +262,7 @@ export class DataTranslator {
       } else if (typeof val === "number") {
         if (IsEmpty.number(val)) {
           isContent = true;
-          content.val = _translateValue(key, val);
+          content.val = _translateValue(key, val, obj);
         } else if (!options.ignoreEmpty) {
           isContent = true;
           content.val = options.emptyValue;
@@ -270,7 +270,7 @@ export class DataTranslator {
       } else if (typeof val === "boolean") {
         if (!IsEmpty.bool(val)) {
           isContent = true;
-          content.val = _translateValue(key, val);
+          content.val = _translateValue(key, val, obj);
         } else if (!options.ignoreEmpty) {
           isContent = true;
           content.val = options.emptyValue;
