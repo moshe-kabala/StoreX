@@ -1,14 +1,23 @@
 import { FilterDataMongo } from "../filter-data/filter-data-mongo";
 import { ModelOptionsData, idType, idsType } from "./wrapper-interface";
+import { EventEmitter } from "events";
+
+export enum MongoCollectionWrapperEvents {
+  Change = "change"
+}
+
+const e = MongoCollectionWrapperEvents;
 
 // todo this class is abstract for mongo
-export class MongoCollectionWrapper<T = any> implements ModelOptionsData<T> {
+export class MongoCollectionWrapper<T = any> extends EventEmitter implements ModelOptionsData<T>  {
   getCollection;
   itemToId;
-  constructor({ getCollection, itemToId }: { getCollection; itemToId? }) {
+  constructor({ getCollection, itemToId }: { getCollection; itemToId?}) {
+    super();
     this.getCollection = getCollection;
     this.itemToId = itemToId || (i => i._id);
   }
+
 
   async get(id) {
     const collection = await this.getCollection();
@@ -17,7 +26,7 @@ export class MongoCollectionWrapper<T = any> implements ModelOptionsData<T> {
 
   async getManyByFilter(filter?: FilterDataMongo, whatGet?) {
     if (!filter) {
-      return this.getMany(undefined,whatGet )
+      return this.getMany(undefined, whatGet)
     }
     let collection = await this.getCollection();
     let isLimit;
@@ -41,34 +50,90 @@ export class MongoCollectionWrapper<T = any> implements ModelOptionsData<T> {
 
     return isLimit
       ? {
-          data,
-          length
-        }
+        data,
+        length
+      }
       : data;
   }
+
   async set(data: T) {
-    return (await this.getCollection()).updateOne(
-      { _id: this.itemToId(data) },
-      { $set: data }
-    );
+    let isFailed = false;
+    try {
+      return (await this.getCollection()).updateOne(
+        { _id: this.itemToId(data) },
+        { $set: data }
+      );
+    }
+    catch (err) {
+      isFailed = true
+      return Promise.reject({ msg: "failed", err })
+    } finally {
+      if (!isFailed) {
+        this.emit(e.Change, { action: "set", data });
+      }
+    }
   }
 
   async update(data: T) {
-    return (await this.getCollection()).updateOne(
-      { _id: this.itemToId(data) },
-      data
-    );
+    let isFailed = false;
+    try {
+      return (await this.getCollection()).updateOne(
+        { _id: this.itemToId(data) },
+        data
+      );
+    } catch (err) {
+      isFailed = true
+      return Promise.reject({ msg: "failed", err })
+    } finally {
+      if (!isFailed) {
+        this.emit(e.Change, { action: "update", data });
+      }
+    }
   }
 
   async add(data: T) {
-    return (await this.getCollection()).insert(data);
+    let isFailed = false;
+
+    try {
+      return (await this.getCollection()).insert(data);
+    } catch (err) {
+      isFailed = true
+      return Promise.reject({ msg: "failed", err })
+    } finally {
+      if (!isFailed) {
+        this.emit(e.Change, { action: "add", data });
+      }
+    }
   }
   async remove(id: idType) {
-    return (await this.getCollection()).deleteOne({ _id: id });
+    let isFailed = false;
+
+    try {
+      return (await this.getCollection()).deleteOne({ _id: id });
+    } catch (err) {
+      isFailed = true
+      return Promise.reject({ msg: "failed", err })
+    } finally {
+      if (!isFailed) {
+        this.emit(e.Change, { action: "remove", data: id });
+      }
+    }
   }
   async removeMany(ids: idsType) {
-    return (await this.getCollection()).deleteMany({ _id: { $in: ids } });
+    let isFailed = false;
+
+    try {
+      return (await this.getCollection()).deleteMany({ _id: { $in: ids } });
+    } catch (err) {
+      isFailed = true
+      return Promise.reject({ msg: "failed", err })
+    } finally {
+      if (!isFailed) {
+        this.emit(e.Change, { action: "removeMany", data: ids });
+      }
+    }
   }
+
   async getMany(ids?: idsType, whatGet?) {
     let collection = await this.getCollection();
     let query: any = {};
@@ -82,9 +147,19 @@ export class MongoCollectionWrapper<T = any> implements ModelOptionsData<T> {
   }
 
   async addMany(data: T[]) {
-    return (await this.getCollection()).insertMany(data);
+    let isFailed = false
+    try {
+      return (await this.getCollection()).insertMany(data);
+    } catch (err) {
+      isFailed = true
+      return Promise.reject({ msg: "failed", err })
+    } finally {
+      if (!isFailed) {
+        this.emit(e.Change, { action: "addMany", data });
+      }
+    }
   }
- 
+
   prepareFilter(filter?: FilterDataMongo) {
     const query: any = filter ? filter.mongoFilter : {};
     if (query.id) {

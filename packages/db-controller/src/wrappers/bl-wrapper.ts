@@ -2,8 +2,8 @@ import { Router, Request, Response } from "express";
 import { ModelOptionsCtrl, ModelOptionsData, idType, idsType } from ".";
 
 import * as Ajv from "ajv";
-import { FilterData } from "@/filter-data";
 import { map } from "./map";
+import { FilterData } from "../filter-data";
 
 export class BLWrapper<T = any> implements ModelOptionsData<T> {
   data;
