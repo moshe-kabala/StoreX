@@ -6,7 +6,7 @@ import {
   NormalizeKey
 } from "./data.trans";
 
-const rowDelim = "\r\n";
+const rowDelim = "\n";
 const colDelim = '","';
 
 /**
@@ -130,7 +130,7 @@ function cell(schema, cell) {
         })
       );
       const s = new StringifyData(
-        new StringifyDataOptions({ separateBetweenKeys: "\r\n" })
+        new StringifyDataOptions({ separateBetweenKeys: "\n" })
       );
       return s.obj(t.obj(cell));
     }

@@ -60,17 +60,17 @@ export function groupBy({ data, group, onAdd, onNew, getCount, context = {} }: {
     return [...m.values()];
 
     function getKey(item) {
-        const k = item[key] 
-        if (from || to){
-            if( k < from || k > to){
-                return undefined
+        const k = path && item[path] ? item[path][key] : item[key];
+        if (from || to) {
+            if (k < from || k > to) {
+                return undefined;
             }
             else {
-                return k
+                return k;
             }
         }
         else {
-            return k
+            return k;
         }
     }
 }

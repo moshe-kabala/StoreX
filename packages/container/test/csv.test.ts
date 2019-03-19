@@ -32,7 +32,7 @@ const schema = {
 
   test("PolicyMonitorTable", async () => {
     const res = await csvTransform(data,  schema );
-    expect(res).toEqual(`"Details"\r\n"Modification Time: 1547127985.394509\r\nModifier: System\r\nNamespace: from-traffic"`)
+    expect(res).toEqual(`"Details"\n"Modification Time: 1547127985.394509\nModifier: System\nNamespace: from-traffic"`)
   });
     
 })

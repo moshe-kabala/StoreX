@@ -25,8 +25,8 @@ export class CollectionOptions {
         this.itemToId = itemToId;
         for (const d of fields) {
             const { key, path } = d;
-            this.options.set(JSON.stringify({ key, path }), new Map());
-            this.others.set(JSON.stringify({ key, path }), d);
+            !d["schema"]["text"] && this.options.set(JSON.stringify({ key, path }), new Map());
+            !d["schema"]["text"] && this.others.set(JSON.stringify({ key, path }), d);
         }
     }
 
