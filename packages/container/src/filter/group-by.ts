@@ -1,4 +1,5 @@
 import { sort } from "./sort";
+import { getNestedKey } from "@storex/utils/lib/schema";
 
 export const createGroupBySchema = (fields) => ({
     type: "object",
@@ -60,7 +61,7 @@ export function groupBy({ data, group, onAdd, onNew, getCount, context = {} }: {
     return [...m.values()];
 
     function getKey(item) {
-        const k = path && item[path] ? item[path][key] : item[key];
+        const k = path ? getNestedKey(item, {path, key}) : item[key]
         if (from || to) {
             if (k < from || k > to) {
                 return undefined;
