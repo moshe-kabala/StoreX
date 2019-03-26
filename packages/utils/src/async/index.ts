@@ -1,66 +1,54 @@
+import { DelayState, DelayStateOpt } from "./delay-state";
 
-interface delayArgs {
-    reduceArgs?: Function, 
-    time: number, 
-    startDelayAfter?: number
-}
+const SUFFIX_STATUS_KEY = `__delay_status__`
 
 
-export function delay<T = Function>({ reduceArgs, time, startDelayAfter = 1 }: delayArgs) {
-    const state = {
-        waiting: false,
-        needToWaiting: false,
-        delayCallingAmount: 0,
-        callingAmount: 0,
-        argsState: undefined,
-    }
+export function delay<T = Function>(opt: DelayStateOpt) {
 
-    return (target, propertyKey?: string, descriptor?: PropertyDescriptor) => {
+    return function (target, propertyKey?: string, descriptor?: PropertyDescriptor) {
 
-        function _clearState() {
-            state.waiting = false;
-            state.callingAmount = 0;
-            state.delayCallingAmount = 0;
+
+        function getStatus(theThisFunction) {
+
+            let arg = descriptor ? `${propertyKey}${SUFFIX_STATUS_KEY}` : SUFFIX_STATUS_KEY;
+
+            if (!theThisFunction[arg]) {
+                theThisFunction[arg] = new DelayState(target, opt, theThisFunction)
+            }
+            return theThisFunction[arg];
         }
 
-        function _delay() {
-            setTimeout(() => {
-                _clearState();
-                if (state.argsState) {
-                    _invoke();
-                }
-            }, time)
-        }
-
-        function _invoke() {
-            target(state.argsState);
-            // clearing the args state
-            state.argsState = undefined;
-            _delay();
-        }
-
-
-        return function () {
-            if (reduceArgs) {
+       function wrapper() {
+            let s = getStatus(this || wrapper);
+            if (opt.reduceArgs) {
                 // first lets reduce aggregate the arguments
-                state.argsState = reduceArgs(state.argsState, ...arguments);
+                s.state.argsState = opt.reduceArgs(s.state.argsState, ...arguments);
             }
             // if waiting
-            if (state.waiting) {
-                state.delayCallingAmount++;
+            if (s.state.waiting) {
+                s.state.delayCallingAmount++;
                 return;
             }
 
-            state.callingAmount++;
+            s.state.callingAmount++;
 
-            if (state.callingAmount > startDelayAfter) {
-                state.waiting = true;
-                _delay();
+            if (s.state.callingAmount > opt.startDelayAfter) {
+                s.state.waiting = true;
+                s.delay();
             } else {
-                _invoke();
+                s.invoke();
             }
 
-        } as any as T;
+        };
+
+        // if class
+        if (descriptor) {
+            target = descriptor.value;
+            descriptor.value = wrapper;
+            return descriptor as any;
+        } else {
+            return wrapper as any as T;
+        }
     }
 }
 
