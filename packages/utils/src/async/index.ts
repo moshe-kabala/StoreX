@@ -1,6 +1,12 @@
 
+interface delayArgs {
+    reduceArgs?: Function, 
+    time: number, 
+    startDelayAfter?: number
+}
 
-export function delay<T = Function>({ reduceArgs, time, startDelayAfter = 1 }) {
+
+export function delay<T = Function>({ reduceArgs, time, startDelayAfter = 1 }: delayArgs) {
     const state = {
         waiting: false,
         needToWaiting: false,
@@ -35,8 +41,10 @@ export function delay<T = Function>({ reduceArgs, time, startDelayAfter = 1 }) {
 
 
         return function () {
-            // first lets reduce aggregate the arguments
-            state.argsState = reduceArgs(state.argsState, ...arguments);
+            if (reduceArgs) {
+                // first lets reduce aggregate the arguments
+                state.argsState = reduceArgs(state.argsState, ...arguments);
+            }
             // if waiting
             if (state.waiting) {
                 state.delayCallingAmount++;
