@@ -24,7 +24,7 @@ export function delay<T = Function>(opt: DelayStateOpt) {
                 // first lets reduce aggregate the arguments
                 s.state.argsState = opt.reduceArgs(s.state.argsState, ...arguments);
             }
-            // if waiting
+            // if already waiting
             if (s.state.waiting) {
                 s.state.delayCallingAmount++;
                 return;

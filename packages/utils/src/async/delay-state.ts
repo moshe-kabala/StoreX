@@ -31,9 +31,7 @@ export class DelayState {
     delay = () =>  {
         setTimeout(() => {
             this._clearState();
-            if (this.state.argsState) {
-                this.invoke();
-            }
+            this.invoke();
         }, this.opt.time)
     }
 
@@ -41,6 +39,6 @@ export class DelayState {
         this.target.apply(this.theThisFunction, [this.state.argsState]);
         // clearing the args state
         this.state.argsState = undefined;
-        this.delay();
+        //this.delay();
     }
 }
