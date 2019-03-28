@@ -12,6 +12,28 @@ export function flatKeys(schema): FlatKey[] {
     return getRow(schema);
 }
 
+export function flatObj(obj, prefix = "") {
+    let result = {};
+    for (const key in obj) {
+        let val = obj[key];
+        if (Array.isArray(val)) {
+            continue;
+        }
+        let fullKey = (prefix ? `${prefix}.${key}` : key)
+        if (isObj(val)) {
+            result = { ...result, ...flatObj(val, fullKey) }
+        } else {
+            result[fullKey] = val;
+        }
+    }
+    return result;
+}
+
+
+function isObj(obj) {
+    return (typeof obj === "object") && (obj !== null)
+}
+
 export function flatSchema({ schema, includeObject }): FlatKey[] {
     return getRow(schema, "", "", includeObject);
 }
