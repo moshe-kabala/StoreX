@@ -54,6 +54,10 @@ export class CustomDate implements m.ICustomDate {
       return moment(this.Date).format("MMM D, YYYY H:mm");
     }
 
+    fromNow() {
+      return moment(this.Date).fromNow();
+    }
+
     asSeconds() {
       return moment(this.Date).format("MMM D, YYYY H:mm:ss");
     }
