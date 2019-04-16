@@ -70,4 +70,54 @@ export class Mongo {
             resolve ( collection );
         });
     }
+
+    moveDocuments = (sourceCollection, targetCollection, filter, map?) => {
+        const x = 10000;
+        let counter = 0;
+        let bulkInsert = targetCollection.initializeUnorderedBulkOp();
+        let bulkRemove = sourceCollection.initializeUnorderedBulkOp();
+        let finished = false;
+        return new Promise(async (resolve, reject) => {
+          try {
+            const count = await sourceCollection.find(filter).count();
+            if (!count) {
+              resolve({ n: 0, ok: 1 });
+            }
+            await sourceCollection.find(filter).forEach(function(doc) {
+              counter++;
+              if (finished) {
+                return;
+              }
+              let res;
+              if (map) {
+                res = map(doc);
+              }
+              if (res === null) {
+                bulkRemove.find({ _id: doc._id }).removeOne();
+              } else if (!res && doc) {
+                // if map not return value take the original doc
+                bulkInsert.insert(doc);
+                bulkRemove.find({ _id: doc._id }).removeOne();
+              } else if (res) {
+                bulkInsert.insert(res);
+                bulkRemove.find({ _id: doc._id }).removeOne();
+              }
+              if (counter % x === 0 && counter !== count) {
+                bulkInsert.execute();
+                bulkRemove.execute();
+                bulkInsert = targetCollection.initializeUnorderedBulkOp();
+                bulkRemove = sourceCollection.initializeUnorderedBulkOp();
+              } else if (counter === count) {
+                bulkInsert.execute();
+                bulkRemove.execute();
+                setTimeout(() => resolve(), 2000);
+                finished = true;
+              }
+            });
+          } catch (err) {
+            console.error("Failed to move docs", err);
+            reject(err);
+          }
+        });
+      };
 }
