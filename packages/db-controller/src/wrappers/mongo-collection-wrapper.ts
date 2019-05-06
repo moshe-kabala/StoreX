@@ -15,13 +15,15 @@ export class MongoCollectionWrapper<T = any> implements ModelOptionsData<T> {
     return await collection.findOne({ _id: id });
   }
 
-  async getManyByFilter(filter?: FilterDataMongo, whatGet?) {
+  async getManyByFilter(filter, whatGet?) {
     if (!filter) {
       return this.getMany(undefined,whatGet )
     }
     let collection = await this.getCollection();
     let isLimit;
-
+    if(!(filter instanceof FilterDataMongo)){
+      filter = new FilterDataMongo(filter)
+    }
     filter.insertPath();
 
     const ftr = this.prepareFilter(filter);
