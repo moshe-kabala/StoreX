@@ -72,13 +72,12 @@ export class CtrlWrapper<T = any> implements ModelOptionsCtrl {
     }
     return id;
   }
-  _getAndValidFilter(req, res, canBeEmpty = false) {
-    const id = req.body.ids;
-    if (!id && !canBeEmpty) {
-      res.status(400).send({ msg: "ID is empty" });
-      return false;
+  _getAndValidFilter(req, res) {
+    let filter = req.body;
+    if (!filter) {
+      filter = {}
     }
-    return id;
+    return filter;
   }
   _getAndValidID(req, res, canBeEmpty = false) {
     const id = req.params.id;
@@ -244,7 +243,7 @@ export class CtrlWrapper<T = any> implements ModelOptionsCtrl {
   }
   async getManyByFilter(req: Request, res: Response) {
     try {
-      const filter = this._getAndValidFilter(req, res, true);
+      const filter = this._getAndValidFilter(req, res);
       if (filter == false) {
         return;
       }
