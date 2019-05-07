@@ -243,7 +243,7 @@ export class CtrlWrapper<T = any> implements ModelOptionsCtrl {
   }
   async getManyByFilter(req: Request, res: Response) {
     try {
-      const filter = this._getAndValidFilter(req, res, true);
+      const filter = this._getAndValidFilter(req, res);
       if (filter == false) {
         return;
       }
