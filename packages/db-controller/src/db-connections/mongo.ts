@@ -2,9 +2,8 @@ import { MongoClient, Db, Collection } from 'mongodb';
 
 
 export class Mongo {
-    constructor ( private _url) {}
+    constructor ( private _url, private _options? ) {}
 
-    // policy monitor db.
     private _db: Db;
     private _tryToConnect = false; // if someone try to connect.
     private _notifyWhenConnectingList = [];
@@ -18,8 +17,14 @@ export class Mongo {
     }
 
     connect = async (): Promise<Db> => {
+        
         this._tryToConnect = true;
-        const db = await MongoClient.connect(this._url);
+        if ( this._options ){
+            const db = await MongoClient.connect(this._url, this._options );    
+        } else {
+            const db = await MongoClient.connect(this._url);    
+        }
+        
         this._tryToConnect = false;
 
         this._notifyWhenConnectingList.forEach(f => {
