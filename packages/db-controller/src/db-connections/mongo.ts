@@ -19,14 +19,14 @@ export class Mongo {
     connect = async (): Promise<Db> => {
         
         this._tryToConnect = true;
+        let db;
         if ( this._options ){
-            const db = await MongoClient.connect(this._url, this._options );    
+            db = await MongoClient.connect(this._url, this._options );    
         } else {
-            const db = await MongoClient.connect(this._url);    
+            db = await MongoClient.connect(this._url);    
         }
         
         this._tryToConnect = false;
-
         this._notifyWhenConnectingList.forEach(f => {
             if (typeof f === 'function') {
                 f(db);
