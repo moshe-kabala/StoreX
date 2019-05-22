@@ -14,7 +14,7 @@ const e = DataGridEvents;
 const _events = Object.keys(e);
 
 export interface CollectionArgs extends DispatcherArgs {
-  options?: CollectionOptions
+  options?: CollectionOptions;
   meta: CollectionMeta;
   status: CollectionStatus;
 }
@@ -59,8 +59,6 @@ export class Collection extends Dispatcher {
     this._is_items_need_to_render = true;
   }
 
-
-
   @dispatch([e.DataChange])
   remove(id) {
     if (this._itemsDir[id]) {
@@ -89,16 +87,21 @@ export class Collection extends Dispatcher {
     }
 
     this._items = value;
-    if (this.options) {
-      this.options.map(this._items)
+    if (this.meta.itemToId) {
+      this.generateDicItem();
+      // remove
+      this._items = Object.keys(this._itemsDir).map(k => this._itemsDir[k]);
     }
-    if (this.meta.itemToId) this.generateDicItem();
+
+    if (this.options) {
+      this.options.map(this._items);
+    }
   }
 
   // wrap the options
   async getOptions({ key, path = "", query = "", limit = 50 }) {
     await this.data;
-    return this.options.getOptions({ key, path, query, limit })
+    return this.options.getOptions({ key, path, query, limit });
   }
 
   get data() {
@@ -130,6 +133,9 @@ export class Collection extends Dispatcher {
 
   @dispatch([e.DataChange])
   private generateDicItem() {
+    // clear the item dir
+    this._itemsDir = {};
+    // fill it from the array
     for (const item of this._items) {
       let id = this.meta.itemToId(item);
       item.$id = id;

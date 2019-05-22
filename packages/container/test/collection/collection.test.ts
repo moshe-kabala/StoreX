@@ -42,6 +42,22 @@ describe("Collection", () => {
         expect( collection.data).toHaveLength(1);
     })
 
+
+    test("Add many", ()=> {
+        const collection = createCollection({itemToId});
+        const item = generateItem();
+        const {id: itemId} = item;
+        const copy_item = {...item, name: "zz"};
+        const items = generateList();
+
+        collection.add(item);
+        collection.addMany([copy_item, ...items]);
+        
+        expect( collection.data).toHaveLength(items.length + 1);
+        expect (collection.get(itemId)).toEqual(copy_item)
+      
+    })
+
     test("Override", ()=> {
         const collection = createCollection({itemToId});
         const data = generateList(5);
