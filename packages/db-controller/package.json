@@ -1,6 +1,6 @@
 {
   "name": "@storex/db-controller",
-  "version": "1.0.67",
+  "version": "1.0.68",
   "description": "Utils for db and routing ...",
   "main": "lib/index.js",
   "scope": "@storex",
