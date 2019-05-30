@@ -1,11 +1,36 @@
 import * as mysql from "mysql";
 import { Query } from "mysql";
 
+
+
+interface ConnectionSslDetails {
+  rejectUnauthorized? : boolean
+  ca?:string | string []
+  cert?:string | string [],
+  ciphers?:string,
+  clientCertEngine?:string,
+  crl?:string | string [],
+  dhparam?:string,
+  ecdhCurve?:string,
+  honorCipherOrder?:boolean,
+  key?:string | string [],
+  maxVersion?:string,
+  minVersion?:string,
+  passphrase?:string,
+  pfx?:string | string [] | Object[],
+  secureOptions?:number,
+  secureProtocol?:string,
+  sessionIdContext?:string
+
+}
+
+
 interface ConnectionDetails {
   password: string;
   user: string;
   host: string;
   dbs: string[];
+  ssl?:ConnectionSslDetails;
 }
 
 let mysqlConf: ConnectionDetails;
@@ -51,14 +76,15 @@ const connections: any = {};
 export function connect() {
   // before connect lets close
   close();
-  const { host, user, password } = mysqlConf;
+  const { host, user, password, ssl } = mysqlConf;
   for (const db of mysqlConf.dbs) {
     connections[db] = mysql.createPool({
       connectionLimit: 15,
       host,
       user,
       password,
-      database: db
+      database: db,
+      ssl:ssl
     });
   }
 }
