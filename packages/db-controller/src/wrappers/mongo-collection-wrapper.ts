@@ -1,6 +1,7 @@
 import { FilterDataMongo } from "../filter-data/filter-data-mongo";
 import { ModelOptionsData, idType, idsType } from "./wrapper-interface";
 import { EventEmitter } from "events";
+import { MongoResult } from "./mongo-result";
 
 export enum MongoCollectionWrapperEvents {
   Change = "change"
@@ -97,8 +98,11 @@ export class MongoCollectionWrapper<T = any> extends EventEmitter implements Mod
     let isFailed = false;
 
     try {
-      return (await this.getCollection()).insert(data);
+      const coll = await this.getCollection()
+      const res = await coll.insert(data);
+      return res;
     } catch (err) {
+      console.log("add error:", err);
       isFailed = true
       return Promise.reject({ msg: "failed", err })
     } finally {
@@ -107,11 +111,19 @@ export class MongoCollectionWrapper<T = any> extends EventEmitter implements Mod
       }
     }
   }
+
   async remove(id: idType) {
     let isFailed = false;
 
     try {
-      return (await this.getCollection()).deleteOne({ _id: id });
+      // Get the object before removing
+      const mongoResult = new MongoResult();
+      mongoResult.object = await this.get(id);
+
+      // Remove the object and return the result
+      const collection = await this.getCollection();
+      mongoResult.status = await collection.deleteOne({ _id: id });
+      return mongoResult;
     } catch (err) {
       isFailed = true
       return Promise.reject({ msg: "failed", err })
@@ -121,6 +133,7 @@ export class MongoCollectionWrapper<T = any> extends EventEmitter implements Mod
       }
     }
   }
+  
   async removeMany(ids: idsType) {
     let isFailed = false;
 
