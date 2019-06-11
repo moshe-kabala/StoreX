@@ -98,11 +98,9 @@ export class MongoCollectionWrapper<T = any> extends EventEmitter implements Mod
     let isFailed = false;
 
     try {
-      const coll = await this.getCollection()
-      const res = await coll.insert(data);
-      return res;
+      const collection = await this.getCollection()
+      return await collection.insert(data);
     } catch (err) {
-      console.log("add error:", err);
       isFailed = true
       return Promise.reject({ msg: "failed", err })
     } finally {
@@ -112,18 +110,24 @@ export class MongoCollectionWrapper<T = any> extends EventEmitter implements Mod
     }
   }
 
+  async removeWithData(id: idType) {
+    // Get the object before removing
+    const mongoResult = new MongoResult();
+    mongoResult.object = await this.get(id);
+
+    // Remove the object and return the result
+    mongoResult.status = await this.remove(id);
+
+    return mongoResult;
+  }
+
   async remove(id: idType) {
     let isFailed = false;
 
     try {
-      // Get the object before removing
-      const mongoResult = new MongoResult();
-      mongoResult.object = await this.get(id);
-
       // Remove the object and return the result
       const collection = await this.getCollection();
-      mongoResult.status = await collection.deleteOne({ _id: id });
-      return mongoResult;
+      return await collection.deleteOne({ _id: id });
     } catch (err) {
       isFailed = true
       return Promise.reject({ msg: "failed", err })
@@ -134,11 +138,23 @@ export class MongoCollectionWrapper<T = any> extends EventEmitter implements Mod
     }
   }
   
+  async removeManyWithData(ids: idsType) {
+    // Get the object before removing
+    const mongoResult = new MongoResult();
+    mongoResult.object = await this.getMany(ids);
+
+    // Remove the object and return the result
+    mongoResult.status = await this.removeMany(ids);
+    
+    return mongoResult;
+  }
+
   async removeMany(ids: idsType) {
     let isFailed = false;
 
     try {
-      return (await this.getCollection()).deleteMany({ _id: { $in: ids } });
+      const collection = await this.getCollection();
+      return await collection.deleteMany({ _id: { $in: ids } });
     } catch (err) {
       isFailed = true
       return Promise.reject({ msg: "failed", err })
@@ -150,21 +166,21 @@ export class MongoCollectionWrapper<T = any> extends EventEmitter implements Mod
   }
 
   async getMany(ids?: idsType, whatGet?) {
-    let collection = await this.getCollection();
+    const collection = await this.getCollection();
     let query: any = {};
     if (ids) {
       query._id = { $in: ids };
     }
 
     let c = await collection.find(query, whatGet);
-
     return c.toArray();
   }
 
   async addMany(data: T[]) {
     let isFailed = false
     try {
-      return (await this.getCollection()).insertMany(data);
+      const collection = await this.getCollection();
+      return await collection.insertMany(data);
     } catch (err) {
       isFailed = true
       return Promise.reject({ msg: "failed", err })
