@@ -1,5 +1,4 @@
 import { MongoCollectionWrapper } from "../../src/wrappers";
-import { MongoClient, Cursor } from "mongodb";
 export const singleDeletionSuccessfulResultOneObj = { "acknowledged" : true, "deletedCount" : 1 };
 export const singleDeletionSuccessfulResultNoObj = { "acknowledged" : true, "deletedCount" : 0 };
 export const deletionSuccessfulResultAllObj = { "acknowledged" : true, "deletedCount" : 3 };
