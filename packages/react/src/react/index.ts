@@ -1,2 +1,3 @@
 export * from "./Subscribe";
-export * from "./DispatcherWrapper";
+export * from "./useDispatcher";
+
