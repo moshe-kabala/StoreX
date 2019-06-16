@@ -1,7 +1,8 @@
 import { FilterDataMongo } from "../filter-data/filter-data-mongo";
 import { ModelOptionsData, idType, idsType } from "./wrapper-interface";
 import { EventEmitter } from "events";
-import { MongoResult } from "./mongo-result";
+import { MongoResult } from "./MongoResult";
+import { ResultStatus } from "./ResultStatus";
 
 export enum MongoCollectionWrapperEvents {
   Change = "change"
@@ -108,26 +109,23 @@ export class MongoCollectionWrapper<T = any> extends EventEmitter implements Mod
     }
   }
 
-  async removeWithData(id: idType) {
-    // Get the object before removing
-    const mongoResult = new MongoResult();
-    mongoResult.object = await this.get(id);
-
-    // Remove the object and return the result
-    mongoResult.status = await this.remove(id);
-
-    return mongoResult;
-  }
-
   async remove(id: idType) {
     let isFailed = false;
+    const mongoResult = new MongoResult();
 
     try {
+      // Get the object before removing
+      mongoResult.data = await this.get(id);
+
       // Remove the object and return the result
-      return (await this.getCollection()).deleteOne({ _id: id });
+      await (await this.getCollection()).deleteOne({ _id: id });
+      mongoResult.status = ResultStatus.Success;
+      return mongoResult;
     } catch (err) {
-      isFailed = true
-      return Promise.reject({ msg: "failed", err })
+      isFailed = true;
+      mongoResult.status = ResultStatus.DBError;
+      mongoResult.error = err;
+      return Promise.reject(mongoResult);
     } finally {
       if (!isFailed) {
         this.emit(e.Change, { action: "remove", data: id });
@@ -135,25 +133,23 @@ export class MongoCollectionWrapper<T = any> extends EventEmitter implements Mod
     }
   }
   
-  async removeManyWithData(ids: idsType) {
-    // Get the object before removing
-    const mongoResult = new MongoResult();
-    mongoResult.object = await this.getMany(ids);
-
-    // Remove the object and return the result
-    mongoResult.status = await this.removeMany(ids);
-    
-    return mongoResult;
-  }
-
   async removeMany(ids: idsType) {
     let isFailed = false;
+    const mongoResult = new MongoResult();
 
     try {
-      return (await this.getCollection()).deleteMany({ _id: { $in: ids } });
+      // Get the object before removing
+      mongoResult.data = await this.getMany(ids);
+
+      // Remove the object and return the result
+      await (await this.getCollection()).deleteMany({ _id: { $in: ids } });
+      mongoResult.status = ResultStatus.Success;
+      return mongoResult;
     } catch (err) {
-      isFailed = true
-      return Promise.reject({ msg: "failed", err })
+      isFailed = true;
+      mongoResult.status = ResultStatus.DBError;
+      mongoResult.error = err;
+      return Promise.reject(mongoResult)
     } finally {
       if (!isFailed) {
         this.emit(e.Change, { action: "removeMany", data: ids });
