@@ -8,11 +8,16 @@ type disArgs =
 
 type stateArgs = (Dispatcher | DispatcherRegisterOptions)[];
 
+const useUpdate = () => {
+  const [, setState] = useState(0);
+  return () => setState(cnt => cnt + 1);
+};
+
 export function useDispatcher(dis: disArgs) {
   if (!(dis instanceof Array)) {
     dis = [dis] as stateArgs;
   }
-  const [_dis, setDis] = useState<stateArgs>(dis);
+  const _update = useUpdate();
 
   console.log("render...");
 
@@ -20,14 +25,14 @@ export function useDispatcher(dis: disArgs) {
     console.log("effect...");
 
     function update() {
-      setDis(dis as stateArgs);
+      _update();
     }
-    const r = _dis;
-    Dispatcher.register(update, _dis);
+    const r = dis as stateArgs;
+    Dispatcher.register(update, r);
 
     return () => {
       console.log("not effect...");
       Dispatcher.unregister(update, r);
     };
-  });
+  }, []);
 }
