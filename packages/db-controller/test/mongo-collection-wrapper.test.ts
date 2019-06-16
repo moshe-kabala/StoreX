@@ -7,7 +7,7 @@ describe("MongoCollectionWrapper", () => {
     
     test("delete one", async () => {
         const userObject1 = { _id: 1, name: "Idit" };
-        
+
         // Add the object to remove
         await mongoDataMock.add(userObject1);
 
@@ -17,7 +17,7 @@ describe("MongoCollectionWrapper", () => {
         const expectedResult = {
             data : userObject1,
             status: ResultStatus.Success,
-            error: ""
+            error: undefined
         }
         
         expect(res).toEqual(expectedResult)
@@ -30,7 +30,7 @@ describe("MongoCollectionWrapper", () => {
         const expectedResult = {
             data : undefined,
             status: ResultStatus.Success,
-            error: ""
+            error: undefined
         }
         
         expect(res).toEqual(expectedResult)
@@ -70,7 +70,7 @@ describe("MongoCollectionWrapper", () => {
         const expectedResult = {
             data : userObjectMany,
             status: ResultStatus.Success,
-            error: ""
+            error: undefined
         }
         
         expect(res).toEqual(expectedResult);
@@ -100,7 +100,7 @@ describe("MongoCollectionWrapper", () => {
         const expectedResult = {
             data : userObjectAFew,
             status: ResultStatus.Success,
-            error: ""
+            error: undefined
         }
         
         expect(res).toEqual(expectedResult);
@@ -129,7 +129,7 @@ describe("MongoCollectionWrapper", () => {
         const expectedResult = {
             data : [],
             status: ResultStatus.Success,
-            error: ""
+            error: undefined
         }
         
         expect(res).toEqual(expectedResult)
