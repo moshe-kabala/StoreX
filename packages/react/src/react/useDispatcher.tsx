@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Dispatcher, DispatcherRegisterOptions } from "@storex/core";
+import { useUpdate } from "./useUpdate";
 
 type disArgs =
   | Dispatcher
@@ -8,31 +9,21 @@ type disArgs =
 
 type stateArgs = (Dispatcher | DispatcherRegisterOptions)[];
 
-const useUpdate = () => {
-  const [, setState] = useState(0);
-  return () => setState(cnt => cnt + 1);
-};
-
 export function useDispatcher(dis: disArgs) {
   if (!(dis instanceof Array)) {
     dis = [dis] as stateArgs;
   }
-  const _update = useUpdate();
-
-  console.log("render...");
+  const update = useUpdate();
 
   useEffect(() => {
-    console.log("effect...");
-
-    function update() {
-      _update();
+    function _update() {
+      update();
     }
     const r = dis as stateArgs;
-    Dispatcher.register(update, r);
+    Dispatcher.register(_update, r);
 
     return () => {
-      console.log("not effect...");
-      Dispatcher.unregister(update, r);
+      Dispatcher.unregister(_update, r);
     };
   }, []);
 }
