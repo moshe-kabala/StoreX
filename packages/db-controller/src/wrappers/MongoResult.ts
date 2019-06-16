@@ -1,7 +1,7 @@
 import { ResultStatus } from "./ResultStatus";
 
 export class MongoResult {
-    data = undefined;
+    data;
     status = ResultStatus.NoStatus;
-    error = "";
+    error;
 }
