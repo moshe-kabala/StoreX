@@ -21,8 +21,7 @@ export class MongoCollectionWrapper<T = any> extends EventEmitter implements Mod
 
 
   async get(id) {
-    const collection = await this.getCollection();
-    return await collection.findOne({ _id: id });
+    return (await this.getCollection()).findOne({ _id: id });
   }
 
   async getManyByFilter(filter, whatGet?) {
@@ -98,8 +97,7 @@ export class MongoCollectionWrapper<T = any> extends EventEmitter implements Mod
     let isFailed = false;
 
     try {
-      const collection = await this.getCollection()
-      return await collection.insert(data);
+      return (await this.getCollection()).insert(data);
     } catch (err) {
       isFailed = true
       return Promise.reject({ msg: "failed", err })
@@ -126,8 +124,7 @@ export class MongoCollectionWrapper<T = any> extends EventEmitter implements Mod
 
     try {
       // Remove the object and return the result
-      const collection = await this.getCollection();
-      return await collection.deleteOne({ _id: id });
+      return (await this.getCollection()).deleteOne({ _id: id });
     } catch (err) {
       isFailed = true
       return Promise.reject({ msg: "failed", err })
@@ -153,8 +150,7 @@ export class MongoCollectionWrapper<T = any> extends EventEmitter implements Mod
     let isFailed = false;
 
     try {
-      const collection = await this.getCollection();
-      return await collection.deleteMany({ _id: { $in: ids } });
+      return (await this.getCollection()).deleteMany({ _id: { $in: ids } });
     } catch (err) {
       isFailed = true
       return Promise.reject({ msg: "failed", err })
@@ -179,8 +175,7 @@ export class MongoCollectionWrapper<T = any> extends EventEmitter implements Mod
   async addMany(data: T[]) {
     let isFailed = false
     try {
-      const collection = await this.getCollection();
-      return await collection.insertMany(data);
+      return (await this.getCollection()).insertMany(data);
     } catch (err) {
       isFailed = true
       return Promise.reject({ msg: "failed", err })
