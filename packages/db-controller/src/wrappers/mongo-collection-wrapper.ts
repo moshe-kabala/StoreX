@@ -1,6 +1,8 @@
 import { FilterDataMongo } from "../filter-data/filter-data-mongo";
 import { ModelOptionsData, idType, idsType } from "./wrapper-interface";
 import { EventEmitter } from "events";
+import { MongoResult } from "./MongoResult";
+import { ResultStatus } from "./ResultStatus";
 
 export enum MongoCollectionWrapperEvents {
   Change = "change"
@@ -18,17 +20,21 @@ export class MongoCollectionWrapper<T = any> extends EventEmitter implements Mod
     this.itemToId = itemToId || (i => i._id);
   }
 
-
   async get(id) {
-    const collection = await this.getCollection();
-    return await collection.findOne({ _id: id });
+    try {
+      return (await this.getCollection()).findOne({ _id: id });
+    } catch (err) {
+      return Promise.reject(err)
+    }
   }
 
   async getManyByFilter(filter, whatGet?) {
     if (!filter) {
       return this.getMany(undefined, whatGet)
     }
+    try {
     let collection = await this.getCollection();
+    
     let isLimit;
     if(!(filter instanceof FilterDataMongo)){
       filter = new FilterDataMongo(filter)
@@ -56,6 +62,9 @@ export class MongoCollectionWrapper<T = any> extends EventEmitter implements Mod
         length
       }
       : data;
+    } catch (err) {
+      return Promise.reject(err)
+    }
   }
 
   async set(data: T) {
@@ -107,45 +116,58 @@ export class MongoCollectionWrapper<T = any> extends EventEmitter implements Mod
       }
     }
   }
+
   async remove(id: idType) {
-    let isFailed = false;
+    const mongoResult = new MongoResult();
 
     try {
-      return (await this.getCollection()).deleteOne({ _id: id });
+      // Get the object before removing
+      mongoResult.data = await this.get(id);
+
+      // Remove the object and return the result
+      await (await this.getCollection()).deleteOne({ _id: id });
+      mongoResult.status = ResultStatus.Success;
+      this.emit(e.Change, { action: "remove", data: id });
+      return mongoResult;
     } catch (err) {
-      isFailed = true
-      return Promise.reject({ msg: "failed", err })
-    } finally {
-      if (!isFailed) {
-        this.emit(e.Change, { action: "remove", data: id });
-      }
+      mongoResult.status = ResultStatus.DBError;
+      mongoResult.error = err;
+      return Promise.reject(mongoResult);
     }
   }
+  
   async removeMany(ids: idsType) {
-    let isFailed = false;
+    const mongoResult = new MongoResult();
 
     try {
-      return (await this.getCollection()).deleteMany({ _id: { $in: ids } });
+      // Get the object before removing
+      mongoResult.data = await this.getMany(ids);
+
+      // Remove the object and return the result
+      await (await this.getCollection()).deleteMany({ _id: { $in: ids } });
+      mongoResult.status = ResultStatus.Success;
+      this.emit(e.Change, { action: "removeMany", data: ids });
+      return mongoResult;
     } catch (err) {
-      isFailed = true
-      return Promise.reject({ msg: "failed", err })
-    } finally {
-      if (!isFailed) {
-        this.emit(e.Change, { action: "removeMany", data: ids });
-      }
-    }
+      mongoResult.status = ResultStatus.DBError;
+      mongoResult.error = err;
+      return Promise.reject(mongoResult)
+    } 
   }
 
   async getMany(ids?: idsType, whatGet?) {
-    let collection = await this.getCollection();
-    let query: any = {};
-    if (ids) {
-      query._id = { $in: ids };
+    try {
+      const collection = await this.getCollection();
+      let query: any = {};
+      if (ids) {
+        query._id = { $in: ids };
+      }
+
+      let c = await collection.find(query, whatGet);
+      return c.toArray();
+    } catch (err) {
+      return Promise.reject(err)
     }
-
-    let c = await collection.find(query, whatGet);
-
-    return c.toArray();
   }
 
   async addMany(data: T[]) {
