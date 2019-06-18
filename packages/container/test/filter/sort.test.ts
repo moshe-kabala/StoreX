@@ -1,3 +1,4 @@
+import "jest";
 import { sort } from "../../src/filter";
 
 describe("Sort", () => {

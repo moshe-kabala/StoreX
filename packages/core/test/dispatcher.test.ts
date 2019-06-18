@@ -1,5 +1,5 @@
-import { StoreIns, StoreInsEvents } from "./helpers";
 import "jest";
+import { StoreIns, StoreInsEvents } from "./helpers";
 import { Dispatcher } from "../src";
 
 describe("Dispatcher", () => {

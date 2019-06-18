@@ -11,7 +11,7 @@
     "release": "npm run update-dependence && rm -rf lib && tsc --sourceMap false && npm test && npm publish --access=public && npm version patch"
   },
   "author": "Moshe Kabala",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@storex/core": "^1.0.34",
     "@storex/utils": "^1.0.40",

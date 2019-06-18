@@ -1,12 +1,28 @@
 {
   "name": "storex",
   "version": "1.0.0",
-  "description": "",
+  "description": "The StoreX builds to help you storing data and connect it to the UI in a simple, clear, pattern driven and modular way",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "release": "./scripts/release.sh"
+    "build": "lerna bootstrap && lerna run build",
+    "test": "lerna run test",
+    "release": "lerna run release"
   },
   "author": "",
-  "license": "ISC"
+  "license": "MIT",
+  "devDependencies": {
+    "lerna": "^3.15.0",
+    "@types/jest": "^23.1.4",
+    "jest": "^23.3.0",
+    "ts-jest": "^23.0.0",
+    "typescript": "^2.9.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moshe-kabala/StoreX.git"
+  },
+  "bugs": {
+    "url": "https://github.com/moshe-kabala/StoreX/issues"
+  },
+  "homepage": "https://github.com/moshe-kabala/StoreX#readme"
 }

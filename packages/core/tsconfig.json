@@ -1,13 +1,12 @@
 {
   "compilerOptions": {
     "outDir": "./lib",
+    "skipLibCheck": true,
     "sourceMap": true,
     "module": "commonjs",
     "declaration": true,
     "experimentalDecorators": true,
-    "target": "es6",
-     },
-  "include": [
-    "./src",
-  ]
+    "target": "es6"
+  },
+  "include": ["./src"]
 }

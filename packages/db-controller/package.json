@@ -10,7 +10,7 @@
     "release": "rm -rf lib && tsc --sourceMap false && npm test && npm publish --access=public && npm version patch"
   },
   "author": "Moshe Kabala",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "ajv": "^6.6.1",
     "express": "^4.16.4",
@@ -19,11 +19,7 @@
   },
   "devDependencies": {
     "@types/mongodb": "^2.2.18",
-    "@types/mysql": "^2.15.5",
-    "@types/jest": "^23.3.0",
-    "jest": "^23.3.0",
-    "ts-jest": "^23.0.0",
-    "typescript": "^2.9.2"
+    "@types/mysql": "^2.15.5"
   },
   "keywords": [
     "@storex/core",
@@ -48,7 +44,7 @@
   },
   "jest": {
     "transform": {
-      ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+      ".(ts|tsx)": "ts-jest"
     },
     "testPathIgnorePatterns": [
       "/node_modules/",

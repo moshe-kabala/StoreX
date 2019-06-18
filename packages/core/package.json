@@ -10,14 +10,8 @@
     "release": "rm -rf lib && tsc --sourceMap false && npm test && npm publish --access=public && npm version patch"
   },
   "author": "Moshe Kabala",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {},
-  "devDependencies": {
-    "@types/jest": "^23.1.4",
-    "jest": "^23.3.0",
-    "ts-jest": "^23.0.0",
-    "typescript": "^2.9.2"
-  },
   "keywords": [
     "@storex/core",
     "storex",
@@ -39,7 +33,7 @@
   },
   "jest": {
     "transform": {
-      ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+      ".(ts|tsx)": "ts-jest"
     },
     "testPathIgnorePatterns": [
       "/node_modules/",
