@@ -12,6 +12,12 @@
   "author": "Moshe Kabala",
   "license": "MIT",
   "dependencies": {},
+  "devDependencies": {
+    "@types/jest": "^23.1.4",
+    "jest": "^23.3.0",
+    "ts-jest": "^23.0.0",
+    "typescript": "^2.9.2"
+  },
   "keywords": [
     "@storex/core",
     "storex",
