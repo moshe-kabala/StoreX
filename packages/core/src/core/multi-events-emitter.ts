@@ -1,4 +1,4 @@
-export class EventEmitter {
+export class MultiEventsEmitter {
   private __funcs: Map<string, Set<Function>> = new Map();
 
   private __on = (key: string, func: Function) => {

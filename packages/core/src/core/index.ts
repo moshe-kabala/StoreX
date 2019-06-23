@@ -3,6 +3,6 @@ export * from "./subscriber";
 export * from "./subscribe";
 export * from "./dispatch";
 export * from "./wrappers";
-export * from "./event-emitter";
+export * from "./multi-events-emitter";
 
 

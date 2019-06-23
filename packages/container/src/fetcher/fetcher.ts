@@ -20,40 +20,40 @@ import { Dispatcher, dispatch } from "@storex/core";
 export abstract class Fetcher extends Dispatcher {
   abstract loadData();
 
-  subscribers = new Set();
-  _needToLoad = true;
-  _is_already_subscribe = false;
+  private __subscribers = new Set();
+  __needToLoad = true;
+  __is_already_subscribe = false;
 
   @dispatch()
-  _isLoading = false;
+  isLoading = false;
 
   subscribe = func => {
     if (
-      this.subscribers.size == 0 &&
-      !this._is_already_subscribe &&
+      this.__subscribers.size == 0 &&
+      !this.__is_already_subscribe &&
       this["initAfterFirstSubscriber"]
     ) {
-      this._is_already_subscribe = true;
+      this.__is_already_subscribe = true;
       this["initAfterFirstSubscriber"]();
     }
 
-    if (this.subscribers.size == 0 && this["onFirstSubscribe"]) {
+    if (this.__subscribers.size == 0 && this["onFirstSubscribe"]) {
       this["onFirstSubscribe"]();
     }
 
-    this.subscribers.add(func);
-    if (this._needToLoad) {
+    this.__subscribers.add(func);
+    if (this.__needToLoad) {
       setTimeout(this._loadData.bind(this));
     }
   };
 
   unsubscribe = func => {
-    if (this.subscribers.size == 0) {
+    if (this.__subscribers.size == 0) {
       return;
     }
-    this.subscribers.delete(func);
+    this.__subscribers.delete(func);
     if (
-      this.subscribers.size == 0 &&
+      this.__subscribers.size == 0 &&
       typeof this["onLastUnsubscribed"] == "function"
     ) {
       this["onLastUnsubscribed"]();
@@ -61,18 +61,27 @@ export abstract class Fetcher extends Dispatcher {
   };
 
   needToLoad = (isUpdate?) => {
-    this._needToLoad = true;
-    if (this.subscribers.size) {
+    this.__needToLoad = true;
+    if (this.__subscribers.size) {
       setTimeout(this._loadData.bind(this, isUpdate));
     }
   };
 
+  __updateSubscriber() {
+    for(const func of this.__subscribers) {
+      if (typeof func === "function" ) {
+        func();
+      }
+    }
+  }
+
   async _loadData(isUpdate?) {
     try {
-      this._isLoading = true;
+      this.isLoading = true;
       await this.loadData();
+      this.__updateSubscriber()
     } finally {
-      this._isLoading = false;
+      this.isLoading = false;
     }
   }
 }
