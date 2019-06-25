@@ -120,7 +120,12 @@ function cell(schema, cell) {
   const type = typeof cell;
   switch (type) {
     case "string":
+    if(cell.length > 200){
+      cell.replace(/.{50}/g, "$&" + "\n")
+    }
+    return cell
     case "number":
+      return cell;
     case "boolean":
       return cell;
     case "object": {
