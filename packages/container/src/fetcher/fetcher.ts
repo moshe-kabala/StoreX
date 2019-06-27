@@ -17,12 +17,16 @@ import { Dispatcher, dispatch } from "@storex/core";
  * @onLastUnsubscribed calling every time after the last unsubscribed
  *
  */
-export abstract class Fetcher extends Dispatcher {
-  abstract loadData();
-
+export class Fetcher extends Dispatcher {
   private __subscribers = new Set();
-  __needToLoad = true;
-  __is_already_subscribe = false;
+  private __needToLoad = true;
+  private __is_already_subscribe = false;
+  private __fetch;
+
+  constructor({ fetch }) {
+    super();
+    this.__fetch = fetch;
+  }
 
   @dispatch()
   isLoading = false;
@@ -43,7 +47,7 @@ export abstract class Fetcher extends Dispatcher {
 
     this.__subscribers.add(func);
     if (this.__needToLoad) {
-      setTimeout(this._loadData.bind(this));
+      setTimeout(this.fetch.bind(this));
     }
   };
 
@@ -63,23 +67,24 @@ export abstract class Fetcher extends Dispatcher {
   needToLoad = (isUpdate?) => {
     this.__needToLoad = true;
     if (this.__subscribers.size) {
-      setTimeout(this._loadData.bind(this, isUpdate));
+      setTimeout(this.fetch.bind(this, isUpdate));
     }
   };
 
-  __updateSubscriber() {
-    for(const func of this.__subscribers) {
-      if (typeof func === "function" ) {
-        func();
+  __updateSubscriber(arg?) {
+    for (const func of this.__subscribers) {
+      if (typeof func === "function") {
+        func(arg);
       }
     }
   }
 
-  async _loadData(isUpdate?) {
+   fetch = async(isUpdate?) => {
     try {
       this.isLoading = true;
-      await this.loadData();
-      this.__updateSubscriber()
+      const data = await this.__fetch();
+      this.isLoading = false;
+      this.__updateSubscriber(data);
     } finally {
       this.isLoading = false;
     }
