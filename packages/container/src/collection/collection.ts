@@ -50,9 +50,9 @@ export class Collection extends Dispatcher {
   }
 
   @dispatch([e.DataChange])
-  removeMany(items) {
-    const idsToRemove = items.map(item => item.id);
-    this.data = this.data.filter(item => idsToRemove.indexOf(item.id) == -1);
+  removeMany(ids) {
+    const idsToRemove = new Set(ids);
+    this.data = this.data.filter(item => !idsToRemove.has(this.meta.itemToId(item)));
   }
 
   @dispatch([e.DataChange])

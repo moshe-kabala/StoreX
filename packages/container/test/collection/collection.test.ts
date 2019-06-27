@@ -61,7 +61,7 @@ describe("Collection", () => {
     test("Remove many", () => {
         const collection = createCollection({ itemToId });
         const items = generateList();
-        const itemsToRemove = [items[0], items[3], items[2]];
+        const itemsToRemove = [items[0].id, items[3].id, items[2].id];
 
         collection.addMany(items);
         collection.removeMany(itemsToRemove);
