@@ -1,7 +1,7 @@
 import * as mysql from "mysql";
 import { Query } from "mysql";
 
-
+const MYSQL_DEFAULT_PORT = 3306;
 
 interface ConnectionSslDetails {
   rejectUnauthorized? : boolean
@@ -77,7 +77,7 @@ const connections: any = {};
 export function connect() {
   // before connect lets close
   close();
-  const { host, user, password, ssl } = mysqlConf;
+  const { host, port, user, password, ssl } = mysqlConf;
   for (const db of mysqlConf.dbs) {
     connections[db] = mysql.createPool({
       connectionLimit: 15,
@@ -85,7 +85,8 @@ export function connect() {
       user,
       password,
       database: db,
-      ssl:ssl
+      ssl:ssl,
+      port: port || MYSQL_DEFAULT_PORT
     });
   }
 }
