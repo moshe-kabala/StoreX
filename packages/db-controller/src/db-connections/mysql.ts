@@ -31,6 +31,7 @@ interface ConnectionDetails {
   host: string;
   dbs: string[];
   ssl?:ConnectionSslDetails;
+  port? :number
 }
 
 let mysqlConf: ConnectionDetails;
