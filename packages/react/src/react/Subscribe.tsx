@@ -12,6 +12,8 @@ export interface SubscribeProps {
 export class Subscribe extends React.Component<SubscribeProps> {
   isUpdated = false;
 
+  mounted = false;
+
   state = {
     dispatchers: undefined
   };
@@ -24,8 +26,10 @@ export class Subscribe extends React.Component<SubscribeProps> {
     this.isUpdated = true;
 
     setTimeout(() => {
-      this.setState({});
-      this.isUpdated = false;
+      if (this.mounted) {
+        this.setState({});
+        this.isUpdated = false;
+      }
     }, 0);
   };
 
@@ -40,11 +44,13 @@ export class Subscribe extends React.Component<SubscribeProps> {
   }
 
   componentWillUnmount() {
+    this.mounted = false;
     const { dispatchers } = this.state;
     Dispatcher.unregister(this.update, dispatchers);
   }
 
   render() {
+    this.mounted = true;
     const { children } = this.props;
     return children();
   }
