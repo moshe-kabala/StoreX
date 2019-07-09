@@ -67,7 +67,7 @@ export class Fetcher extends Dispatcher {
   needToLoad = (fetchData?) => {
     this.__needToLoad = true;
     if (this.__subscribers.size) {
-      this.fetch.bind(this, fetchData);
+      this.fetch(fetchData);
     }
   };
 
@@ -79,7 +79,7 @@ export class Fetcher extends Dispatcher {
     }
   }
 
-   fetch = async(fetchData?) => {
+  fetch = async (fetchData?) => {
     try {
       this.isLoading = true;
       const data = await this.__fetch(fetchData);
@@ -88,5 +88,5 @@ export class Fetcher extends Dispatcher {
     } finally {
       this.isLoading = false;
     }
-  }
+  };
 }
