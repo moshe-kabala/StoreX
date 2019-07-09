@@ -64,10 +64,10 @@ export class Fetcher extends Dispatcher {
     }
   };
 
-  needToLoad = (isUpdate?) => {
+  needToLoad = (fetchData?) => {
     this.__needToLoad = true;
     if (this.__subscribers.size) {
-      setTimeout(this.fetch.bind(this, isUpdate));
+      this.fetch.bind(this, fetchData);
     }
   };
 
@@ -79,10 +79,10 @@ export class Fetcher extends Dispatcher {
     }
   }
 
-   fetch = async(isUpdate?) => {
+   fetch = async(fetchData?) => {
     try {
       this.isLoading = true;
-      const data = await this.__fetch();
+      const data = await this.__fetch(fetchData);
       this.isLoading = false;
       this.__updateSubscriber(data);
     } finally {
