@@ -1,6 +1,6 @@
 {
   "name": "@storex/utils",
-  "version": "1.0.43",
+  "version": "1.0.46",
   "description": "Utils for schema and more ...",
   "main": "lib/index.js",
   "scope": "@storex",
@@ -12,6 +12,12 @@
   "author": "Moshe Kabala",
   "license": "MIT",
   "dependencies": {},
+  "peerDependencies": {
+    "ajv": "^5.5.2"
+  },
+  "devDependencies": {
+    "ajv": "^5.5.2"
+  },
   "keywords": [
     "@storex/core",
     "storex",
