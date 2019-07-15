@@ -1,7 +1,9 @@
 import { Router, Request, Response } from "express";
 import { ModelOptionsCtrl, ModelOptionsData } from ".";
+import { MongoResult } from "./MongoResult";
 
 import * as Ajv from "ajv";
+import { ResultStatus } from "./ResultStatus";
 
 export interface CtrlStatus {
   success: boolean;
@@ -168,21 +170,20 @@ export class CtrlWrapper<T = any> implements ModelOptionsCtrl {
   }
 
   async remove(req: Request, res: Response) {
-    const status: any = { success: false, errMsg: "", data: { ids: "" } };
+    let removeResult: MongoResult;
     try {
       const removeId = this._getAndValidID(req, res);
       if (removeId == false) {
-        return status;
+        removeResult.status = ResultStatus.ValidationError;
+        return removeResult;
       }
-      await this.data.remove(removeId);
+      removeResult = await this.data.remove(removeId);
       res.send({ msg: "removed" });
-      status.data.ids = removeId;
-      status.success = true;
-      return status;
+      return removeResult;
     } catch (err) {
-      status.errMsg = err;
       this._failed({ err, res, msg: "Failed to removed data" });
-      return status;
+      removeResult.status = ResultStatus.DBError;  
+      return removeResult;
     }
   }
 
@@ -230,15 +231,20 @@ export class CtrlWrapper<T = any> implements ModelOptionsCtrl {
     }
   }
   async removeMany(req: Request, res: Response) {
+    let removeResult: MongoResult;
     try {
       const ids = this._getAndValidIDs(req, res);
       if (!ids) {
-        return;
+        removeResult.status = ResultStatus.ValidationError;
+        return removeResult;
       }
-      const result = await this.data.removeMany(ids);
-      res.send(result);
+      removeResult = await this.data.removeMany(ids);
+      res.send({ msg: "removed" });
+      return removeResult;
     } catch (err) {
       this._failed({ err, res, msg: "Failed to remove data" });
+      removeResult.status = ResultStatus.DBError;  
+      return removeResult;
     }
   }
   async getManyByFilter(req: Request, res: Response) {
