@@ -1,5 +1,5 @@
 import { ModelOptionsData, idType, idsType } from "../../src/wrappers";
-import { MongoResult } from "../../src/wrappers/MongoResult";
+import { ResultData } from "../../src/wrappers/ResultData";
 import { ResultStatus } from "../../src/wrappers/ResultStatus";
 import { FilterData } from "../../src/filter-data";
 
@@ -43,7 +43,7 @@ class ModelOptionsDataMock implements ModelOptionsData<any> {
     }
   
     remove(id) {
-      let result = new MongoResult();
+      let result = new ResultData();
   
       try {
         result.data = this.get(id);
@@ -75,12 +75,12 @@ class ModelOptionsDataMock implements ModelOptionsData<any> {
     }
   
     removeMany(ids) {
-      let result = new MongoResult();
+      let result = new ResultData();
       try {
         result.data = [];
   
         ids.forEach(id => {
-          let user: MongoResult = this.remove(id);
+          let user: ResultData = this.remove(id);
           if (user.data) {
             result.data.push(user.data);
           }

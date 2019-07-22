@@ -1,6 +1,6 @@
 import { ResultStatus } from "./ResultStatus";
 
-export class MongoResult {
+export class ResultData {
     data;
     status = ResultStatus.NoStatus;
     error;

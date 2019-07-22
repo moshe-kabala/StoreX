@@ -1,6 +1,6 @@
 import "jest";
 import { ctrlWrapperMock } from './mocks/ctrl-wrapper.mock';
-import { MongoResult } from "../src/wrappers/MongoResult";
+import { ResultData } from "../src/wrappers/ResultData";
 import { ResultStatus } from "../src/wrappers/ResultStatus";
 import { responseMock, responseStatusMock } from "./mocks/modelOptionsData.mock";
 
@@ -13,7 +13,7 @@ describe("CtrlWrapper", () => {
         // Remove that object
         const result = await ctrlWrapperMock.remove(request, response);
 
-        const expectedResult: MongoResult = new MongoResult();
+        const expectedResult: ResultData = new ResultData();
         expectedResult.data = { id: "1", name: "yam", age: "20" };
         expectedResult.status = ResultStatus.Success;
 

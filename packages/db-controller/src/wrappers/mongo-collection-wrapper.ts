@@ -1,7 +1,7 @@
 import { FilterDataMongo } from "../filter-data/filter-data-mongo";
 import { ModelOptionsData, idType, idsType } from "./wrapper-interface";
 import { EventEmitter } from "events";
-import { MongoResult } from "./MongoResult";
+import { ResultData } from "./ResultData";
 import { ResultStatus } from "./ResultStatus";
 
 export enum MongoCollectionWrapperEvents {
@@ -118,7 +118,7 @@ export class MongoCollectionWrapper<T = any> extends EventEmitter implements Mod
   }
 
   async remove(id: idType) {
-    const mongoResult = new MongoResult();
+    const mongoResult = new ResultData();
 
     try {
       // Get the object before removing
@@ -137,7 +137,7 @@ export class MongoCollectionWrapper<T = any> extends EventEmitter implements Mod
   }
   
   async removeMany(ids: idsType) {
-    const mongoResult = new MongoResult();
+    const mongoResult = new ResultData();
 
     try {
       // Get the object before removing

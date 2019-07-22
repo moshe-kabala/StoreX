@@ -1,6 +1,6 @@
 import { Router, Request, Response } from "express";
 import { ModelOptionsCtrl, ModelOptionsData } from ".";
-import { MongoResult } from "./MongoResult";
+import { ResultData } from "./ResultData";
 
 import * as Ajv from "ajv";
 import { ResultStatus } from "./ResultStatus";
@@ -94,7 +94,7 @@ export class CtrlWrapper<T = any> implements ModelOptionsCtrl {
   }
 
   getValidationErrorResponse(err) {
-    const validationResponse = new MongoResult();
+    const validationResponse = new ResultData();
     validationResponse.error = err;
     validationResponse.status = ResultStatus.ValidationError;
     return validationResponse;
@@ -143,7 +143,7 @@ export class CtrlWrapper<T = any> implements ModelOptionsCtrl {
 
   _failed({ err, res, msg }, responseData?) {
     if (!responseData) {
-      responseData = new MongoResult();
+      responseData = new ResultData();
       responseData.status = ResultStatus.InternalError;
       responseData.error = err;
     }
@@ -188,7 +188,7 @@ export class CtrlWrapper<T = any> implements ModelOptionsCtrl {
   }
 
   async remove(req: Request, res: Response) {
-    let removeResult: MongoResult;
+    let removeResult: ResultData;
     try {
       // Check if the ID is valid and get it
       const removeId = this._getAndValidID(req, res);
@@ -247,7 +247,7 @@ export class CtrlWrapper<T = any> implements ModelOptionsCtrl {
     }
   }
   async removeMany(req: Request, res: Response) {
-    let removeResult: MongoResult = new MongoResult();
+    let removeResult: ResultData = new ResultData();
     try {
       const ids = this._getAndValidIDs(req, res);
       if (!ids) {
