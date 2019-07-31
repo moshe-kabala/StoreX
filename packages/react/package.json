@@ -1,7 +1,7 @@
 {
   "name": "@storex/react",
   "scope": "@storex",
-  "version": "1.0.36",
+  "version": "1.1.0",
   "description": "Binding store to your app",
   "main": "lib/index.js",
   "publishConfig": {
@@ -62,7 +62,7 @@
     "url": "https://github.com/moshe-kabala/StoreX"
   },
   "dependencies": {
-    "@storex/core": "^1.0.37",
+    "@storex/core": "^1.1.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
   }
