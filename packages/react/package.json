@@ -4,6 +4,9 @@
   "version": "1.0.36",
   "description": "Binding store to your app",
   "main": "lib/index.js",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
   "scripts": {
     "test": "jest",
     "build": "tsc",

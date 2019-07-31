@@ -3,6 +3,9 @@
   "version": "1.0.46",
   "description": "Utils for schema and more ...",
   "main": "lib/index.js",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
   "scope": "@storex",
   "scripts": {
     "test": "jest",

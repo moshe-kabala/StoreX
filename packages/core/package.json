@@ -9,6 +9,9 @@
     "build": "tsc",
     "release": "rm -rf lib && tsc --sourceMap false && npm test && npm publish --access=public && npm version patch"
   },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
   "author": "Moshe Kabala",
   "license": "MIT",
   "dependencies": {},
