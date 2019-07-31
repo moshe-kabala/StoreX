@@ -4,7 +4,8 @@
   "description": "Utils for schema and more ...",
   "main": "lib/index.js",
   "publishConfig": {
-    "registry": "https://registry.npmjs.org"
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
   },
   "scope": "@storex",
   "scripts": {
