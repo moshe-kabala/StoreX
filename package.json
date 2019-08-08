@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "lerna bootstrap && lerna run build",
+    "publish": "npm run build && lerna run test && lerna publish",
     "test": "lerna run test",
     "release": "lerna run release"
   },

@@ -1,6 +1,6 @@
 {
   "name": "@storex/core",
-  "version": "1.0.37",
+  "version": "1.1.0",
   "description": "Binding store to your app",
   "main": "lib/index.js",
   "scope": "@storex",
@@ -9,9 +9,12 @@
     "build": "tsc",
     "release": "rm -rf lib && tsc --sourceMap false && npm test && npm publish --access=public && npm version patch"
   },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  },
   "author": "Moshe Kabala",
   "license": "MIT",
-  "dependencies": {},
   "devDependencies": {
     "@types/jest": "^23.1.4",
     "jest": "^23.3.0",
