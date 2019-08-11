@@ -3,27 +3,21 @@ import { ResultData } from "../../src/wrappers/ResultData";
 import { ResultStatus } from "../../src/wrappers/ResultStatus";
 import { FilterData } from "../../src/filter-data";
 
-class ResponseMock {
-    status(something) { 
-      return responseStatusMock;
-    }
-    send(something) {
-      return something;
-    }
+export class ResponseMock {
+  
+  responseData;
+  responseStatus = 200;
+
+  status(someStatus) { 
+    this.responseStatus = someStatus;
+    return this;
   }
-  
-  export const responseMock = new ResponseMock();
-  
-  class ResponseStatusMock {
-    send(something) {  
-      return something;
-    }
-    status(something) {
-      return responseMock;
-    }
+
+  send(data) {
+    this.responseData = data;
+    return this;
   }
-  
-export const responseStatusMock = new ResponseStatusMock();
+}
 
 class ModelOptionsDataMock implements ModelOptionsData<any> {
     collection = [
