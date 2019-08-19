@@ -101,7 +101,13 @@ export class BLWrapper<T = any> implements ModelOptionsData<T> {
   }
   async getManyByFilter(filter?: FilterData): Promise<any> {
     try {
-      return this.mapFrom(await this.data.getManyByFilter(filter));
+      const data = await this.data.getManyByFilter(filter);
+      if(data instanceof Array){
+        return this.mapFrom(data);
+      } else if (data.data){
+        return this.mapFrom(data.data)
+      }
+      return this.mapFrom(data);
     } catch (err) {
       return Promise.reject(err);
     }
