@@ -103,9 +103,9 @@ export class BLWrapper<T = any> implements ModelOptionsData<T> {
     try {
       let data = await this.data.getManyByFilter(filter);
       if(data instanceof Array){
-        data =  this.mapFrom(data);
+        data =  await this.mapFrom(data);
       } else if (data.data){
-        data.data = this.mapFrom(data.data)
+        data.data = await this.mapFrom(data.data)
       }
       return data
     } catch (err) {
