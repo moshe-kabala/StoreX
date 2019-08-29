@@ -1,7 +1,9 @@
 import { Router, Request, Response } from "express";
 import { ModelOptionsCtrl, ModelOptionsData } from ".";
+import { ResultData } from "./ResultData";
 
 import * as Ajv from "ajv";
+import { ResultStatus } from "./ResultStatus";
 
 export interface CtrlStatus {
   success: boolean;
@@ -67,7 +69,8 @@ export class CtrlWrapper<T = any> implements ModelOptionsCtrl {
   _getAndValidIDs(req, res, canBeEmpty = false) {
     const id = req.body.ids;
     if (!id && !canBeEmpty) {
-      res.status(400).send({ msg: "IDs are empty" });
+      const msg = "IDs are empty";
+      res.status(400).send({ msg, result: this.getValidationErrorResponse(msg) });
       return false;
     }
     return id;
@@ -79,18 +82,28 @@ export class CtrlWrapper<T = any> implements ModelOptionsCtrl {
     }
     return filter;
   }
+
   _getAndValidID(req, res, canBeEmpty = false) {
     const id = req.params.id;
     if (!id && !canBeEmpty) {
-      res.status(400).send({ msg: "ID is empty" });
+      const msg = "ID is empty";
+      res.status(400).send({ msg, result: this.getValidationErrorResponse(msg) });
       return false;
     }
     return id;
   }
+
+  getValidationErrorResponse(err) {
+    const validationResponse = new ResultData();
+    validationResponse.error = err;
+    validationResponse.status = ResultStatus.ValidationError;
+    return validationResponse;
+  }
+
   _getAndValidModels(req, res, canBeEmpty = false) {
     const models = req.body;
     if (!models && !canBeEmpty) {
-      res.status(400).send({ msg: "Not valid ID" });
+      res.status(400).send({ msg: "Not a valid ID" });
       return false;
     } else if (!models) {
       return;
@@ -106,7 +119,7 @@ export class CtrlWrapper<T = any> implements ModelOptionsCtrl {
   _getAndValidModel(req, res, canBeEmpty = false) {
     const model = req.body;
     if (!model && !canBeEmpty) {
-      res.status(400).send({ msg: "Not valid ID" });
+      res.status(400).send({ msg: "Not a valid ID" });
       return false;
     } else if (!model) {
       return;
@@ -123,13 +136,20 @@ export class CtrlWrapper<T = any> implements ModelOptionsCtrl {
       err = this._validation(m);
     }
     if (err) {
-      res.status(400).send({ msg: "Not valid Body data", err });
+      res.status(400).send({ msg: "Not a valid body data", err });
       return false;
     }
   }
 
-  _failed({ err, msg, res }) {
-    res.status(400).send({ msg, err });
+  _failed({ err, res, msg }, responseData?) {
+    if (!responseData) {
+      responseData = new ResultData();
+      responseData.status = ResultStatus.InternalError;
+      responseData.error = err;
+    }
+
+    res.status(400).send({ msg, err, responseData });
+    return responseData;
   }
 
   async get(req: Request, res: Response) {
@@ -161,28 +181,25 @@ export class CtrlWrapper<T = any> implements ModelOptionsCtrl {
       return status;
     } catch (err) {
       status.errMsg = err;
-      this._failed({ err, res, msg: "Failed to removed data" });
+      this._failed({ err, res, msg: "Failed to add data" });
 
       return status;
     }
   }
 
   async remove(req: Request, res: Response) {
-    const status: any = { success: false, errMsg: "", data: { ids: "" } };
+    let removeResult: ResultData;
     try {
+      // Check if the ID is valid and get it
       const removeId = this._getAndValidID(req, res);
-      if (removeId == false) {
-        return status;
+      if (!removeId) {
+        return false;
       }
-      await this.data.remove(removeId);
-      res.send({ msg: "removed" });
-      status.data.ids = removeId;
-      status.success = true;
-      return status;
+      removeResult = await this.data.remove(removeId);
+      res.send({ result: removeResult, msg: "removed" }); // TODO : Consider returning only the removeResult object
+      return removeResult;
     } catch (err) {
-      status.errMsg = err;
-      this._failed({ err, res, msg: "Failed to removed data" });
-      return status;
+      return this._failed({ err, res, msg: "Failed to remove data" }, removeResult);
     }
   }
 
@@ -200,7 +217,7 @@ export class CtrlWrapper<T = any> implements ModelOptionsCtrl {
       return status;
     } catch (err) {
       status.errMsg = err;
-      this._failed({ err, res, msg: "Failed to updated data" });
+      this._failed({ err, res, msg: "Failed to update data" });
       return status;
     }
   }
@@ -230,15 +247,17 @@ export class CtrlWrapper<T = any> implements ModelOptionsCtrl {
     }
   }
   async removeMany(req: Request, res: Response) {
+    let removeResult: ResultData = new ResultData();
     try {
       const ids = this._getAndValidIDs(req, res);
       if (!ids) {
-        return;
+        return false;
       }
-      const result = await this.data.removeMany(ids);
-      res.send(result);
+      removeResult = await this.data.removeMany(ids);
+      res.send({ result: removeResult, msg: "removed" });
+      return removeResult;
     } catch (err) {
-      this._failed({ err, res, msg: "Failed to remove data" });
+      return this._failed({ err, res, msg: "Failed to remove data" }, removeResult);
     }
   }
   async getManyByFilter(req: Request, res: Response) {
@@ -251,7 +270,7 @@ export class CtrlWrapper<T = any> implements ModelOptionsCtrl {
       res.send(result);
       return result;
     } catch (err) {
-      this._failed({ err, res, msg: "Failed to get by filter" });
+      this._failed({ err, res, msg: "Failed to get data by filter" });
     }
   }
 }
