@@ -168,17 +168,16 @@ export class CtrlWrapper<T = any> implements ModelOptionsCtrl {
   }
 
   async add(req: Request, res: Response) {
+    let addResult: ResultData;
     const status: any = { success: false, errMsg: "", data: { model: {} } };
     try {
       const model = await this._getAndValidModel(req, res);
       if (model == false) {
         return status;
       }
-      await this.data.add(model);
-      res.send({ msg: "added" });
-      status.data.model = model;
-      status.success = true;
-      return status;
+      addResult = await this.data.add(model);
+      res.send({ result: addResult, msg: "added" });
+      return addResult;
     } catch (err) {
       status.errMsg = err;
       this._failed({ err, res, msg: "Failed to add data" });
@@ -196,25 +195,24 @@ export class CtrlWrapper<T = any> implements ModelOptionsCtrl {
         return false;
       }
       removeResult = await this.data.remove(removeId);
-      res.send({ result: removeResult, msg: "removed" }); // TODO : Consider returning only the removeResult object
+      res.send({ result: removeResult, msg: "removed" });
       return removeResult;
     } catch (err) {
       return this._failed({ err, res, msg: "Failed to remove data" }, removeResult);
     }
   }
 
-  async update(req: Request, res: Response): Promise<CtrlStatus> {
+  async update(req: Request, res: Response) {
+    let updateResult: ResultData;
     const status: any = { success: false, errMsg: "", data: { model: {} } };
     try {
       const model = this._getAndValidModel(req, res);
       if (model == false) {
         return status;
       }
-      await this.data.update(model);
+      updateResult = await this.data.update(model);
       res.send({ msg: "updated" });
-      status.data.model = model;
-      status.success = true;
-      return status;
+      return updateResult;
     } catch (err) {
       status.errMsg = err;
       this._failed({ err, res, msg: "Failed to update data" });

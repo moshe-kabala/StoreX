@@ -1,7 +1,11 @@
 import { ResultStatus } from "./ResultStatus";
 
 export class ResultData {
-    data;
-    status = ResultStatus.NoStatus;
-    error;
+    data: any;
+    prevData: any;
+    status: ResultStatus = ResultStatus.NoStatus;
+    error: any;
+    constructor(result?: any) {
+        Object.assign(this, result || {});
+    }
 }
