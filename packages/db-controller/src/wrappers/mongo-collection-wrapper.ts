@@ -69,11 +69,13 @@ export class MongoCollectionWrapper<T = any> extends EventEmitter implements Mod
 
   async set(data: T) {
     let isFailed = false;
+    const mongoResult = new ResultData({ data });
     try {
-      return (await this.getCollection()).updateOne(
-        { _id: this.itemToId(data) },
-        { $set: data }
-      );
+      const c = await this.getCollection();
+      mongoResult.prevData = await c.findOne({ _id: this.itemToId(data) });
+      await c.updateOne( { _id: this.itemToId(data) }, { $set: data } );
+      mongoResult.status = ResultStatus.Success;
+      return mongoResult;
     }
     catch (err) {
       isFailed = true
@@ -87,11 +89,13 @@ export class MongoCollectionWrapper<T = any> extends EventEmitter implements Mod
 
   async update(data: T) {
     let isFailed = false;
+    const mongoResult = new ResultData({ data });
     try {
-      return (await this.getCollection()).updateOne(
-        { _id: this.itemToId(data) },
-        data
-      );
+      const c = await this.getCollection();
+      mongoResult.prevData = await c.findOne({ _id: this.itemToId(data) });
+      await c.updateOne( { _id: this.itemToId(data) }, data );
+      mongoResult.status = ResultStatus.Success;
+      return mongoResult;
     } catch (err) {
       isFailed = true
       return Promise.reject({ msg: "failed", err })
@@ -104,9 +108,13 @@ export class MongoCollectionWrapper<T = any> extends EventEmitter implements Mod
 
   async add(data: T) {
     let isFailed = false;
+    const mongoResult = new ResultData({ data });
 
     try {
-      return (await this.getCollection()).insert(data);
+      const c = await this.getCollection();
+      await c.insert(data);
+      mongoResult.status = ResultStatus.Success;
+      return mongoResult;
     } catch (err) {
       isFailed = true
       return Promise.reject({ msg: "failed", err })
@@ -122,8 +130,7 @@ export class MongoCollectionWrapper<T = any> extends EventEmitter implements Mod
 
     try {
       // Get the object before removing
-      mongoResult.data = await this.get(id);
-
+      mongoResult.prevData = await this.get(id);
       // Remove the object and return the result
       await (await this.getCollection()).deleteOne({ _id: id });
       mongoResult.status = ResultStatus.Success;
