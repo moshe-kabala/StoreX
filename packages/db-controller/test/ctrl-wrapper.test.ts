@@ -21,7 +21,7 @@ describe("CtrlWrapper", () => {
 
         const expectedResponse = {
             responseData: {
-                result: {
+                data: {
                     status: 200, prevData: {
                         id: "1", name: "yam", age: "20"
                     }
@@ -71,7 +71,7 @@ describe("CtrlWrapper", () => {
 
         const expectedResponse = {
             responseData: {
-                msg: "removed", result: {
+                msg: "removed", data: {
                     data: undefined,
                     status: 200
                 }
