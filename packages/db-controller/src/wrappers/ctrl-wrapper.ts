@@ -176,7 +176,7 @@ export class CtrlWrapper<T = any> implements ModelOptionsCtrl {
         return status;
       }
       addResult = await this.data.add(model);
-      res.send({ result: addResult, msg: "added" });
+      res.send({ data: addResult, msg: "added" });
       return addResult;
     } catch (err) {
       status.errMsg = err;
@@ -195,7 +195,7 @@ export class CtrlWrapper<T = any> implements ModelOptionsCtrl {
         return false;
       }
       removeResult = await this.data.remove(removeId);
-      res.send({ result: removeResult, msg: "removed" });
+      res.send({ data: removeResult, msg: "removed" });
       return removeResult;
     } catch (err) {
       return this._failed({ err, res, msg: "Failed to remove data" }, removeResult);
@@ -211,7 +211,7 @@ export class CtrlWrapper<T = any> implements ModelOptionsCtrl {
         return status;
       }
       updateResult = await this.data.update(model);
-      res.send({ msg: "updated" });
+      res.send({ data: updateResult, msg: "updated" });
       return updateResult;
     } catch (err) {
       status.errMsg = err;
@@ -252,7 +252,7 @@ export class CtrlWrapper<T = any> implements ModelOptionsCtrl {
         return false;
       }
       removeResult = await this.data.removeMany(ids);
-      res.send({ result: removeResult, msg: "removed" });
+      res.send({ data: removeResult, msg: "removed" });
       return removeResult;
     } catch (err) {
       return this._failed({ err, res, msg: "Failed to remove data" }, removeResult);

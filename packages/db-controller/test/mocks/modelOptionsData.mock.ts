@@ -40,7 +40,7 @@ class ModelOptionsDataMock implements ModelOptionsData<any> {
       let result = new ResultData();
   
       try {
-        result.data = this.get(id);
+        result.prevData = this.get(id);
         for (var i = 0; i < this.collection.length; i++) {
           if (this.collection[i].id == id) {
             this.collection.splice(i, 1);
@@ -71,12 +71,12 @@ class ModelOptionsDataMock implements ModelOptionsData<any> {
     removeMany(ids) {
       let result = new ResultData();
       try {
-        result.data = [];
+        result.prevData = [];
   
         ids.forEach(id => {
           let user: ResultData = this.remove(id);
-          if (user.data) {
-            result.data.push(user.data);
+          if (user.prevData) {
+            result.prevData.push(user.prevData);
           }
         });
         
