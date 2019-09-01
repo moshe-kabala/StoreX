@@ -15,7 +15,7 @@ describe("MongoCollectionWrapper", () => {
         const res = await mongoDataMock.remove(1);
 
         const expectedResult = {
-            data : userObject1,
+            prevData : userObject1,
             status: ResultStatus.Success,
             error: undefined
         }

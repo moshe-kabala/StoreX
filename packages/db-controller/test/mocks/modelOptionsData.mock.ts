@@ -40,7 +40,7 @@ class ModelOptionsDataMock implements ModelOptionsData<any> {
       let result = new ResultData();
   
       try {
-        result.data = this.get(id);
+        result.prevData = this.get(id);
         for (var i = 0; i < this.collection.length; i++) {
           if (this.collection[i].id == id) {
             this.collection.splice(i, 1);
