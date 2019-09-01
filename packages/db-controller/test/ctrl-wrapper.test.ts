@@ -85,18 +85,26 @@ describe("CtrlWrapper", () => {
     test("delete many - delete all", async () => {
         ctrlWrapperMock.refreshCollection();
 
+        const prevData = [
+            { id: "1", name: "yam", age: "20" },
+            { id: "2", name: "mor", age: "22" },
+            { id: "3", name: "uri", age: "24" },
+            { id: "4", name: "bar", age: "26" },
+            { id: "5", name: "idit", age: "28" }
+        ];
+
         let request = { body: { ids: ["1", "2", "3", "4", "5"] } };
         let response = new ResponseMock();
 
         // Try to remove that object
         const result = await ctrlWrapperMock.removeMany(request, response);
 
-        const expectedResult = { msg: "removed" };
+        const expectedResult = { prevData, status: 200 };
 
         expect(result).toEqual(expectedResult);
 
         const expectedResponse = {
-            responseData: { msg: "removed" },
+            responseData: { data: { ...expectedResult }, msg: "removed" },
             responseStatus: 200
         }
 
@@ -112,12 +120,17 @@ describe("CtrlWrapper", () => {
         // Try to remove that object
         const result = await ctrlWrapperMock.removeMany(request, response);
 
-        const expectedResult = { msg: "removed" };
+        const expectedResult = {
+            prevData: [
+                { id: "3", name: "uri", age: "24" },
+                { id: "4", name: "bar", age: "26" }]
+            , status: 200
+        };
 
         expect(result).toEqual(expectedResult);
 
         const expectedResponse = {
-            responseData: { msg: "removed" },
+            responseData: { data: { ...expectedResult }, msg: "removed" },
             responseStatus: 200
         }
 
@@ -156,12 +169,12 @@ describe("CtrlWrapper", () => {
         // Try to remove these objects
         const result = await ctrlWrapperMock.removeMany(request, response);
 
-        const expectedResult = { msg: "removed" };
+        const expectedResult = { prevData: [], status: 200 };
 
         expect(result).toEqual(expectedResult);
 
         const expectedResponse = {
-            responseData: { msg: "removed" },
+            responseData: { data: { ...expectedResult }, msg: "removed" },
             responseStatus: 200
         }
 

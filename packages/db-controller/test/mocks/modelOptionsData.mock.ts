@@ -71,12 +71,12 @@ class ModelOptionsDataMock implements ModelOptionsData<any> {
     removeMany(ids) {
       let result = new ResultData();
       try {
-        result.data = [];
+        result.prevData = [];
   
         ids.forEach(id => {
           let user: ResultData = this.remove(id);
-          if (user.data) {
-            result.data.push(user.data);
+          if (user.prevData) {
+            result.prevData.push(user.prevData);
           }
         });
         

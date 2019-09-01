@@ -245,17 +245,17 @@ export class CtrlWrapper<T = any> implements ModelOptionsCtrl {
     }
   }
   async removeMany(req: Request, res: Response) {
+    let removeResult: ResultData = new ResultData();
     try {
       const ids = this._getAndValidIDs(req, res);
       if (!ids) {
         return false;
       }
-      await this.data.removeMany(ids);
-      const result = { msg: "removed" };
-      res.send(result);
-      return result;
+      removeResult = await this.data.removeMany(ids);
+      res.send({ data: removeResult, msg: "removed" });
+      return removeResult;
     } catch (err) {
-      return this._failed({ err, res, msg: "Failed to remove data" });
+      return this._failed({ err, res, msg: "Failed to remove data" }, removeResult);
     }
   }
   async getManyByFilter(req: Request, res: Response) {

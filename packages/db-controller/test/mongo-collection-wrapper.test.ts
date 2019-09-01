@@ -68,7 +68,7 @@ describe("MongoCollectionWrapper", () => {
         const res = await mongoDataMock.removeMany(manyIds);
 
         const expectedResult = {
-            data : userObjectMany,
+            prevData : userObjectMany,
             status: ResultStatus.Success,
             error: undefined
         }
@@ -98,7 +98,7 @@ describe("MongoCollectionWrapper", () => {
         ];
 
         const expectedResult = {
-            data : userObjectAFew,
+            prevData : userObjectAFew,
             status: ResultStatus.Success,
             error: undefined
         }
@@ -113,7 +113,7 @@ describe("MongoCollectionWrapper", () => {
             const res = await mongoDataMock.removeMany(["1"]);
         } catch (err) {
             const expectedResult = {
-                data : [],
+                prevData : [],
                 status: ResultStatus.DBError,
                 error: "not a number"
             }   
@@ -127,7 +127,7 @@ describe("MongoCollectionWrapper", () => {
         const res = await mongoDataMock.removeMany([5,6]);
         
         const expectedResult = {
-            data : [],
+            prevData : [],
             status: ResultStatus.Success,
             error: undefined
         }

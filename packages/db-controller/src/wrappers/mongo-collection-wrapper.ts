@@ -148,7 +148,7 @@ export class MongoCollectionWrapper<T = any> extends EventEmitter implements Mod
 
     try {
       // Get the object before removing
-      mongoResult.data = await this.getMany(ids);
+      mongoResult.prevData = await this.getMany(ids);
 
       // Remove the object and return the result
       await (await this.getCollection()).deleteMany({ _id: { $in: ids } });
