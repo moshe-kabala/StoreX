@@ -33,35 +33,35 @@ export class MongoCollectionWrapper<T = any> extends EventEmitter implements Mod
       return this.getMany(undefined, whatGet)
     }
     try {
-    let collection = await this.getCollection();
-    
-    let isLimit;
-    if(!(filter instanceof FilterDataMongo)){
-      filter = new FilterDataMongo(filter)
-    }
-    filter.insertPath();
+      let collection = await this.getCollection();
 
-    const ftr = this.prepareFilter(filter);
-
-    let c = await collection.find(ftr.query, whatGet);
-    const length = await c.count();
-    if (ftr.sortBy) {
-      c = c.sort(ftr.sortBy);
-    }
-
-    if (ftr.limitData) {
-      isLimit = true;
-      c = c.skip(ftr.limitData.from).limit(ftr.limitData.limit);
-    }
-
-    const data = await c.toArray();
-
-    return isLimit
-      ? {
-        data,
-        length
+      let isLimit;
+      if (!(filter instanceof FilterDataMongo)) {
+        filter = new FilterDataMongo(filter)
       }
-      : data;
+      filter.insertPath();
+
+      const ftr = this.prepareFilter(filter);
+
+      let c = await collection.find(ftr.query, whatGet);
+      const length = await c.count();
+      if (ftr.sortBy) {
+        c = c.sort(ftr.sortBy);
+      }
+
+      if (ftr.limitData) {
+        isLimit = true;
+        c = c.skip(ftr.limitData.from).limit(ftr.limitData.limit);
+      }
+
+      const data = await c.toArray();
+
+      return isLimit
+        ? {
+          data,
+          length
+        }
+        : data;
     } catch (err) {
       return Promise.reject(err)
     }
@@ -73,7 +73,7 @@ export class MongoCollectionWrapper<T = any> extends EventEmitter implements Mod
     try {
       const c = await this.getCollection();
       mongoResult.prevData = await c.findOne({ _id: this.itemToId(data) });
-      await c.updateOne( { _id: this.itemToId(data) }, { $set: data } );
+      await c.updateOne({ _id: this.itemToId(data) }, { $set: data });
       mongoResult.status = ResultStatus.Success;
       return mongoResult;
     }
@@ -93,7 +93,7 @@ export class MongoCollectionWrapper<T = any> extends EventEmitter implements Mod
     try {
       const c = await this.getCollection();
       mongoResult.prevData = await c.findOne({ _id: this.itemToId(data) });
-      await c.updateOne( { _id: this.itemToId(data) }, data );
+      await c.updateOne({ _id: this.itemToId(data) }, data);
       mongoResult.status = ResultStatus.Success;
       return mongoResult;
     } catch (err) {
@@ -142,7 +142,7 @@ export class MongoCollectionWrapper<T = any> extends EventEmitter implements Mod
       return Promise.reject(mongoResult);
     }
   }
-  
+
   async removeMany(ids: idsType) {
     const mongoResult = new ResultData();
 
@@ -159,7 +159,7 @@ export class MongoCollectionWrapper<T = any> extends EventEmitter implements Mod
       mongoResult.status = ResultStatus.DBError;
       mongoResult.error = err;
       return Promise.reject(mongoResult)
-    } 
+    }
   }
 
   async getMany(ids?: idsType, whatGet?) {
