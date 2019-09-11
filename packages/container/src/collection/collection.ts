@@ -28,7 +28,7 @@ export class Collection extends Dispatcher {
   private _itemsDir = {};
   private _items = [];
   private _viewItems; // contain the data after viewing
-  private _is_items_need_to_render = true;
+  private _is_items_need_to_render = false;
   private _is_view_items_need_to_render = true;
 
   constructor({
@@ -95,9 +95,16 @@ export class Collection extends Dispatcher {
     this._items = value;
     if (this.meta.itemToId) {
       this.generateDicItem();
-      // remove
-      this._items = Object.keys(this._itemsDir).map(k => this._itemsDir[k]);
-    }
+      // remove duplicated
+      const ids = new Set();
+      this._items = this._items.filter(i => {
+          const id = this.meta.itemToId(i)
+          if (id !== undefined && !ids.has(id)) {
+              ids.add(id);
+              return true;
+          }
+      })
+  }
 
     if (this.options) {
       this.options.map(this._items);
