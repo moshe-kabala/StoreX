@@ -10,6 +10,10 @@
     "update-dependence": "npm update @storex/core",
     "release": "npm run update-dependence && rm -rf lib && tsc --sourceMap false && npm test && npm publish --access=public && npm version patch"
   },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  },
   "author": "Moshe Kabala",
   "license": "MIT",
   "dependencies": {
@@ -64,5 +68,6 @@
       "js",
       "json"
     ]
-  }
+  },
+  "gitHead": "12e6b48c712c11073df0a2c0c90a8c75dbdbfdb7"
 }

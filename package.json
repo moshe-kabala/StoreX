@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "lerna bootstrap && lerna run build",
-    "publish": "npm run build && lerna run test && lerna publish",
+    "publish": "npm run build && lerna run test && lerna publish --registry=https://registry.npmjs.org --access=public",
     "test": "lerna run test",
     "release": "lerna run release"
   },
