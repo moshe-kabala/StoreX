@@ -3,8 +3,8 @@
 The StoreX builds to help you store data and connect it both to the UI. or to whatever in a simple, clear, pattern-driven, and modular way.
 
 ## The library methodology and principles are:
-* Parate the data containers and management from the GUI.
-* Parate the logic parts from the GUI.
+* Separate the data containers and management from the GUI.
+* Separate the logic parts from the GUI.
 * Create your store's either as a singleton or create a new instance per component, depends on your needs.
 * Control the data binding flow. (No magic data binding).
 * Data drive components.
