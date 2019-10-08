@@ -1,30 +1,32 @@
+
 # Intro
-The StoreX builds to help you store data and connect it both to the UI. or to whatever in a simple, clear, pattern-driven and modular way
+The StoreX builds to help you store data and connect it both to the UI. or to whatever in a simple, clear, pattern-driven, and modular way.
 
-## This library is production ready but still under construction
-
-## Our principles are:
-* Separate the data containers and management from the GUI.
-* Separate the logic parts from the GUI.
-* Create your containers as single tone or create a new instance depends on your needs
+## The library methodology and principles are:
+* parate the data containers and management from the GUI.
+* parate the logic parts from the GUI.
+* Create your store's either as a singleton or create a new instance per component, depends on your needs.
 * Control the data binding flow. (No magic data binding).
-* Components (GUI) driven by data.
-* Modular containers. write many stores without dependency (contain the data in layers) as possible.
-* Always prepare the data for the GUI.
-
+* ta drive components.
+* dular containers. Write many stores without dependency (contain the data in layers) as possible.
+* ways prepare the data for the GUI.
 ## The main concepts are
-* Dispatcher - dispatch some events / messages. this is the basic class for everything.
+* Dispatcher - dispatch some events / messages. that is the basic class for everything.
 * Subscribe - subscribe to the dispatcher/s and do something on change.
-## Packages
-There are some packages in this repo as the following
-### @storex/core
-This is the core lib it contains the components relates to the data binding (Dispatcher and Subscriber)
-### @storex/react
-This is the main lib for React it contains components and hooks to subscribe to the dispatcher/s class in a convenient way
-### @storex/container
-Contains some Classes Like Collection, Cache, and Dispatcher  to make data flow more easy and clear
-### @storex/utils
-Contains some utils for JSON-schema and async actions
+# Packages
+There are some packages in this repo as the following.
 
-## Note
-This library is not observable lib for that there is Mobx. this lib is written to help you to manage your data (especially when the data is not preparing to the view) and connect the data to the GUI. the performance is great, there some optimizations for the dispatch action 
+## @storex/core
+The core lib contains the components relates to the data binding (Dispatcher and Subscriber).
+
+## @storex/react
+The main lib for React that contains components and hooks to subscribe to the dispatcher/s class conveniently.
+
+## @storex/container
+The Container lib contains some classes such as Collection, Cache, and Dispatcher, to make data flow more easily and clear.
+
+## @storex/utils
+The Utils lib contains some helpers for JSON-schema and async actions.
+
+# Note
+This library isn't an observable lib, for that there are better libraries such as Mobx lib. This lib is written to help you manage your data (especially when the data is not preparing to the view) and connect between the data and the GUI. The library performances are very high, and there some optimizations for the dispatch action.
