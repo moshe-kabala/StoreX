@@ -7,7 +7,7 @@ The StoreX builds to help you store data and connect it both to the UI. or to wh
 * parate the logic parts from the GUI.
 * Create your store's either as a singleton or create a new instance per component, depends on your needs.
 * Control the data binding flow. (No magic data binding).
-* ta drive components.
+* data drive components.
 * dular containers. Write many stores without dependency (contain the data in layers) as possible.
 * ways prepare the data for the GUI.
 ## The main concepts are
