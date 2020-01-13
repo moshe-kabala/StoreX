@@ -90,7 +90,7 @@ export class FilterDataElasticSearch extends FilterData {
 }
 
 export function getConditionalFilterValue(condition) {
-  console.log("getConditionalFilterValue: condition: ", condition);
+  // console.log("getConditionalFilterValue: condition: ", condition);
   /* array of conditions */
   if (Array.isArray(condition)) {
     // determine relation
@@ -115,7 +115,7 @@ export function getConditionalFilterValue(condition) {
 }
 
 function getFilterValue(condition) {
-  console.log("getConditionalFilterValue: condition: ", condition);
+  // console.log("getConditionalFilterValue: condition: ", condition);
   let { type = "string", value, operator, key } = condition;
   switch (type) {
     case "boolean":
@@ -130,6 +130,27 @@ function getFilterValue(condition) {
         return { match: { [key]: value } };
       } else if (operator === "!=") {
         return { bool: { must_not: [{ match: { [key]: value } }] } };
+      } else if (operator === ">") {
+        return { range: { [key]: { gt: value } } };
+      } else if (operator === "<") {
+        return { range: { [key]: { lt: value } } };
+      } else if (operator === ">=") {
+        return { range: { [key]: { gte: value } } };
+      } else if (operator === "<=") {
+        return { range: { [key]: { lte: value } } };
+      } else if (operator === "<>") {
+        return { range: { [key]: { lte: value[1], gte: value[0] } } };
+      }
+      break;
+    case "string":
+      if (operator === "=") {
+        return { term: { [key]: { value } } };
+      } else if (operator === "!=") {
+        return { bool: { must_not: [{ term: { [key]: { value } } }] } };
+      } else if (operator === "~") {
+        return { match: { [key]: { value } } };
+      } else if (operator === "!~") {
+        return { bool: { must_not: [{ match: { [key]: { value } } }] } };
       }
       break;
   }
