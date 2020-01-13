@@ -1,24 +1,29 @@
 import "jest";
+import { getConditionalFilterValue } from "./../../../src/filter-data/filter-data-elasticsearch";
 
-describe("filter wrapper", () => {
-  test("create boolean filter - single", async () => {});
+describe("filter data class tests", () => {
+  test("create boolean filter - single", async () => {
+    const key = "a";
+    const val = true;
+    const condition = {
+      key,
+      type: "boolean",
+      value: val,
+      operator: "=",
+      path: ""
+    };
 
-  const request = {
-      where: [
-          {
-              key: "filter1",
-              type: "boolean",
-              value: true,
-              operator: "=",
-              path: ""
+    const request = [].push(condition);
 
-          }
-      ]
-  }
+    const expectedResponse = {
+      bool: {
+        must: {
+          match: { [key]: val }
+        }
+      }
+    };
 
-  const expected = {
-      
-  }
-
-
+    const response = getConditionalFilterValue(request);
+    expect(response).toEqual(expectedResponse);
+  });
 });
