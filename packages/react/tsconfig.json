@@ -5,6 +5,7 @@
     "module": "commonjs",
     "skipLibCheck": true,
     "declaration": true,
+    "skipDefaultLibCheck": true,
     "experimentalDecorators": true,
     "target": "es6",
     "jsx": "react",
