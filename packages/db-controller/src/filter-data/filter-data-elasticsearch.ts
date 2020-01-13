@@ -90,7 +90,7 @@ export class FilterDataElasticSearch extends FilterData {
 }
 
 export function getConditionalFilterValue(condition) {
-  console.log("getConditionalFilterValue: condition: ", condition)
+  console.log("getConditionalFilterValue: condition: ", condition);
   /* array of conditions */
   if (Array.isArray(condition)) {
     // determine relation
@@ -115,12 +115,21 @@ export function getConditionalFilterValue(condition) {
 }
 
 function getFilterValue(condition) {
-  console.log("getConditionalFilterValue: condition: ", condition)
+  console.log("getConditionalFilterValue: condition: ", condition);
   let { type = "string", value, operator, key } = condition;
-  switch(type){
-    case "boolean" : 
-      if(operator === "="){
-        return { match : {[key]: value}}
+  switch (type) {
+    case "boolean":
+      if (operator === "=") {
+        return { match: { [key]: value } };
+      } else if (operator === "!=") {
+        return { bool: { must_not: [{ match: { [key]: value } }] } };
+      }
+      break;
+    case "number":
+      if (operator === "=") {
+        return { match: { [key]: value } };
+      } else if (operator === "!=") {
+        return { bool: { must_not: [{ match: { [key]: value } }] } };
       }
       break;
   }

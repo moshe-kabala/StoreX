@@ -13,15 +13,74 @@ describe("filter data class tests", () => {
       path: ""
     };
 
-    const request = [condition];
+    let request = [condition];
 
-    const expectedResponse = {
+    let expectedResponse = {
       bool: {
         must: [{ match: { [key]: val } }]
       }
     };
 
-    const response = getConditionalFilterValue(request);
+    let response = getConditionalFilterValue(request);
     expect(response).toEqual(expectedResponse);
+
+    condition.operator = "!=";
+    request = [condition];
+
+    let expectedResponse2 = {
+      bool: {
+        must: [
+          {
+            bool: {
+              must_not: [{ match: { [key]: val } }]
+            }
+          }
+        ]
+      }
+    };
+
+    response = getConditionalFilterValue(request);
+    expect(response).toEqual(expectedResponse2);
+  });
+
+  test("create numeric filter - single", async () => {
+    const key = "a";
+    const val = 1;
+    const condition = {
+      key,
+      type: "number",
+      value: val,
+      operator: "=",
+      path: ""
+    };
+
+    let request = [condition];
+
+    let expectedResponse = {
+      bool: {
+        must: [{ match: { [key]: val } }]
+      }
+    };
+
+    let response = getConditionalFilterValue(request);
+    expect(response).toEqual(expectedResponse);
+
+    condition.operator = "!=";
+    request = [condition];
+
+    let expectedResponse2 = {
+      bool: {
+        must: [
+          {
+            bool: {
+              must_not: [{ match: { [key]: val } }]
+            }
+          }
+        ]
+      }
+    };
+
+    response = getConditionalFilterValue(request);
+    expect(response).toEqual(expectedResponse2);
   });
 });
