@@ -1,0 +1,85 @@
+
+
+Equale operator
+---------------
+---------------
+{"key" : "a", "operator" : "=", "type" : "string", "value" : "W"}, 
+===>
+{ "match" : { "a" : "W"} },
+
+
+
+NOT Equale operator
+---------------
+---------------
+{"key" : "a", "operator" : "!=", "type" : "string", "value" : "W"}, 
+===>
+{
+    "bool" : 
+    {
+        "must_not" : [
+            { "match" : { "a" : "W"} },
+        ]
+    }
+    
+}
+
+
+greater then
+---------------
+---------------
+{"key" : "a", "operator" : ">", "type" : "number", "value" : "10"}, 
+===>
+{
+    "range" : {
+        "a" : {
+            "gt" : 10
+        }
+    }
+}
+
+
+less then or even
+---------------
+---------------
+{"key" : "a", "operator" : ">=", "type" : "number", "value" : "20"}, 
+===>
+{
+    "range" : {
+        "a" : {
+            "lte" : 20
+        }
+    }
+}
+
+
+in range
+---------------
+---------------
+{"key" : "a", "operator" : "<>", "type" : "number", "value" : [10,20]}, 
+===>
+{
+    "range" : {
+        "a" : {
+            "lt" : 20,
+            "gt" : 10
+        }
+    }
+}
+
+
+
+Like
+---------------
+---------------
+
+
+
+Unlike
+---------------
+---------------
+
+
+
+
+
