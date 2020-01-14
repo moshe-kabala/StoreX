@@ -191,7 +191,7 @@ describe("filter data class tests - operators structs", () => {
 
   test("create string filter - single", async () => {
     const key = "a";
-    const val = "some string";
+    let val = "some string";
     let condition = {
       key,
       type: "string",
@@ -253,5 +253,26 @@ describe("filter data class tests - operators structs", () => {
 
     response = getConditionalFilterValue(request);
     expect(response).toEqual(expectedResponse4);
+
+    condition.operator = "regex";
+    val = "some regex.* string";
+    condition.value = val;
+    request = [condition];
+    let expectedResponse5 = {
+      bool: {
+        must: [
+          {
+            regexp: {
+              [key]: {
+                value: val
+              }
+            }
+          }
+        ]
+      }
+    };
+
+    response = getConditionalFilterValue(request);
+    expect(response).toEqual(expectedResponse5);
   });
 });

@@ -89,10 +89,12 @@ export class FilterDataElasticSearch extends FilterData {
   }
 }
 
-export function determineRelation(conditionsList: any[]): string{
+export function determineRelation(conditionsList: any[]): string {
   let relation = "and";
-  const relations = conditionsList.filter(cond => { return cond.relation });
-  if(!relations || relations.length === 0){
+  const relations = conditionsList.filter(cond => {
+    return cond.relation;
+  });
+  if (!relations || relations.length === 0) {
     return relation;
   }
   return relations[0].relation;
@@ -105,7 +107,9 @@ export function getConditionalFilterValue(condition) {
     // determine relation
     const relation = determineRelation(condition);
     // filter relation objects
-    const conditions_no_relations = condition.filter(cond => { return cond.relation === undefined });
+    const conditions_no_relations = condition.filter(cond => {
+      return cond.relation === undefined;
+    });
     // calculate conditions
     const c = conditions_no_relations.map(cond => {
       return getConditionalFilterValue(cond);
@@ -162,6 +166,8 @@ function getFilterValue(condition) {
         return { match: { [key]: { value } } };
       } else if (operator === "!~") {
         return { bool: { must_not: [{ match: { [key]: { value } } }] } };
+      } else if (operator === "regex") {
+        return { regexp: { [key]: { value } } };
       }
       break;
   }
