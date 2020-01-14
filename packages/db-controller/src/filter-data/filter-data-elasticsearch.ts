@@ -1,6 +1,5 @@
 import { FilterData, Where, IFilterData } from "./filter-data";
 import { limitObj } from "./types";
-// import { sortObjDeprecated, sortObj, orders } from "./types";
 
 export class FilterDataElasticSearch extends FilterData {
   constructor(filterData?: IFilterData, validateFunc?) {
@@ -41,43 +40,6 @@ export class FilterDataElasticSearch extends FilterData {
     this.where = this.where.map(m);
     return this;
   };
-
-  fixFilterWhereValue(dic) {
-    this.fixFilterWhere(dic, "value");
-  }
-
-  fixFilterWhereKey(dic) {
-    this.fixFilterWhere(dic, "key");
-    for (const s of this.sort) {
-      if (dic[s.key]) {
-        s.key = dic[s.key];
-      }
-    }
-  }
-
-  fixFilterWhereType(dic) {
-    this.fixFilterWhere(dic, "type");
-  }
-
-  private fixFilterWhere(dic: object, key) {
-    for (const w of this.where) {
-      const val = dic[w.key];
-
-      if (val === undefined) {
-        continue;
-      }
-
-      if (typeof val === "function") {
-        w[key] = val(w);
-        continue;
-      }
-
-      if (typeof val === "string") {
-        w[key] = val;
-        continue;
-      }
-    }
-  }
 }
 
 /* filters */
