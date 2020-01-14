@@ -104,9 +104,6 @@ export function getConditionalFilterValue(condition) {
   if (Array.isArray(condition)) {
     // determine relation
     const relation = determineRelation(condition);
-    
-
-
     // filter relation objects
     const conditions_no_relations = condition.filter(cond => { return cond.relation === undefined });
     // calculate conditions
