@@ -1,5 +1,5 @@
 import * as Ajv from "ajv";
-import { limitObj } from "./types";
+import { limitObj, sortObjDeprecated } from "./types";
 
 const defaultPage = 1;
 const defaultItemPerPage = 1000;
@@ -17,7 +17,7 @@ export interface Where {
 }
 
 export interface IFilterData extends IBaseFilter {
-  sort?: { key: string; reverse: boolean }[];
+  sort?: sortObjDeprecated[];
   itemPerPage?: number;
   page?: number;
 }
@@ -48,7 +48,7 @@ export class BaseFilter implements IBaseFilter {
 }
 
 export class FilterData extends BaseFilter implements IFilterData {
-  sort: { key: string; reverse: boolean }[];
+  sort: sortObjDeprecated[];
   itemPerPage: number;
   page: number;
   constructor(filterData: IFilterData, validatorFunc?) {
