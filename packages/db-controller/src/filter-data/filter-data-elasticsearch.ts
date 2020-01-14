@@ -89,14 +89,28 @@ export class FilterDataElasticSearch extends FilterData {
   }
 }
 
+export function determineRelation(conditionsList: any[]): string{
+  let relation = "and";
+  const relations = conditionsList.filter(cond => { return cond.relation });
+  if(!relations || relations.length === 0){
+    return relation;
+  }
+  return relations[0].relation;
+}
+
 export function getConditionalFilterValue(condition) {
   // console.log("getConditionalFilterValue: condition: ", condition);
   /* array of conditions */
   if (Array.isArray(condition)) {
     // determine relation
-    const relation = "and";
+    const relation = determineRelation(condition);
+    
+
+
+    // filter relation objects
+    const conditions_no_relations = condition.filter(cond => { return cond.relation === undefined });
     // calculate conditions
-    const c = condition.map(cond => {
+    const c = conditions_no_relations.map(cond => {
       return getConditionalFilterValue(cond);
     });
     // create skelaton

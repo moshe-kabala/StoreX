@@ -1,7 +1,7 @@
 import "jest";
-import { getConditionalFilterValue } from "./../../../src/filter-data/filter-data-elasticsearch";
+import { getConditionalFilterValue } from "../../../src/filter-data/filter-data-elasticsearch";
 
-describe("filter data class tests", () => {
+describe("filter data class tests - operators structs", () => {
   test("create boolean filter - single", async () => {
     const key = "a";
     const val = true;
