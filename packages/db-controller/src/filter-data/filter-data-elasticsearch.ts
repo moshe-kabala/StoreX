@@ -8,7 +8,7 @@ export class FilterDataElasticSearch extends FilterData {
 
   get esFilter() {
     if (!this.where || this.where.length === 0) {
-      return {};
+      return;
     }
 
     return {
@@ -22,6 +22,15 @@ export class FilterDataElasticSearch extends FilterData {
     }
     return {
       sort: getSortValue(this.sort)
+    };
+  }
+
+  get esLimit() {
+    const limit = this.limitData;
+    if (!limit) return;
+    return {
+      from: limit.from,
+      size: limit.limit
     };
   }
 
@@ -72,7 +81,6 @@ export class FilterDataElasticSearch extends FilterData {
     }
   }
 }
-
 
 /* filters */
 export function getConditionalFilterValue(condition) {
