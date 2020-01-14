@@ -10,14 +10,8 @@ export class FilterDataElasticSearch extends FilterData {
       return {};
     }
 
-    const filters = getConditionalFilterValue(this.where);
-
-    // const f = this.where.map(condition => {
-    //   return getConditionalFilterValue(condition);
-    // })
-
     return {
-      query: filters
+      query: getConditionalFilterValue(this.where)
     };
   }
 
