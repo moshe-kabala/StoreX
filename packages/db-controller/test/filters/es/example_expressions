@@ -1,0 +1,35 @@
+and exression
+--------------
+--------------
+ [
+    {"relation" : "and" },
+    {"key" : "a", "operator" : "=", "type" : "string", "value" : "W"}, 
+    {"key" : "b", "operator" : "=", "type" : "string", "value" : "X"},  
+]
+====>
+{
+    "bool" : {
+        "must" : [
+            { "match" : { "a" : "W"} },
+            { "match" : { "b" : "X"} }
+        ]
+    }
+}
+
+or exression
+--------------
+--------------
+ [
+    {"relation" : "or" },
+    {"key" : "a", "operator" : "=", "type" : "string", "value" : "W"}, 
+    {"key" : "b", "operator" : "=", "type" : "string", "value" : "X"},  
+]
+====>
+{
+    "bool" : {
+        "should" : [
+            { "match" : { "a" : "W"} },
+            { "match" : { "b" : "X"} }
+        ]
+    }
+}

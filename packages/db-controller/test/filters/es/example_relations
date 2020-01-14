@@ -1,0 +1,148 @@
+a = X | b = Y
+-------------
+-------------
+client --> server
+-----------------
+{
+    where: [
+        {"relation" : "or" },
+        {"key" : "a", "operator" : "=", "type" : "string", "value" : "X"},
+        {"key" : "b", "operator" : "=", "type" : "string", "value" : "Y"},        
+    ]
+}
+or
+{
+    where: [
+        [
+            {"key" : "a", "operator" : "=", "type" : "string", "value" : "X"},
+            {"relation" : "or" },
+            {"key" : "b", "operator" : "=", "type" : "string", "value" : "Y"},  
+        ]
+    ]
+}
+{
+    "query" : {
+        "bool" : {
+            "should" : [
+                { "match" : {"a" : "X"}},
+                { "match" : {"b" : "Y"}},
+            ]
+        }
+    }
+}
+
+
+
+(a = X | b = Y) & c = Z
+-------------
+-------------
+client --> server
+-----------------
+{
+    where: [
+        {"relation" : "and" },
+        [
+            {"relation" : "or" },
+            {"key" : "a", "operator" : "=", "type" : "string", "value" : "X"},
+            {"key" : "b", "operator" : "=", "type" : "string", "value" : "Y"},  
+        ],
+        {"key" : "c", "operator" : "=", "type" : "string", "value" : "Z"},
+    ]
+}
+
+{
+    "query" : {
+        "bool" : {
+            "must" : [
+                { "bool" : {
+                    "should" : [
+                        { "match" : {"a" : "X"}},
+                        { "match" : {"b" : "Y"}}
+                ]
+                }},
+                { "match" : {"c" : "Z"}},
+            ]
+        }
+    }
+}
+
+
+a = X | (b = Y & c = Z)
+-------------
+-------------
+client --> server
+-----------------
+{
+    where: [
+        {"relation" : "or" },
+        [
+            {"relation" : "and" },
+            {"key" : "a", "operator" : "=", "type" : "string", "value" : "X"},
+            {"key" : "c", "operator" : "=", "type" : "string", "value" : "Z"},  
+        ],
+        {"key" : "a", "operator" : "=", "type" : "string", "value" : "X"},
+    ]
+}
+
+{
+    "query" : {
+        "bool" : {
+            "should" : [
+                { "bool" : {
+                    "must" : [
+                        { "match" : {"b" : "Y"}},
+                        { "match" : {"c" : "Z"}}
+                ]
+                }},
+                { "match" : {"a" : "X"}},
+            ]
+        }
+    }
+}
+
+
+(a = W & b = X) | (c = Y & d = Z)
+-------------
+-------------
+client --> server
+-----------------
+{
+    where: [
+        {"relation" : "or" },
+        [
+            {"relation" : "and" },
+            {"key" : "a", "operator" : "=", "type" : "string", "value" : "W"},
+            {"key" : "b", "operator" : "=", "type" : "string", "value" : "X"},  
+        ],
+       [
+            {"relation" : "and" },
+            {"key" : "c", "operator" : "=", "type" : "string", "value" : "Y"},
+            {"key" : "d", "operator" : "=", "type" : "string", "value" : "Z"},  
+        ],
+    ]
+}
+
+{
+    "query" : {
+        "bool" : { 
+            "should" : [
+                {
+                    "bool": { 
+                        "must" : [
+                            { "match" : { {"a" : "W" }}},
+                            { "match" : { {"b" : "X" }}}
+                        ]
+                    }
+                },
+                {
+                    "bool": { 
+                        "must" : [
+                            { "match" : { {"c" : "Y" }}},
+                            { "match" : { {"d" : "Z" }}}
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+}
