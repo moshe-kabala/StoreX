@@ -1,4 +1,5 @@
 import { FilterData, Where, IFilterData } from "./filter-data";
+import { sortObjDeprecated, sortObj, orders } from "./types";
 
 export class FilterDataElasticSearch extends FilterData {
   constructor(filterData?: IFilterData, validateFunc?) {
@@ -19,11 +20,9 @@ export class FilterDataElasticSearch extends FilterData {
     if (!this.sort || this.sort.length === 0) {
       return;
     }
-    const sortObj = {};
-    this.sort.forEach(item => {
-      sortObj[item.key] = item.reverse ? 1 : -1;
-    });
-    return sortObj;
+    return {
+      sort: getSortValue(this.sort)
+    };
   }
 
   filter = (f: (w, i?) => Boolean): this => {
@@ -83,17 +82,8 @@ export class FilterDataElasticSearch extends FilterData {
   }
 }
 
-export function determineRelation(conditionsList: any[]): string {
-  let relation = "and";
-  const relations = conditionsList.filter(cond => {
-    return cond.relation;
-  });
-  if (!relations || relations.length === 0) {
-    return relation;
-  }
-  return relations[0].relation;
-}
 
+/* filters */
 export function getConditionalFilterValue(condition) {
   // console.log("getConditionalFilterValue: condition: ", condition);
   /* array of conditions */
@@ -121,6 +111,17 @@ export function getConditionalFilterValue(condition) {
 
   /* single condition */
   return getFilterValue(condition);
+}
+
+export function determineRelation(conditionsList: any[]): string {
+  let relation = "and";
+  const relations = conditionsList.filter(cond => {
+    return cond.relation;
+  });
+  if (!relations || relations.length === 0) {
+    return relation;
+  }
+  return relations[0].relation;
 }
 
 function getFilterValue(condition) {
@@ -167,81 +168,25 @@ function getFilterValue(condition) {
   }
 }
 
-function getFilterValue2(where: Where) {
-  let { type = "string", value, operator } = where;
-  let key: string | object = where.key;
-  let val;
-  switch (type) {
-    case "bool":
-    case "boolean":
-      val = operator === "!" ? { $ne: Number(value) } : { $eq: Number(value) };
-      break;
-    case "number":
-      if (operator === "!") {
-        val = { $ne: value };
-      } else if (operator === ">") {
-        val = { $gt: value };
-      } else if (operator === "<") {
-        val = { $lt: value };
-      } else {
-        val = value;
-      }
-      break;
-    case "multi-range":
-      if (operator === "=") {
-        val = {
-          min: value,
-          max: value
-        };
-      } else if (operator === "!") {
-        if (typeof value === "object") {
-          val = {
-            $not: {
-              $elemMatch: { min: { $lte: value.max }, max: { $gte: value.min } }
-            }
-          };
-        } else {
-          val = {
-            $not: { $elemMatch: { min: { $lte: value }, max: { $gte: value } } }
-          };
-        }
-      } else if (operator === ">") {
-        if (typeof value === "object") {
-          value = value.max;
-        }
-        val = { $gt: value };
-        key = key + ".max";
-      } else if (operator === "<") {
-        if (typeof value === "object") {
-          value = value.min;
-        }
-        val = { $lt: value };
-        key = key + ".min";
-      } else {
-        if (typeof value === "object") {
-          val = {
-            $elemMatch: { min: { $lte: value.max }, max: { $gte: value.min } }
-          };
-        } else {
-          val = { $elemMatch: { min: { $lte: value }, max: { $gte: value } } };
-        }
-      }
-      break;
-    case "array":
-    case "enum":
-      if (value && value instanceof Array && value.length > 0) {
-        val = { $in: value };
-        if (operator === "!") {
-          val = { $not: val };
-        }
-      }
-      break;
-    case "string":
-    default:
-      val =
-        operator === "!~"
-          ? { $not: new RegExp(value, "i") }
-          : new RegExp(value, "i");
+/* sort */
+export function getSortValues(sortList: any[]) {
+  return sortList.map(sort => {
+    return getSortValue(sort);
+  });
+}
+
+function getSortValue(sortObject /*: sortObjDeprecated | sortObj*/) {
+  /* single sort */
+  /* backward compitability */
+  let order;
+  if (sortObject["reverse"] !== undefined) {
+    // preveious version
+    order = sortObject["reverse"] ? "desc" : "asc";
+  } else {
+    // current version
+    order = sortObject["order"];
   }
-  return { key: key, val: val };
+  return {
+    [sortObject.key]: { order }
+  };
 }
