@@ -25,6 +25,8 @@ export class BaseFilter implements IBaseFilter {
   where: Where[];
   constructor(filterData: IBaseFilter, private validatorFunc) {
     this.where = filterData.where || [];
+    this.insertPath();
+
   }
   valid() {
     if (!this.validatorFunc) {
@@ -33,6 +35,15 @@ export class BaseFilter implements IBaseFilter {
     this.validatorFunc(this);
     return this.validatorFunc.errors;
   }
+
+  insertPath = (): this => {
+    for (const w of this.where) {
+      if (w.path) {
+        w.key = `${w.path}.${w.key}`;
+      }
+    }
+    return this;
+  };
 }
 
 export class FilterData extends BaseFilter implements IFilterData {

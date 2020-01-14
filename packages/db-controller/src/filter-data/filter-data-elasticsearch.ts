@@ -35,15 +35,6 @@ export class FilterDataElasticSearch extends FilterData {
     return this;
   };
 
-  insertPath = (): this => {
-    for (const w of this.where) {
-      if (w.path) {
-        w.key = `${w.path}.${w.key}`;
-      }
-    }
-    return this;
-  };
-
   fixFilterWhereValue(dic) {
     this.fixFilterWhere(dic, "value");
   }
