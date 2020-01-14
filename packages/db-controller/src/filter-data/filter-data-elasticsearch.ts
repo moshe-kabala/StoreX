@@ -1,5 +1,5 @@
 import { FilterData, Where, IFilterData } from "./filter-data";
-import { sortObjDeprecated, sortObj, orders } from "./types";
+// import { sortObjDeprecated, sortObj, orders } from "./types";
 
 export class FilterDataElasticSearch extends FilterData {
   constructor(filterData?: IFilterData, validateFunc?) {
