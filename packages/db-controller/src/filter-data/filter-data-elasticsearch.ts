@@ -1,4 +1,5 @@
 import { FilterData, Where, IFilterData } from "./filter-data";
+import { limitObj } from "./types";
 // import { sortObjDeprecated, sortObj, orders } from "./types";
 
 export class FilterDataElasticSearch extends FilterData {
@@ -28,10 +29,7 @@ export class FilterDataElasticSearch extends FilterData {
   get esLimit() {
     const limit = this.limitData;
     if (!limit) return;
-    return {
-      from: limit.from,
-      size: limit.limit
-    };
+    return getLimitValue(limit);
   }
 
   filter = (f: (w, i?) => Boolean): this => {
@@ -187,5 +185,13 @@ function getSortValue(sortObject /*: sortObjDeprecated | sortObj*/) {
   }
   return {
     [sortObject.key]: { order }
+  };
+}
+
+/* limit */
+export function getLimitValue(limit: limitObj) {
+  return {
+    from: limit.from,
+    size: limit.limit
   };
 }

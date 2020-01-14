@@ -1,4 +1,5 @@
 import * as Ajv from "ajv";
+import { limitObj } from "./types";
 
 const defaultPage = 1;
 const defaultItemPerPage = 1000;
@@ -63,7 +64,7 @@ export class FilterData extends BaseFilter implements IFilterData {
    * @returns
    * @memberof FilterData
    */
-  get limitData() {
+  get limitData(): limitObj {
     if (this.itemPerPage && this.page) {
       return {
         from: this.itemPerPage * (this.page - 1),

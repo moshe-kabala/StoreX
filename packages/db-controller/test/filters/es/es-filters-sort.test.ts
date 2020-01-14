@@ -3,7 +3,7 @@ import { getSortValues } from "../../../src/filter-data/filter-data-elasticsearc
 
 const asc = "asc";
 const desc = "desc";
-describe("filter data class tests - relations structs", () => {
+describe("filter data class tests - sort structs", () => {
   test("test sort object creator - backward compitability", async () => {
     const key = "somekey";
     let reverse = true;
