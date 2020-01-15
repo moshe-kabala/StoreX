@@ -1,19 +1,18 @@
 import * as Ajv from "ajv";
-import { limitObj, sortObjDeprecated } from "./types";
+import {
+  limitObj,
+  sortObjDeprecated,
+  Filter,
+  Where,
+  WhereRelationFilter,
+  WhereFilterList
+} from "./types";
 
 const defaultPage = 1;
 const defaultItemPerPage = 1000;
 
 export interface IBaseFilter {
-  where: Where[];
-}
-
-export interface Where {
-  key: string;
-  path: string;
-  value: string | Array<string> | any;
-  type?: string;
-  operator?: string;
+  where: WhereFilterList;
 }
 
 export interface IFilterData extends IBaseFilter {
@@ -23,11 +22,10 @@ export interface IFilterData extends IBaseFilter {
 }
 
 export class BaseFilter implements IBaseFilter {
-  where: Where[];
+  where: WhereFilterList;
   constructor(filterData: IBaseFilter, private validatorFunc) {
     this.where = filterData.where || [];
     this.insertPath();
-
   }
   valid() {
     if (!this.validatorFunc) {
@@ -38,12 +36,35 @@ export class BaseFilter implements IBaseFilter {
   }
 
   insertPath = (): this => {
-    for (const w of this.where) {
-      if (w.path) {
+    // flatten where
+    const flattenWhereList: Where[] = this.flattenWhere(this.where);
+    // iterate over all simple where object and insert path
+    for (const w of flattenWhereList) {
+      if (w && w.path) {
         w.key = `${w.path}.${w.key}`;
       }
     }
     return this;
+  };
+
+  flattenWhere = (whereList: WhereFilterList | WhereRelationFilter): Where[] => {
+    if (typeof whereList === "object" && whereList["key"] !== undefined) {
+      // if Where
+      return [whereList as Where];
+    } else if (
+      typeof whereList === "object" &&
+      whereList["realtion"] !== undefined
+    ) {
+      // if relation
+      return;
+    } else if (whereList instanceof Array) {
+      // if a list
+      const list = whereList as WhereFilterList;
+      const list2 = list.map(item => {
+        return this.flattenWhere(item);
+      });
+      return list2.reduce((acc, val) => acc.concat(val), []);
+    }
   };
 }
 
@@ -151,7 +172,7 @@ function createSchema(fields: string[]) {
       },
       itemPerPage: { type: "integer", minimum: 1 },
       page: { type: "integer", minimum: 0 }
-    },
+    }
   };
 
   return filterDataSchema;
