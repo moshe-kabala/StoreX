@@ -1,4 +1,5 @@
-import { FilterData, Where, IFilterData } from "./filter-data";
+import { FilterData, IFilterData } from "./filter-data";
+import { Where, orders, sortObj, WhereRelationFilter } from "./types";
 
 export class FilterDataMongo extends FilterData {
   constructor(filterData?: IFilterData, validateFunc?) {
@@ -11,7 +12,13 @@ export class FilterDataMongo extends FilterData {
     }
 
     const filter = {};
-    for (const w of this.where) {
+    for (let w of this.where) {
+      // temp - TODO - support new filter format
+      if(w["key"] === undefined){
+        continue;
+      }
+      w = w as Where;
+      // temp
       const filterKeyVal = getFilterValue(w);
       if (filterKeyVal.val !== "" && filterKeyVal.val !== undefined) {
         filter[filterKeyVal.key] = filterKeyVal.val;
@@ -24,11 +31,7 @@ export class FilterDataMongo extends FilterData {
     if (!this.sort || this.sort.length === 0) {
       return;
     }
-    const sortObj = {};
-    this.sort.forEach(item => {
-      sortObj[item.key] = item.reverse ? 1 : -1;
-    });
-    return sortObj;
+    return this.getSortValues(this.sort, getSortValue);
   }
 
   filter = (f: (w, i?) => Boolean): this => {
@@ -59,7 +62,15 @@ export class FilterDataMongo extends FilterData {
   }
 
   private fixFilterWhere(dic: object, key) {
-    for (const w of this.where) {
+    for (let w of this.where) {
+      
+      // temp - TODO - support new filter format
+      if(w["key"] === undefined){
+        continue;
+      }
+      w = w as Where;
+      // temp
+
       const val = dic[w.key];
 
       if (val === undefined) {
@@ -81,7 +92,7 @@ export class FilterDataMongo extends FilterData {
 
 function getFilterValue(where: Where) {
   let { type = "string", value, operator } = where;
-  let key: string | object = where.key;
+  let key: string /*| object */ = where.key;
   let val;
   switch (type) {
     case "bool":
@@ -156,4 +167,11 @@ function getFilterValue(where: Where) {
           : new RegExp(value, "i");
   }
   return { key: key, val: val };
+}
+
+/* sort */
+function getSortValue(sortObject: sortObj) {
+  return {
+    [sortObject.key]: sortObject["order"] === orders.asc ? 1 : -1
+  };
 }
