@@ -33,6 +33,15 @@ export type Filter = Where | Relation;
 export type WhereRelationFilter = Filter | Array<Filter>;
 export type WhereFilterList = Array<WhereRelationFilter>;
 
+export enum filtersTypes {
+  boolean = "boolean",
+  string = "string",
+  numeric = "number",
+  ipV4 = "IPv4",
+  freeSearch = "freeSearch"
+}
+export const defaultFilterType = filtersTypes.string;
+
 /* filters operators */
 export namespace typeOperators {
   export enum operators {
@@ -41,6 +50,7 @@ export namespace typeOperators {
     like = "~",
     unlike = "!~",
     regex = "regex",
+    regexnot = "!regex",
     gt = ">",
     gte = ">=",
     lt = "<",
@@ -78,5 +88,12 @@ export namespace typeOperators {
     lte = operators.lte,
     inrange = operators.inrange,
     regex = operators.regex
+  }
+
+  export enum freeSearhOperators {
+    eq = operators.eq,
+    ne = operators.ne,
+    regex = operators.regex,
+    regexnot = operators.regexnot
   }
 }
