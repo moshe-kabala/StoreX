@@ -66,7 +66,7 @@ export function getConditionalFilterValue(
 ) {
   /* single condition */
   if (!Array.isArray(condition)) {
-    return getFilterValue(condition);
+    return getFilterValue(condition as Where);
   }
   /* array of condition */
 
@@ -78,7 +78,7 @@ export function getConditionalFilterValue(
   });
   // calculate conditions
   const c = conditions_no_relations.map(cond => {
-    return getConditionalFilterValue(cond);
+    return getConditionalFilterValue(cond as Where);
   });
   // create skelaton
   let skelaton = { bool: {} };
@@ -102,7 +102,7 @@ export function determineRelation(conditionsList: any[]): string {
   return relations[0].relation;
 }
 
-function getFilterValue(condition) {
+function getFilterValue(condition: Where) {
   let { type = defaultFilterType, value, operator, key } = condition;
   switch (type) {
     case filtersTypes.boolean:
