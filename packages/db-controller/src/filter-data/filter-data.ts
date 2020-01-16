@@ -122,14 +122,14 @@ export class FilterData extends BaseFilter implements IFilterData {
     }
   }
 
-  getSortValues(sortList: Sort[], sortConverter: Function) {
+  getSortValues(sortList: Sort[], sortDBConverter: Function) {
     /* convert deprecated format to new format */
     const newSortFormat: sortObj[] = sortList.map(sortObj => {
       return this.convertDepracetedFormatToNewFormat(sortObj);
     });
 
     return newSortFormat.map(sort => {
-      return sortConverter(sort);
+      return sortDBConverter(sort);
     });
   }
 

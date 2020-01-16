@@ -3,6 +3,7 @@ import {
   getConditionalFilterValue,
   determineRelation
 } from "../../../src/filter-data/filter-data-elasticsearch";
+import { RelationEnum } from "../../../src/filter-data/types";
 
 const keyA = "a";
 const valA = true;
@@ -61,9 +62,9 @@ describe("filter data class tests - relations structs", () => {
   });
 
   test("create or relation group filter", async () => {
-    const relation = { relation: "or" };
+    const relation = { relation: RelationEnum.or };
 
-    const request = [relation, conditionA, conditionB];
+    const request = [conditionA, relation, conditionB];
 
     let expectedResponse = {
       bool: {
