@@ -1,5 +1,5 @@
 import { FilterData, IFilterData } from "./filter-data";
-import { Where, orders, sortObj, WhereRelationFilter } from "./types";
+import { Where, orders, sortObj, typeOperators as op, filtersTypes } from "./types";
 
 export class FilterDataMongo extends FilterData {
   constructor(filterData?: IFilterData, validateFunc?) {
@@ -96,27 +96,27 @@ function getFilterValue(where: Where) {
   let val;
   switch (type) {
     case "bool":
-    case "boolean":
-      val = operator === "!" ? { $ne: Number(value) } : { $eq: Number(value) };
+    case filtersTypes.boolean:
+      val = operator === op.operators.not ? { $ne: Number(value) } : { $eq: Number(value) };
       break;
-    case "number":
-      if (operator === "!") {
+    case filtersTypes.numeric:
+      if (operator === op.operators.not) {
         val = { $ne: value };
-      } else if (operator === ">") {
+      } else if (operator === op.operators.gt) {
         val = { $gt: value };
-      } else if (operator === "<") {
+      } else if (operator === op.operators.lt) {
         val = { $lt: value };
       } else {
         val = value;
       }
       break;
     case "multi-range":
-      if (operator === "=") {
+      if (operator === op.operators.eq) {
         val = {
           min: value,
           max: value
         };
-      } else if (operator === "!") {
+      } else if (operator === op.operators.not) {
         if (typeof value === "object") {
           val = {
             $not: {
@@ -128,13 +128,13 @@ function getFilterValue(where: Where) {
             $not: { $elemMatch: { min: { $lte: value }, max: { $gte: value } } }
           };
         }
-      } else if (operator === ">") {
+      } else if (operator === op.operators.gt) {
         if (typeof value === "object") {
           value = value.max;
         }
         val = { $gt: value };
         key = key + ".max";
-      } else if (operator === "<") {
+      } else if (operator === op.operators.lt) {
         if (typeof value === "object") {
           value = value.min;
         }
@@ -154,15 +154,15 @@ function getFilterValue(where: Where) {
     case "enum":
       if (value && value instanceof Array && value.length > 0) {
         val = { $in: value };
-        if (operator === "!") {
+        if (operator === op.operators.not) {
           val = { $not: val };
         }
       }
       break;
-    case "string":
+    case filtersTypes.string:
     default:
       val =
-        operator === "!~"
+        operator === op.operators.unlike
           ? { $not: new RegExp(value, "i") }
           : new RegExp(value, "i");
   }

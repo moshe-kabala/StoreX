@@ -45,6 +45,7 @@ export const defaultFilterType = filtersTypes.string;
 /* filters operators */
 export namespace typeOperators {
   export enum operators {
+    not = "!",
     eq = "=",
     ne = "!=",
     like = "~",
