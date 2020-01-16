@@ -5,18 +5,19 @@ import {
   Filter,
   Where,
   WhereRelationFilter,
-  WhereFilterList
+  WhereFilterList,
+  Sort
 } from "./types";
 
 const defaultPage = 1;
 const defaultItemPerPage = 1000;
 
 export interface IBaseFilter {
-  where: WhereFilterList;
+  where?: WhereFilterList;
 }
 
 export interface IFilterData extends IBaseFilter {
-  sort?: sortObjDeprecated[];
+  sort?: Sort[];
   itemPerPage?: number;
   page?: number;
 }
@@ -69,7 +70,7 @@ export class BaseFilter implements IBaseFilter {
 }
 
 export class FilterData extends BaseFilter implements IFilterData {
-  sort: sortObjDeprecated[];
+  sort: Sort[];
   itemPerPage: number;
   page: number;
   constructor(filterData: IFilterData, validatorFunc?) {

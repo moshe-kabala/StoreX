@@ -19,12 +19,12 @@ export class FilterDataElasticSearch extends FilterData {
       return;
     }
 
-    console.log("array before simplifying: ", this.where);
+    // console.log("array before simplifying: ", this.where);
     let simpleWhereStructure = makeSimple(this.where);
     if (!Array.isArray(simpleWhereStructure)) {
       simpleWhereStructure = [simpleWhereStructure];
     }
-    console.log("array after simplifying: ", simpleWhereStructure);
+    // console.log("array after simplifying: ", simpleWhereStructure);
 
     return {
       query: getConditionalFilterValue(simpleWhereStructure)
@@ -36,7 +36,7 @@ export class FilterDataElasticSearch extends FilterData {
       return;
     }
     return {
-      sort: getSortValue(this.sort)
+      sort: getSortValues(this.sort)
     };
   }
 
@@ -58,36 +58,6 @@ export class FilterDataElasticSearch extends FilterData {
 }
 
 /* filters */
-
-// export function getConditionalFilterValue2(condition) {
-//   // console.log("getConditionalFilterValue: condition: ", condition);
-//   /* array of conditions */
-//   if (Array.isArray(condition)) {
-//     // determine relation
-//     const relation = determineRelation(condition);
-//     // filter relation objects
-//     const conditions_no_relations = condition.filter(cond => {
-//       return cond.relation === undefined;
-//     });
-//     // calculate conditions
-//     const c = conditions_no_relations.map(cond => {
-//       return getConditionalFilterValue(cond);
-//     });
-//     // create skelaton
-//     let skelaton = { bool: {} };
-//     if (relation === "and") {
-//       skelaton.bool = { must: c };
-//     } else if (relation == "or") {
-//       skelaton.bool = { should: c };
-//     }
-//     // return struct
-//     return skelaton;
-//   }
-
-//   /* single condition */
-//   return getFilterValue(condition);
-// }
-
 export function getConditionalFilterValue(
   condition: WhereRelationFilter | WhereFilterList
 ) {
@@ -131,7 +101,6 @@ function makeSimple(conditions: WhereFilterList) {
       filter["relation"] === RelationEnum.or
     ) {
       // if or relation - close current group and add to groups list
-      // console.log("filter of or relation type")
       if (currentGroup.length === 1) {
         groupsList.push(currentGroup[0]);
       } else {
@@ -144,13 +113,8 @@ function makeSimple(conditions: WhereFilterList) {
       filter["relation"] === RelationEnum.and
     ) {
       // if "and" relation ignore
-      // console.log("filter of and relation type")
       continue;
     } else {
-      // else add to current group
-      // console.log("addying filter to current group:")
-      // console.log("filter: ", filter)
-      // console.log("currentGroup: ", currentGroup)
       currentGroup.push(filter);
     }
   }
@@ -162,12 +126,10 @@ function makeSimple(conditions: WhereFilterList) {
   if (orExist) {
     groupsList.push({ relation: RelationEnum.or });
   }
-  // console.log("makeSimple: before flattning: ", groupsList)
   if (groupsList.length === 1) {
     return groupsList[0];
   }
   return groupsList;
-  // return groupsList.reduce((accumulator, value) => accumulator.concat(value), []);
 }
 
 export function determineRelation(conditionsList: any[]): string {
@@ -182,7 +144,6 @@ export function determineRelation(conditionsList: any[]): string {
 }
 
 function getFilterValue(condition) {
-  // console.log("getConditionalFilterValue: condition: ", condition);
   let { type = "string", value, operator, key } = condition;
   switch (type) {
     case "boolean":

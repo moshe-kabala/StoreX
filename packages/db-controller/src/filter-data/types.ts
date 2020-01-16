@@ -1,10 +1,11 @@
 /* sort */
-export type sortObjDeprecated = { key: string; reverse: boolean };
 export enum orders {
   asc = "asc",
   desc = "desc"
 }
+export type sortObjDeprecated = { key: string; reverse: boolean };
 export type sortObj = { key: string; order: orders };
+export type Sort = sortObj | sortObjDeprecated;
 
 /* limit */
 export type limitObj = { from: number; to: number; limit: number };
