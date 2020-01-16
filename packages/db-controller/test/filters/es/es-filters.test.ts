@@ -5,102 +5,139 @@ import {
 } from "../../../src/filter-data/types";
 
 describe("elasticsearch filter class tests", () => {
-  // test("test filter class initiation - empty filters", async () => {
-  //   const filters = {
-  //     where: [],
-  //     sort: []
-  //   };
-  //   const filter = new FilterDataElasticSearch(filters);
+  test("test filter class initiation - empty filters", async () => {
+    const filters = {
+      where: [],
+      sort: []
+    };
+    const filter = new FilterDataElasticSearch(filters);
 
-  //   expect(filter.esFilter).toBeUndefined();
-  //   expect(filter.esLimit).toBeUndefined();
-  //   expect(filter.esSortBy).toBeUndefined();
+    expect(filter.esFilter).toBeUndefined();
+    expect(filter.esLimit).toBeUndefined();
+    expect(filter.esSortBy).toBeUndefined();
 
-  //   const filters2 = {
-  //     where: [],
-  //     sort: [],
-  //     itemPerPage: undefined,
-  //     page: undefined
-  //   };
-  //   const filter2 = new FilterDataElasticSearch(filters2);
-  //   expect(filter2.esFilter).toBeUndefined();
-  //   expect(filter2.esLimit).toBeUndefined();
-  //   expect(filter2.esSortBy).toBeUndefined();
-  // });
+    const filters2 = {
+      where: [],
+      sort: [],
+      itemPerPage: undefined,
+      page: undefined
+    };
+    const filter2 = new FilterDataElasticSearch(filters2);
+    expect(filter2.esFilter).toBeUndefined();
+    expect(filter2.esLimit).toBeUndefined();
+    expect(filter2.esSortBy).toBeUndefined();
+  });
 
   test("test filter class initiation - where filter", async () => {
     const key = "key";
-    // const value = "value";
-    // const filters = {
-    //   where: [
-    //     { key, operator: op.operators.eq, type: "string", value, path: "" },
-    //     { key, operator: op.operators.eq, type: "string", value, path: "" }
-    //   ]
-    // };
-    // const filter = new FilterDataElasticSearch(filters);
+    const value = "value";
 
-    // let where = filter.esFilter;
+    const filters0 = {
+      where: [
+        { key, operator: op.operators.eq, type: "string", value, path: "" }
+      ]
+    };
+    const filter0 = new FilterDataElasticSearch(filters0);
 
-    // const expectedFilter = {
-    //   query: {
-    //     bool: {
-    //       must: [{ term: { [key]: { value } } }, { term: { [key]: { value } } }]
-    //     }
-    //   }
-    // };
-    // expect(where).toEqual(expectedFilter);
+    let where0 = filter0.esFilter;
 
-    // const filters1 = {
-    //   where: [
-    //     { key, operator: op.operators.eq, type: "string", value, path: "" },
-    //     { relation: RelationEnum.and },
-    //     { key, operator: op.operators.eq, type: "string", value, path: "" }
-    //   ]
-    // };
-    // const filter1 = new FilterDataElasticSearch(filters1);
-    // let where1 = filter1.esFilter;
+    const expectedFilter0 = {
+      query: {
+        bool: {
+          must: [{ term: { [key]: { value } } }]
+        }
+      }
+    };
+    expect(where0).toEqual(expectedFilter0);
 
-    // const expectedFilter1 = {
-    //   query: {
-    //     bool: {
-    //       must: [{ term: { [key]: { value } } }, { term: { [key]: { value } } }]
-    //     }
-    //   }
-    // };
-    // expect(where1).toEqual(expectedFilter1);
+    const filters = {
+      where: [
+        { key, operator: op.operators.eq, type: "string", value, path: "" },
+        { key, operator: op.operators.eq, type: "string", value, path: "" }
+      ]
+    };
+    const filter = new FilterDataElasticSearch(filters);
 
-    // const filters2 = {
-    //   where: [
-    //     { key, operator: op.operators.eq, type: "string", value, path: "" },
-    //     { relation: RelationEnum.or },
-    //     { key, operator: op.operators.eq, type: "string", value, path: "" }
-    //   ]
-    // };
-    // const filter2 = new FilterDataElasticSearch(filters2);
-    // let where2 = filter2.esFilter;
+    let where = filter.esFilter;
 
-    // const expectedFilter2 = {
-    //   query: {
-    //     bool: {
-    //       should: [
-    //         { term: { [key]: { value } } },
-    //         { term: { [key]: { value } } }
-    //       ]
-    //     }
-    //   }
-    // };
-    // expect(where2).toEqual(expectedFilter2);
+    const expectedFilter = {
+      query: {
+        bool: {
+          must: [{ term: { [key]: { value } } }, { term: { [key]: { value } } }]
+        }
+      }
+    };
+    expect(where).toEqual(expectedFilter);
+
+    const filters1 = {
+      where: [
+        { key, operator: op.operators.eq, type: "string", value, path: "" },
+        { relation: RelationEnum.and },
+        { key, operator: op.operators.eq, type: "string", value, path: "" }
+      ]
+    };
+    const filter1 = new FilterDataElasticSearch(filters1);
+    let where1 = filter1.esFilter;
+
+    const expectedFilter1 = {
+      query: {
+        bool: {
+          must: [{ term: { [key]: { value } } }, { term: { [key]: { value } } }]
+        }
+      }
+    };
+    expect(where1).toEqual(expectedFilter1);
+
+    const filters2 = {
+      where: [
+        { key, operator: op.operators.eq, type: "string", value, path: "" },
+        { relation: RelationEnum.or },
+        { key, operator: op.operators.eq, type: "string", value, path: "" }
+      ]
+    };
+    const filter2 = new FilterDataElasticSearch(filters2);
+    let where2 = filter2.esFilter;
+
+    const expectedFilter2 = {
+      query: {
+        bool: {
+          should: [
+            { term: { [key]: { value } } },
+            { term: { [key]: { value } } }
+          ]
+        }
+      }
+    };
+    expect(where2).toEqual(expectedFilter2);
 
     const val1 = "val1";
     const val2 = "val2";
     const val3 = "val3";
     const filters3 = {
       where: [
-        { key, operator: op.operators.eq, type: "string", value: val1, path: "" },
+        {
+          key,
+          operator: op.operators.eq,
+          type: "string",
+          value: val1,
+          path: ""
+        },
         { relation: RelationEnum.or },
-        { key, operator: op.operators.eq, type: "string", value: val2, path: "" },
+        {
+          key,
+          operator: op.operators.eq,
+          type: "string",
+          value: val2,
+          path: ""
+        },
         { relation: RelationEnum.and },
-        { key, operator: op.operators.eq, type: "string", value: val3, path: "" }
+        {
+          key,
+          operator: op.operators.eq,
+          type: "string",
+          value: val3,
+          path: ""
+        }
       ]
     };
     const filter3 = new FilterDataElasticSearch(filters3);
@@ -125,32 +162,54 @@ describe("elasticsearch filter class tests", () => {
     };
     expect(where3).toEqual(expectedFilter3);
 
+    const filters4 = {
+      where: [
+        {
+          key,
+          operator: op.operators.eq,
+          type: "string",
+          value: val1,
+          path: ""
+        },
+        { relation: RelationEnum.and },
+        {
+          key,
+          operator: op.operators.eq,
+          type: "string",
+          value: val2,
+          path: ""
+        },
+        { relation: RelationEnum.or },
+        {
+          key,
+          operator: op.operators.eq,
+          type: "string",
+          value: val3,
+          path: ""
+        }
+      ]
+    };
+    const filter4 = new FilterDataElasticSearch(filters4);
+    let where4 = filter4.esFilter;
 
-    // const filters3 = {
-    //   where: [
-    //     { relation: RelationEnum.or },
-    //     { key, operator: op.operators.eq, type: "string", value, path: "" },
-    //     [{ key, operator: op.operators.eq, type: "string", value, path: "" }]
-    //   ]
-    // };
-    // const filter3 = new FilterDataElasticSearch(filters3);
-    // let where3 = filter3.esFilter;
-
-    // const expectedFilter3 = {
-    //   query: {
-    //     bool: {
-    //       should: [
-    //         { term: { [key]: { value } } },
-    //         {
-    //           bool: {
-    //             must: [{ term: { [key]: { value } } }]
-    //           }
-    //         }
-    //       ]
-    //     }
-    //   }
-    // };
-    // expect(where3).toEqual(expectedFilter3);
+    const expectedFilter4 = {
+      query: {
+        bool: {
+          should: [
+            {
+              bool: {
+                must: [
+                  { term: { [key]: { value: val1 } } },
+                  { term: { [key]: { value: val2 } } }
+                ]
+              }
+            },
+            { term: { [key]: { value: val3 } } }
+          ]
+        }
+      }
+    };
+    expect(where4).toEqual(expectedFilter4);
   });
 
   // test("test filter class initiation - sort filter", async () => {});
@@ -166,7 +225,6 @@ describe("elasticsearch filter class tests", () => {
     //   where: [{ key, operator: "=", type: "string", value, path }]
     // };
     // const filter = new FilterDataElasticSearch(filters);
-
     // let where = filter.esFilter;
     // const expectedFilter = {
     //   query: {
@@ -176,7 +234,6 @@ describe("elasticsearch filter class tests", () => {
     //   }
     // };
     // expect(where).toEqual(expectedFilter);
-
     //   const filters1 = {
     //     where: [
     //       { key, operator: "=", type: "string", value, path },
@@ -184,7 +241,6 @@ describe("elasticsearch filter class tests", () => {
     //     ]
     //   };
     //   const filter1 = new FilterDataElasticSearch(filters1);
-
     //   let where1 = filter1.esFilter;
     //   const expectedFilter1 = {
     //     query: {
@@ -194,7 +250,6 @@ describe("elasticsearch filter class tests", () => {
     //     }
     //   };
     //   expect(where1).toEqual(expectedFilter1);
-
     // const filters2 = {
     //   where: [
     //     { key, operator: "=", type: "string", value, path },
@@ -202,7 +257,6 @@ describe("elasticsearch filter class tests", () => {
     //     [{ key, operator: "=", type: "string", value, path }]
     //   ]
     // };
-
     // const filter2 = new FilterDataElasticSearch(filters2);
     // const where2 = filter2.esFilter;
     // const expectedFilter2 = {
@@ -221,7 +275,6 @@ describe("elasticsearch filter class tests", () => {
     //   }
     // };
     // expect(where2).toEqual(expectedFilter2);
-
     // const filters3 = {
     //   where: [
     //     { key, operator: "=", type: "string", value, path },
@@ -231,7 +284,6 @@ describe("elasticsearch filter class tests", () => {
     //     ]
     //   ]
     // };
-
     // const filter3 = new FilterDataElasticSearch(filters3);
     // const where3 = filter3.esFilter;
     // const expectedFilter3 = {

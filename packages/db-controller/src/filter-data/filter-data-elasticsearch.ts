@@ -19,8 +19,15 @@ export class FilterDataElasticSearch extends FilterData {
       return;
     }
 
+    console.log("array before simplifying: ", this.where);
+    let simpleWhereStructure = makeSimple(this.where);
+    if (!Array.isArray(simpleWhereStructure)) {
+      simpleWhereStructure = [simpleWhereStructure];
+    }
+    console.log("array after simplifying: ", simpleWhereStructure);
+
     return {
-      query: getConditionalFilterValue(this.where)
+      query: getConditionalFilterValue(simpleWhereStructure)
     };
   }
 
@@ -89,18 +96,11 @@ export function getConditionalFilterValue(
     return getFilterValue(condition);
   }
   /* array of condition */
-  // transform to grouped relations structure
-  console.log("array before simplifying: ", condition)
-  const simpleConditionArray = makeSimple(condition);
-  console.log("array after simplifying: ", simpleConditionArray)
-  
-  
+
   // determine relation
-  const relation = determineRelation(simpleConditionArray);
-  console.log("relation: ", relation)
-  throw new Error("sorry")
+  const relation = determineRelation(condition);
   // filter relation objects
-  const conditions_no_relations = simpleConditionArray.filter(cond => {
+  const conditions_no_relations = (condition as any[]).filter(cond => {
     return cond["relation"] === undefined;
   });
   // calculate conditions
@@ -124,10 +124,19 @@ function makeSimple(conditions: WhereFilterList) {
   let orExist: boolean = false;
   for (const filter of conditions) {
     // console.log("exemining filter: ", filter)
-    if (typeof filter === "object" && filter["relation"] === RelationEnum.or) {
+    if (Array.isArray(filter)) {
+      currentGroup.push(makeSimple(filter));
+    } else if (
+      typeof filter === "object" &&
+      filter["relation"] === RelationEnum.or
+    ) {
       // if or relation - close current group and add to groups list
       // console.log("filter of or relation type")
-      groupsList.push(currentGroup);
+      if (currentGroup.length === 1) {
+        groupsList.push(currentGroup[0]);
+      } else {
+        groupsList.push(currentGroup);
+      }
       currentGroup = [];
       orExist = true;
     } else if (
@@ -145,13 +154,18 @@ function makeSimple(conditions: WhereFilterList) {
       currentGroup.push(filter);
     }
   }
-  if (currentGroup.length > 0) {
+  if (currentGroup.length === 1) {
+    groupsList.push(currentGroup[0]);
+  } else if (currentGroup.length > 1) {
     groupsList.push(currentGroup);
   }
   if (orExist) {
     groupsList.push({ relation: RelationEnum.or });
   }
-  console.log("makeSimple: before flattning: ", groupsList)
+  // console.log("makeSimple: before flattning: ", groupsList)
+  if (groupsList.length === 1) {
+    return groupsList[0];
+  }
   return groupsList;
   // return groupsList.reduce((accumulator, value) => accumulator.concat(value), []);
 }
