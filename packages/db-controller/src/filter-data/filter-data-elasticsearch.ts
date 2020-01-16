@@ -20,7 +20,7 @@ export class FilterDataElasticSearch extends FilterData {
     }
 
     // console.log("array before simplifying: ", this.where);
-    let simpleWhereStructure = makeSimple(this.where);
+    let simpleWhereStructure = this.makeSimple(this.where);
     if (!Array.isArray(simpleWhereStructure)) {
       simpleWhereStructure = [simpleWhereStructure];
     }
@@ -86,50 +86,6 @@ export function getConditionalFilterValue(
   }
   // return struct
   return skelaton;
-}
-
-function makeSimple(conditions: WhereFilterList) {
-  const groupsList = [];
-  let currentGroup = [];
-  let orExist: boolean = false;
-  for (const filter of conditions) {
-    // console.log("exemining filter: ", filter)
-    if (Array.isArray(filter)) {
-      currentGroup.push(makeSimple(filter));
-    } else if (
-      typeof filter === "object" &&
-      filter["relation"] === RelationEnum.or
-    ) {
-      // if or relation - close current group and add to groups list
-      if (currentGroup.length === 1) {
-        groupsList.push(currentGroup[0]);
-      } else {
-        groupsList.push(currentGroup);
-      }
-      currentGroup = [];
-      orExist = true;
-    } else if (
-      typeof filter === "object" &&
-      filter["relation"] === RelationEnum.and
-    ) {
-      // if "and" relation ignore
-      continue;
-    } else {
-      currentGroup.push(filter);
-    }
-  }
-  if (currentGroup.length === 1) {
-    groupsList.push(currentGroup[0]);
-  } else if (currentGroup.length > 1) {
-    groupsList.push(currentGroup);
-  }
-  if (orExist) {
-    groupsList.push({ relation: RelationEnum.or });
-  }
-  if (groupsList.length === 1) {
-    return groupsList[0];
-  }
-  return groupsList;
 }
 
 export function determineRelation(conditionsList: any[]): string {
