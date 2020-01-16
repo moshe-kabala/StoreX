@@ -1,14 +1,13 @@
 import * as Ajv from "ajv";
 import {
   limitObj,
-  sortObjDeprecated,
-  Filter,
   Where,
   WhereRelationFilter,
   WhereFilterList,
   Sort,
   sortObj,
-  orders
+  orders,
+  RelationEnum
 } from "./types";
 
 const defaultPage = 1;
@@ -105,6 +104,7 @@ export class FilterData extends BaseFilter implements IFilterData {
     return error;
   }
 
+  /* sort helpers */
   convertDepracetedFormatToNewFormat(sortObj: Sort): sortObj {
     /* object undefined */
     if (!sortObj) {
@@ -131,6 +131,51 @@ export class FilterData extends BaseFilter implements IFilterData {
     return newSortFormat.map(sort => {
       return sortConverter(sort);
     });
+  }
+
+  /* filter helpers */
+  makeSimple(conditions: WhereFilterList) {
+    const groupsList = [];
+    let currentGroup = [];
+    let orExist: boolean = false;
+    for (const filter of conditions) {
+      // console.log("exemining filter: ", filter)
+      if (Array.isArray(filter)) {
+        currentGroup.push(this.makeSimple(filter));
+      } else if (
+        typeof filter === "object" &&
+        filter["relation"] === RelationEnum.or
+      ) {
+        // if or relation - close current group and add to groups list
+        if (currentGroup.length === 1) {
+          groupsList.push(currentGroup[0]);
+        } else {
+          groupsList.push(currentGroup);
+        }
+        currentGroup = [];
+        orExist = true;
+      } else if (
+        typeof filter === "object" &&
+        filter["relation"] === RelationEnum.and
+      ) {
+        // if "and" relation ignore
+        continue;
+      } else {
+        currentGroup.push(filter);
+      }
+    }
+    if (currentGroup.length === 1) {
+      groupsList.push(currentGroup[0]);
+    } else if (currentGroup.length > 1) {
+      groupsList.push(currentGroup);
+    }
+    if (orExist) {
+      groupsList.push({ relation: RelationEnum.or });
+    }
+    if (groupsList.length === 1) {
+      return groupsList[0];
+    }
+    return groupsList;
   }
 }
 
