@@ -1,5 +1,9 @@
 import "jest";
 import { getConditionalFilterValue } from "../../../src/filter-data/filter-data-elasticsearch";
+import {
+  filtersTypes,
+  typeOperators as op
+} from "../../../src/filter-data/types";
 
 describe("filter data class tests - operators structs", () => {
   test("create boolean filter - single", async () => {
@@ -274,5 +278,97 @@ describe("filter data class tests - operators structs", () => {
 
     response = getConditionalFilterValue(request);
     expect(response).toEqual(expectedResponse5);
+  });
+
+  test("create free text filter - single", async () => {
+    const key = "a";
+    let val = "some string";
+    let condition = {
+      key,
+      type: filtersTypes.freeSearch,
+      value: val,
+      operator: op.operators.like,
+      path: ""
+    };
+
+    let request = [condition];
+
+    let expectedResponse = {
+      bool: {
+        must: [{ query_string: { query: val } }]
+      }
+    };
+
+    let response = getConditionalFilterValue(request);
+    expect(response).toEqual(expectedResponse);
+
+    condition = {
+      key,
+      type: filtersTypes.freeSearch,
+      value: val,
+      operator: op.operators.unlike,
+      path: ""
+    };
+
+    request = [condition];
+
+    let expectedResponse2 = {
+      bool: {
+        must: [
+          {
+            bool: {
+              must_not: [{ query_string: { query: val } }]
+            }
+          }
+        ]
+      }
+    };
+
+    response = getConditionalFilterValue(request);
+    expect(response).toEqual(expectedResponse2);
+
+    condition = {
+      key,
+      type: filtersTypes.freeSearch,
+      value: val,
+      operator: op.operators.regex,
+      path: ""
+    };
+
+    request = [condition];
+
+    expectedResponse = {
+      bool: {
+        must: [{ query_string: { query: `/${val}/` } }]
+      }
+    };
+
+    response = getConditionalFilterValue(request);
+    expect(response).toEqual(expectedResponse);
+
+    condition = {
+      key,
+      type: filtersTypes.freeSearch,
+      value: val,
+      operator: op.operators.regexnot,
+      path: ""
+    };
+
+    request = [condition];
+
+    expectedResponse2 = {
+      bool: {
+        must: [
+          {
+            bool: {
+              must_not: [{ query_string: { query: `/${val}/` } }]
+            }
+          }
+        ]
+      }
+    };
+
+    response = getConditionalFilterValue(request);
+    expect(response).toEqual(expectedResponse2);
   });
 });

@@ -6,7 +6,10 @@ import {
   WhereFilterList,
   RelationEnum,
   defaultRelation,
-  sortObj
+  sortObj,
+  filtersTypes,
+  defaultFilterType,
+  typeOperators as op
 } from "./types";
 
 export class FilterDataElasticSearch extends FilterData {
@@ -100,46 +103,65 @@ export function determineRelation(conditionsList: any[]): string {
 }
 
 function getFilterValue(condition) {
-  let { type = "string", value, operator, key } = condition;
+  let { type = defaultFilterType, value, operator, key } = condition;
   switch (type) {
-    case "boolean":
-      if (operator === "=") {
+    case filtersTypes.boolean:
+      if (operator === op.operators.eq) {
         return { match: { [key]: value } };
-      } else if (operator === "!=") {
+      } else if (operator === op.operators.ne) {
         return { bool: { must_not: [{ match: { [key]: value } }] } };
       }
       break;
-    case "number":
-      if (operator === "=") {
+    case filtersTypes.numeric:
+      if (operator === op.operators.eq) {
         return { match: { [key]: value } };
-      } else if (operator === "!=") {
+      } else if (operator === op.operators.ne) {
         return { bool: { must_not: [{ match: { [key]: value } }] } };
-      } else if (operator === ">") {
+      } else if (operator === op.operators.gt) {
         return { range: { [key]: { gt: value } } };
-      } else if (operator === "<") {
+      } else if (operator === op.operators.lt) {
         return { range: { [key]: { lt: value } } };
-      } else if (operator === ">=") {
+      } else if (operator === op.operators.gte) {
         return { range: { [key]: { gte: value } } };
-      } else if (operator === "<=") {
+      } else if (operator === op.operators.lte) {
         return { range: { [key]: { lte: value } } };
-      } else if (operator === "<>") {
+      } else if (operator === op.operators.inrange) {
         return { range: { [key]: { lte: value[1], gte: value[0] } } };
       }
       break;
-    case "string":
-      if (operator === "=") {
+    case filtersTypes.string:
+      if (operator === op.operators.eq) {
         return { term: { [key]: { value } } };
-      } else if (operator === "!=") {
+      } else if (operator === op.operators.ne) {
         return { bool: { must_not: [{ term: { [key]: { value } } }] } };
-      } else if (operator === "~") {
+      } else if (operator === op.operators.like) {
         return { match: { [key]: { value } } };
-      } else if (operator === "!~") {
+      } else if (operator === op.operators.unlike) {
         return { bool: { must_not: [{ match: { [key]: { value } } }] } };
-      } else if (operator === "regex") {
+      } else if (operator === op.operators.regex) {
         return { regexp: { [key]: { value } } };
       }
       break;
+
+    case filtersTypes.freeSearch:
+      const q = { query_string: { query: value } };
+      if (operator === op.operators.like) {
+        return q;
+      } else if (operator === op.operators.unlike) {
+        return { bool: { must_not: [q] } };
+      } else if (operator === op.operators.regex) {
+        q.query_string.query = createRegex(value);
+        return q;
+      } else if (operator === op.operators.regexnot) {
+        q.query_string.query = createRegex(value);
+        return { bool: { must_not: [q] } };
+      }
+      break;
   }
+}
+
+function createRegex(expression: string) {
+  return `/${expression}/`;
 }
 
 /* sort */
