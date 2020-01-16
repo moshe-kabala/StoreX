@@ -2,8 +2,8 @@ and exression
 --------------
 --------------
  [
-    {"relation" : "and" },
     {"key" : "a", "operator" : "=", "type" : "string", "value" : "W"}, 
+    {"relation" : "and" },
     {"key" : "b", "operator" : "=", "type" : "string", "value" : "X"},  
 ]
 ====>
@@ -20,8 +20,8 @@ or exression
 --------------
 --------------
  [
-    {"relation" : "or" },
     {"key" : "a", "operator" : "=", "type" : "string", "value" : "W"}, 
+    {"relation" : "or" },
     {"key" : "b", "operator" : "=", "type" : "string", "value" : "X"},  
 ]
 ====>
