@@ -1,8 +1,5 @@
 import "jest";
-import {
-  getSortValues,
-  FilterDataElasticSearch
-} from "../../../src/filter-data/filter-data-elasticsearch";
+import { FilterDataElasticSearch } from "../../../src/filter-data/filter-data-elasticsearch";
 import { orders } from "../../../src/filter-data/types";
 
 const asc = orders.asc;
@@ -63,7 +60,9 @@ describe("filter data class tests - sort structs", () => {
     const key2 = "somekey2";
     let sort2 = { key: key2, order: order2 };
     sorts = [sort1, sort2];
-    let expectedResponse2 = { sort: [{ [key]: { order } }, { [key2]: { order: order2 } }] };
+    let expectedResponse2 = {
+      sort: [{ [key]: { order } }, { [key2]: { order: order2 } }]
+    };
 
     filters = {
       sort: sorts
@@ -72,13 +71,5 @@ describe("filter data class tests - sort structs", () => {
     filter = new FilterDataElasticSearch(filters);
     sortResponse = filter.esSortBy;
     expect(sortResponse).toEqual(expectedResponse2);
-
-    // order = desc;
-    // sort1 = { key, order };
-    // sorts = [sort1];
-    // expectedResponse = [{ [key]: { order } }];
-
-    // response = getSortValues(sorts);
-    // expect(response).toEqual(expectedResponse);
   });
 });

@@ -4,9 +4,9 @@ import {
   Where,
   WhereRelationFilter,
   WhereFilterList,
-  typeOperators,
   RelationEnum,
-  defaultRelation
+  defaultRelation,
+  sortObj
 } from "./types";
 
 export class FilterDataElasticSearch extends FilterData {
@@ -36,7 +36,7 @@ export class FilterDataElasticSearch extends FilterData {
       return;
     }
     return {
-      sort: getSortValues(this.sort)
+      sort: this.getSortValues(this.sort, getSortValue)
     };
   }
 
@@ -187,25 +187,9 @@ function getFilterValue(condition) {
 }
 
 /* sort */
-export function getSortValues(sortList: any[]) {
-  return sortList.map(sort => {
-    return getSortValue(sort);
-  });
-}
-
-function getSortValue(sortObject /*: sortObjDeprecated | sortObj*/) {
-  /* single sort */
-  /* backward compitability */
-  let order;
-  if (sortObject["reverse"] !== undefined) {
-    // preveious version
-    order = sortObject["reverse"] ? "desc" : "asc";
-  } else {
-    // current version
-    order = sortObject["order"];
-  }
+function getSortValue(sortObject: sortObj) {
   return {
-    [sortObject.key]: { order }
+    [sortObject.key]: { order: sortObject.order }
   };
 }
 

@@ -6,7 +6,9 @@ import {
   Where,
   WhereRelationFilter,
   WhereFilterList,
-  Sort
+  Sort,
+  sortObj,
+  orders
 } from "./types";
 
 const defaultPage = 1;
@@ -48,7 +50,9 @@ export class BaseFilter implements IBaseFilter {
     return this;
   };
 
-  flattenWhere = (whereList: WhereFilterList | WhereRelationFilter): Where[] => {
+  flattenWhere = (
+    whereList: WhereFilterList | WhereRelationFilter
+  ): Where[] => {
     if (typeof whereList === "object" && whereList["key"] !== undefined) {
       // if Where
       return [whereList as Where];
@@ -99,6 +103,34 @@ export class FilterData extends BaseFilter implements IFilterData {
   valid() {
     const error = super.valid();
     return error;
+  }
+
+  convertDepracetedFormatToNewFormat(sortObj: Sort): sortObj {
+    /* object undefined */
+    if (!sortObj) {
+      return;
+    }
+    /* old format object */
+    if (sortObj["reverse"] !== undefined) {
+      return {
+        key: sortObj.key,
+        order: sortObj["reverse"] ? orders.desc : orders.asc
+      };
+    } else {
+      /* current format object */
+      return sortObj as sortObj;
+    }
+  }
+
+  getSortValues(sortList: Sort[], sortConverter: Function) {
+    /* convert deprecated format to new format */
+    const newSortFormat: sortObj[] = sortList.map(sortObj => {
+      return this.convertDepracetedFormatToNewFormat(sortObj);
+    });
+
+    return newSortFormat.map(sort => {
+      return sortConverter(sort);
+    });
   }
 }
 
