@@ -105,4 +105,38 @@ describe("elasticsearch utils tests", () => {
     esutils.injectTimeIntervalToAggSchema(aggSchema5, interval);
     expect(aggSchema5).toEqual(expectedSchema5);
   });
+
+  test("test sort injection to aggregation schema", async () => {
+    const order = { order: "desc" };
+    let aggSortSchema = {
+      bucket_sort: {
+        sort: []
+      }
+    };
+
+    const sortObjKey = "somesortkey";
+    const field = "somefield";
+    const field2 = "somefield2";
+    const aggSchema = {
+      aggs: {
+        agg_subject: {
+          agg_type: {
+            field
+          },
+          aggs: {
+            subagg_subject: {
+              sub_agg_type: {
+                field: field2
+              }
+            }
+          }
+        }
+      }
+    };
+    const expectedAggScema = JSON.parse(JSON.stringify(aggSchema));
+    aggSortSchema.bucket_sort.sort[0].push({filedsort : order})
+    aggSchema.aggs.agg_subject.aggs[sortObjKey] = aggSortSchema;
+
+    // injectSortToAggSchema(aggSchema, );
+  });
 });
