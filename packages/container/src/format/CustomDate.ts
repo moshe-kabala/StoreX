@@ -51,7 +51,15 @@ export class CustomDate implements m.ICustomDate {
     }
   
     asView() {
-      return moment(this.Date).format("MMM D, YYYY H:mm");
+      return moment(this.Date).format("MMM D, YYYY H:mm:ss");
+    }
+
+    asDay() {
+      return moment(this.Date).format("MMM D, YYYY")
+    }
+
+    asTimeOnly() {
+      return moment(this.Date).format("H:mm:ss")
     }
 
     fromNow() {
