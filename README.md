@@ -1,6 +1,14 @@
-![Storex logo](./Storex.logo.svg)
+<p align="center">
+  <img alt="Storex logo" src="./Storex.logo.svg" width="480">
+</p>
+
+<p align="center" style="font-size: large">
+ Manage independent stores in layers
+</p>
+
+
 # Intro
-The StoreX builds to help you store data and connect it both to the UI. or to whatever in a simple, clear, pattern-driven, and modular way.
+The StoreX builds to help you store data in layers in a simple, clear, pattern-driven, and modular way.
 
 ## The library methodology and principles are:
 * Separate the data containers and management from the GUI.
