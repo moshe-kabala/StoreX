@@ -1,4 +1,4 @@
-
+![Storex logo](./Storex.logo.svg)
 # Intro
 The StoreX builds to help you store data and connect it both to the UI. or to whatever in a simple, clear, pattern-driven, and modular way.
 
