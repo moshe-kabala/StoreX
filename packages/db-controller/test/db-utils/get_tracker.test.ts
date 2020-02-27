@@ -1,5 +1,0 @@
-import "jest";
-
-describe("GetTracker", ()=> {
-
-})
