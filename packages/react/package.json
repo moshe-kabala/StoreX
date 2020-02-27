@@ -63,6 +63,7 @@
   },
   "dependencies": {
     "@storex/core": "^1.1.0",
+    "@storex/utils": "^1.1.5",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
   }

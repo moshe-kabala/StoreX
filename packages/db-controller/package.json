@@ -16,6 +16,7 @@
   "author": "Moshe Kabala",
   "license": "MIT",
   "dependencies": {
+    "@storex/utils": "^1.1.5",
     "ajv": "^6.6.1",
     "express": "^4.16.4",
     "mongodb": "^2.2.33",

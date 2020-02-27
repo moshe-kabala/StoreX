@@ -58,5 +58,8 @@
       "js",
       "json"
     ]
+  },
+  "dependencies": {
+    "@storex/utils": "^1.1.5"
   }
 }
