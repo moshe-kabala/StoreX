@@ -27,7 +27,7 @@
     "@types/node": "^10.12.10",
     "jest": "^23.4.1",
     "ts-jest": "^23.0.1",
-    "typescript": "^2.9.2"
+    "typescript": "^3.8.2"
   },
   "keywords": [
     "@storex/core",
