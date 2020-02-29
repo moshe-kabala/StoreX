@@ -13,10 +13,11 @@ export interface BaseCacheArgs {
   rootCaches?: BaseCache | { [key: string]: BaseCache };
 }
 
-const CACHES = new Set();
+const CACHES = new Set<IBaseCache>();
 
 export interface IBaseCache {
   isNeedToUpdate;
+  init:()=>void;
   get();
   remove();
   set(data);

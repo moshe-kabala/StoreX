@@ -2,6 +2,7 @@
   "compilerOptions": {
     "outDir": "./lib",
     "sourceMap": true,
+    "skipLibCheck": true,
     "module": "commonjs",
     "declaration": true,
     "experimentalDecorators": true,

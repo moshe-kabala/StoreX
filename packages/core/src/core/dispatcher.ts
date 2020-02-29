@@ -20,7 +20,7 @@ export class Dispatcher<T = any> {
   _is_async = false;
   _events;
   _waited_to_update_events = new Set();
-  _waited_to_update_funcs = new Set();
+  _waited_to_update_funcs = new Set<Function>();
   _dispatch_count = 0;
   _eventsRegisterFunc: { [key: string]: Set<(a: any) => any> } = {
     onChange: new Set()

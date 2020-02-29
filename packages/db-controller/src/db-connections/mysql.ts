@@ -3,38 +3,33 @@ import { Query } from "mysql";
 
 const MYSQL_DEFAULT_PORT = 3306;
 
-interface ConnectionSslDetails {
-  rejectUnauthorized? : boolean
-  ca?:string | string []
-  cert?:string | string [],
-  ciphers?:string,
-  clientCertEngine?:string,
-  crl?:string | string [],
-  dhparam?:string,
-  ecdhCurve?:string,
-  honorCipherOrder?:boolean,
-  key?:string | string [],
-  maxVersion?:string,
-  minVersion?:string,
-  passphrase?:string,
-  pfx?:string | string [] | Object[],
-  secureOptions?:number,
-  secureProtocol?:string,
-  sessionIdContext?:string
+// interface ConnectionSslDetails {
+//   rejectUnauthorized? : boolean
+//   ca?:string | string []
+//   cert?:string | string [],
+//   ciphers?:string,
+//   clientCertEngine?:string,
+//   crl?:string | string [],
+//   dhparam?:string,
+//   ecdhCurve?:string,
+//   honorCipherOrder?:boolean,
+//   key?:string | string [],
+//   maxVersion?:string,
+//   minVersion?:string,
+//   passphrase?:string,
+//   pfx?:string | string [] | Object[],
+//   secureOptions?:number,
+//   secureProtocol?:string,
+//   sessionIdContext?:string
 
-}
+// }
 
 
-interface ConnectionDetails {
-  password: string;
-  user: string;
-  host: string;
+interface ConnectionDetails extends mysql.PoolConfig {
   dbs: string[];
-  ssl?:ConnectionSslDetails;
-  port? :number
 }
 
-let mysqlConf: ConnectionDetails;
+let mysqlConf:ConnectionDetails;
 
 class DemoPool {
   query = (
@@ -77,16 +72,15 @@ const connections: any = {};
 export function connect() {
   // before connect lets close
   close();
-  const { host, port, user, password, ssl } = mysqlConf;
-  for (const db of mysqlConf.dbs) {
+  const { dbs, ...rest } = mysqlConf;
+  for (const db of dbs) {
     connections[db] = mysql.createPool({
+      // default params
       connectionLimit: 15,
-      host,
-      user,
-      password,
+      port:  MYSQL_DEFAULT_PORT,
+      // user config params
+      ...rest,
       database: db,
-      ssl:ssl,
-      port: port || MYSQL_DEFAULT_PORT
     });
   }
 }
