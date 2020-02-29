@@ -11,18 +11,15 @@ export class LinkedList<T = unknown> {
 
   addValueToHead(value: T) {
     const newNode = new LinkedListNode(value);
-    newNode.next = this.head;
-    this.head = newNode;
-    // if there is no next, that mean that the list was empty
-    if (newNode.next == null) {
-      this.tall = newNode;
-    }
-    this.length++;
+    this.addToHead(newNode);
     return newNode;
   }
 
   addToHead(newNode: LinkedListNode<T>) {
     newNode.next = this.head;
+    if (this.head) {
+      this.head.previous = newNode;
+    }
     this.head = newNode;
     // if there is no next, that mean that the list was empty
     if (newNode.next == null) {
@@ -85,11 +82,17 @@ export class LinkedList<T = unknown> {
     return node;
   }
 
-  findByValue(val): LinkedListNode<T> {
+  findByValue(
+    val: T,
+    compere?: (value1: T, value2: T) => boolean
+  ): LinkedListNode<T> | null {
     let node = this.head;
 
     while (node) {
-      if (node.value === val) {
+      if (
+        (!compere && node.value === val) ||
+        (compere && compere(val, node.value))
+      ) {
         return node;
       }
 

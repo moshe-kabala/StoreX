@@ -1,6 +1,6 @@
 import "jest";
 
-import { sleep } from "../src/async";
+import { sleep } from "../../src/async";
 import {
   SLEEP_TIME,
   createFunctionCallingEnv,

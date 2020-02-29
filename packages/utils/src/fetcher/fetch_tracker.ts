@@ -1,4 +1,4 @@
-import { Key } from "./types";
+type Key = string | number;
 
 // todo add option to config limit time for get cycle
 // consider to throw error if wait_for(key) calling but no one defines waiter for this key
@@ -41,8 +41,19 @@ export class FetchTracker<T = unknown> {
   private __waiting = new Map();
 
   __on_ended_func = new Set<(key: Key, value: T) => void>();
+  __wait_map?: (value) => any | T;
+  __timeout?: number;
 
-  constructor(public timeout = 60000, private __wait_map?: (value) => any | T) {}
+  constructor({
+    timeout = 60000,
+    wait_map
+  }: {
+    wait_map?: (value) => any | T;
+    timeout?: number;
+  } = {}) {
+    this.__timeout = timeout;
+    this.__wait_map = wait_map;
+  }
 
   private __emit_ended_func(key: Key, value: T) {
     for (const func of Array.from(this.__on_ended_func)) {

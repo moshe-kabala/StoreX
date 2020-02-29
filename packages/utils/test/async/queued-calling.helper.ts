@@ -1,4 +1,4 @@
-import { queuedCalling, getQueuedCallingStatus, sleep } from "../src/async";
+import { queuedCalling, getQueuedCallingStatus, sleep } from "../../src/async";
 
 export const SLEEP_TIME = 100;
 

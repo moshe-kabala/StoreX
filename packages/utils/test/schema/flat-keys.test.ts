@@ -1,4 +1,4 @@
-import { flatKeys, flatObj } from "../src/schema/flat-keys"
+import { flatKeys, flatObj } from "../../src/schema/flat-keys"
 import "jest"
 
 describe("FlatKeys", () => {

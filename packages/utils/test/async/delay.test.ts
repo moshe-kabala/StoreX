@@ -1,4 +1,4 @@
-import { delay, sleep } from "../src/async"
+import { delay, sleep } from "../../src/async"
 import "jest"
 
 function reduceArgsToArray(state, item) {

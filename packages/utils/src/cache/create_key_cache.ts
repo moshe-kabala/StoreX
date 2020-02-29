@@ -1,7 +1,7 @@
 import { KeyCache, KeyCacheEvents } from "./key_cache";
 import { KeyCacheLimiter } from "./key_cache_limiter";
 import { Key } from "./types";
-import { FetchTracker } from "./fetch_tracker";
+import { FetchTracker } from "../fetcher";
 
 type createKeyValueCacheArgs<T> = {
   limit?: number;
@@ -44,7 +44,7 @@ export function createKeyCache<T>({
     });
   }
 
-  const tracker = new FetchTracker<T>(60000, wait_map);
+  const tracker = new FetchTracker<T>({ wait_map });
 
   tracker.onEnded((key, value: T) => {
     cache.set(key, value);

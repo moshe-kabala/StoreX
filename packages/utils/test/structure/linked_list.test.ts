@@ -1,5 +1,5 @@
 import "jest";
-import { LinkedList, LinkedListNode } from "../../src/db-utils/linked_list";
+import { LinkedList, LinkedListNode } from "../../src/structure";
 
 // test tow direction linked list
 describe("LinkedList", () => {
@@ -85,5 +85,27 @@ describe("LinkedList", () => {
     expect(list.head).toBe(null);
     expect(list.tall).toBe(null);
     expect(list.length).toBe(0);
+  });
+
+  test("Test find", () => {
+    list
+      .addToTall(new LinkedListNode("1"))
+      .addToTall(new LinkedListNode("2"))
+      .addToTall(new LinkedListNode("3"));
+
+    expect(list.findByValue("2")?.value).toBe("2");
+  });
+
+  test("Test find with compere function", () => {
+    const list = new LinkedList<{ value: String }>();
+
+    list
+      .addToTall(new LinkedListNode({ value: "1" }))
+      .addToTall(new LinkedListNode({ value: "2" }))
+      .addToTall(new LinkedListNode({ value: "3" }));
+
+    expect(
+      list.findByValue({ value: "2" }, (v1, v2) => v1.value == v2.value)?.value
+    ).toEqual({ value: "2" });
   });
 });

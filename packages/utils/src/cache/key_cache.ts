@@ -22,8 +22,12 @@ export class KeyCache<T = any> {
   );
 
   // todo implement limit function
-  constructor({ default_value = DEFAULT }) {
+  constructor({ default_value = DEFAULT } = {}) {
     this.__default_value = default_value;
+  }
+
+  get size(): number {
+    return this.__cache.size;
   }
 
   clean() {
@@ -36,7 +40,7 @@ export class KeyCache<T = any> {
     // return default value
     if (value === undefined) return this.__default_value();
 
-    this.__emit(KeyCacheEvents.set, key, value);
+    this.__emit(KeyCacheEvents.get, key, value);
     return value;
   }
 

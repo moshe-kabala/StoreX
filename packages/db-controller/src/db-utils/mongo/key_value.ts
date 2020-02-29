@@ -1,6 +1,6 @@
 import { sleep } from "@storex/utils/lib/async";
+import { createKeyCache } from "@storex/utils/lib/cache";
 import { Collection, UnorderedBulkOperation, FindOneOptions } from "mongodb";
-import { createKeyCache } from "../create_key_cache";
 
 type CacheValue<T> = { value: T; version: string };
 type ValueOf<T> = T[keyof T];
@@ -343,7 +343,17 @@ export class KeyValueMongo<
    * @memberof KeyValueMongo
    */
   async getGroupItem(group: string, key: string) {
-    // todo
+    try {
+      const collection = await this._getCollection();
+      const { value } = (await collection.findOne(
+        { "_id.group": group, "_id.key": key },
+        { value: 1 } as any
+      )) as any;
+      return value;
+    } catch (err) {
+      const msg = `Failed to get the item with key: ${key} from group: ${group}`;
+      return Promise.reject({ msg, err });
+    }
   }
 
   /**
@@ -361,6 +371,23 @@ export class KeyValueMongo<
       const msg = `Unknown transaction id ${id}`;
       return Promise.reject({ msg });
     }
+
+    colec
+      .find({ "_id.group": group, "_id.key": key })
+      .upsert()
+      .update({
+        $setOnInsert: { value, version: id, _id: { group, key } },
+        $set: { value, version: id }
+      });
+
+    // Update the version of the group meta data
+    colec
+      .find({ _id: GROUP_META_PREFIX + group })
+      .upsert()
+      .update({
+        $setOnInsert: { version: id, _id: GROUP_META_PREFIX + group },
+        $set: { version: id }
+      });
   }
 
   async getGroup(group: string): Promise<Map<string, ValueOf<G>>> {
@@ -426,6 +453,15 @@ export class KeyValueMongo<
         $set: { value, version: id }
       });
     }
+
+    // Update the group meta data
+    colec
+      .find({ _id: GROUP_META_PREFIX + group })
+      .upsert()
+      .update({
+        $setOnInsert: { version: id, _id: GROUP_META_PREFIX + group },
+        $set: { version: id }
+      });
 
     // remove old;
     colec.find({ "_id.group": group, version: { $not: id } }).remove();
