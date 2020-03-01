@@ -12,7 +12,16 @@ export interface FilterDataSqlArgs {
   filterDataValidation?;
 }
 
-export class FilterDataSql {
+
+/**
+ * 
+ * FilterDataSql convert filter data into a sql query
+ * 
+ * @export
+ * @class FilterDataSql
+ * @template T
+ */
+export class FilterDataSql<T=any> {
   query;
   filterData;
   fields;
@@ -140,7 +149,7 @@ export class FilterDataSql {
     return createSqlWhere(where, moreWhere, ignoreFields);
   }
 
-  fetchFilteredData() {
+  fetchFilteredData(): Promise<T[] | {data: T[], length: number}> {
     var self = this;
     return new Promise((resolve, reject) => {
       var query = self.buildQuery();
@@ -164,10 +173,9 @@ export class FilterDataSql {
             return reject(new Error("Can't execute limits Query"));
           }
 
-          var output = {};
+          let output:  T[] | {data: T[], length: number};
           if (numberOfRows != undefined) {
-            output["length"] = numberOfRows;
-            output["data"] = rows;
+            output = {length: numberOfRows, data:rows }
           } else {
             output = rows;
           }
