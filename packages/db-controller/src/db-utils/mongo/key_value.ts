@@ -2,12 +2,15 @@ import { sleep } from "@storex/utils/lib/async";
 import { createKeyCache } from "@storex/utils/lib/cache";
 import { Collection, UnorderedBulkOperation, FindOneOptions } from "mongodb";
 
+type Key = string | number;
+
 type CacheValue<T> = { value: T; version: string };
 type ValueOf<T> = T[keyof T];
 type KeyValueOptions<T extends object> = { [key in keyof T]: KeyOption<T> };
 type GroupKeyValueOptions<T extends object> = {
   [key in keyof T]: GroupOption<T>;
 };
+
 
 const GROUP_META_PREFIX = "__meta__of__group__:";
 
@@ -28,8 +31,8 @@ interface GroupOption<T> {
   cache?: boolean;
 
   // maps function for the entire group
-  mapTo: (data: ValueOf<T>) => Map<string, unknown>;
-  mapFrom?: (data: Map<string, any>) => ValueOf<T>;
+  mapTo: (data: ValueOf<T>) => Map<Key, unknown>;
+  mapFrom?: (data: Map<Key, any>) => ValueOf<T>;
 
   // maps function for item in the group
   mapItemTo?: (data: ValueOf<T>) => any;
@@ -38,7 +41,7 @@ interface GroupOption<T> {
   validate?: () => [boolean, object | null];
   validateItem?: () => [boolean, object | null];
 
-  default?: () => Map<string, unknown>;
+  default?: () => Map<Key, unknown>;
   defaultItem?: () => any;
 }
 
@@ -390,7 +393,7 @@ export class KeyValueMongo<
       });
   }
 
-  async getGroup(group: string): Promise<Map<string, ValueOf<G>>> {
+  async getGroup(group: string): Promise<ValueOf<G>> {
     try {
       if (this._groups.tracker.is_already_fetched(group)) {
         return this._groups.tracker.await_for(group);
