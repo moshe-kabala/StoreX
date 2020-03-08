@@ -11,7 +11,6 @@ type GroupKeyValueOptions<T extends object> = {
   [key in keyof T]: GroupOption<T>;
 };
 
-
 const GROUP_META_PREFIX = "__meta__of__group__:";
 
 interface KeyOption<T> {
@@ -80,10 +79,12 @@ export class KeyValueMongo<
   // create cache and fetch tracker for both keys and groups
   _key = createKeyCache<CacheValue<ValueOf<T>>>({
     limit: 10000,
+    default_value: () => ({ value: undefined, version: undefined }),
     wait_map: ({ value }) => value
   });
   _groups = createKeyCache<CacheValue<ValueOf<G>>>({
     limit: 10000,
+    default_value: () => ({ value: undefined, version: undefined }),
     wait_map: ({ value }) => value
   });
 
@@ -273,9 +274,10 @@ export class KeyValueMongo<
         const { value, version: cache_version } = this._key.cache.get(key);
         // if there is version
         if (cache_version !== null && cache_version !== "__default__") {
-          const { version } = (await collection.findOne({ key }, {
-            version: 1
-          } as any)) as any;
+          const { version } =
+            (await collection.findOne({ key }, {
+              version: 1
+            } as any)) as any || ({} as any);
           if (version && version == cache_version) {
             this._key.tracker.ended(key, { version, value });
             return value;
@@ -325,12 +327,13 @@ export class KeyValueMongo<
   }
 
   _map_group_from(group: string, value) {
-    const result = this._options.groups[group]?.mapFromKeyValueMap(value);
-    return result ? result : value;
+    return this._options.groups[group]?.mapFromKeyValueMap
+      ? this._options.groups[group].mapFrom(value)
+      : value;
   }
 
   _map_group_to(group: string, value): any[] {
-    const result = this._options.groups[group]?.mapToKeyValueMap(value);
+    const result = this._options.groups[group].mapTo(value);
     if (!result) {
       throw new Error(`Unknown group ${group}`);
     }
@@ -348,10 +351,10 @@ export class KeyValueMongo<
   async getGroupItem(group: string, key: string) {
     try {
       const collection = await this._getCollection();
-      const { value } = (await collection.findOne(
-        { "_id.group": group, "_id.key": key },
-        { value: 1 } as any
-      )) as any;
+      const { value } =
+        (await collection.findOne({ "_id.group": group, "_id.key": key }, {
+          value: 1
+        } as any)) as any || ({} as any);
       return value;
     } catch (err) {
       const msg = `Failed to get the item with key: ${key} from group: ${group}`;
@@ -378,7 +381,7 @@ export class KeyValueMongo<
     colec
       .find({ "_id.group": group, "_id.key": key })
       .upsert()
-      .update({
+      .replaceOne({
         $setOnInsert: { value, version: id, _id: { group, key } },
         $set: { value, version: id }
       });
@@ -387,10 +390,7 @@ export class KeyValueMongo<
     colec
       .find({ _id: GROUP_META_PREFIX + group })
       .upsert()
-      .update({
-        $setOnInsert: { version: id, _id: GROUP_META_PREFIX + group },
-        $set: { version: id }
-      });
+      .replaceOne({ version: id, _id: GROUP_META_PREFIX + group });
   }
 
   async getGroup(group: string): Promise<ValueOf<G>> {
@@ -401,17 +401,17 @@ export class KeyValueMongo<
 
       const collection = await this._getCollection();
 
-      const { version } = (await collection.findOne(
-        { _id: GROUP_META_PREFIX + group },
-        { version: 1 } as FindOneOptions
-      )) as any;
+      const { version } =
+        (await collection.findOne({ _id: GROUP_META_PREFIX + group }, {
+          version: 1
+        } as FindOneOptions)) || ({} as any);
 
       const {
         value: cache_value,
         version: cache_version
       } = this._groups.cache.get(group);
 
-      if (version == cache_version) {
+      if (cache_value && version == cache_version) {
         return cache_value as any;
       }
 
@@ -425,13 +425,12 @@ export class KeyValueMongo<
       const value = this._map_group_from(
         group,
         new Map(
-          result.map(({ _id: { group, key }, value }) => {
-            return [key, value];
-          })
+          result.map(({ _id: { group, key }, value }) => [key, value])
         )
       );
 
       this._groups.tracker.ended(group, { value, version });
+      return value;
     } catch (err) {
       this._groups.tracker.failed(group, err);
       return Promise.reject({ msg: `Failed to get group: ${group}`, err });
@@ -449,24 +448,20 @@ export class KeyValueMongo<
     const values = this._map_group_to(group, value);
 
     // upsert
-    let foundGroup = colec.find({ "_id.group": group }).upsert();
     for (const [key, value] of values) {
-      foundGroup.update({
-        $setOnInsert: { value, version: id, _id: { group, key } },
-        $set: { value, version: id }
-      });
+      colec
+      .find({ "_id": {group, key} })
+      .upsert()
+      .replaceOne({ value, version: id, _id: { group, key } });
     }
 
     // Update the group meta data
     colec
       .find({ _id: GROUP_META_PREFIX + group })
       .upsert()
-      .update({
-        $setOnInsert: { version: id, _id: GROUP_META_PREFIX + group },
-        $set: { version: id }
-      });
+      .replaceOne({ version: id, _id: GROUP_META_PREFIX + group });
 
     // remove old;
-    colec.find({ "_id.group": group, version: { $not: id } }).remove();
+    colec.find({ "_id.group": group, version: { $ne: id } }).remove();
   }
 }
